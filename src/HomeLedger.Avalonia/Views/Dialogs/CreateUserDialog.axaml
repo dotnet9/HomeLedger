@@ -1,0 +1,22 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="HomeLedger.Avalonia.Views.Dialogs.CreateUserDialog"
+        Title="新建成员账号" Width="400" SizeToContent="Height" CanResize="False"
+        WindowStartupLocation="CenterOwner" Background="#f7f5f0">
+    <Border Margin="14" CornerRadius="14" Background="White" BorderBrush="#e9e5dc" BorderThickness="1" Padding="24">
+        <StackPanel Spacing="12">
+            <TextBlock x:Name="HeaderText" Text="新建成员账号" FontSize="16" FontWeight="Bold" Foreground="#147d64"/>
+            <TextBlock Text="用户名（登录用，字母数字）" FontSize="12" Foreground="#5a6058"/>
+            <TextBox x:Name="UsernameBox" Height="36"/>
+            <TextBlock Text="显示名（如：爸爸、大女儿）" FontSize="12" Foreground="#5a6058"/>
+            <TextBox x:Name="DisplayNameBox" Height="36"/>
+            <TextBlock Text="初始密码（成员首次登录需改密）" FontSize="12" Foreground="#5a6058"/>
+            <TextBox x:Name="PasswordBox" PasswordChar="●" Height="36"/>
+            <TextBlock x:Name="ErrorText" Foreground="#c4553d" FontSize="12" IsVisible="False" TextWrapping="Wrap"/>
+            <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right" Margin="0,8,0,0">
+                <Button Content="取消" Click="OnCancel" CornerRadius="10" MinWidth="72"/>
+                <Button Content="创建" Click="OnConfirm" Background="#147d64" Foreground="White" CornerRadius="10" MinWidth="88"/>
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</Window>
