@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>HomeLedger · 报表</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+  <div class="titlebar">
+    <div class="logo"><div class="icon">¥</div> HomeLedger 家庭记账</div>
+    <div class="spacer"></div>
+    <div class="wbtn">—</div><div class="wbtn">▢</div><div class="wbtn close">✕</div>
+  </div>
+  <div class="body">
+    <div class="sidebar">
+      <div class="nav-item"><span class="ico">📝</span> 记账</div>
+      <div class="nav-item"><span class="ico">🏦</span> 存款利息</div>
+      <div class="nav-item active"><span class="ico">📊</span> 报表</div>
+      <div class="nav-item"><span class="ico">⚙️</span> 设置</div>
+      <div class="user">
+        <div class="avatar">楠</div>
+        <div><div class="name">张楠（儿女）</div><div class="role">成员 · 我的报表</div></div>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="page-title">我的报表</div>
+      <div class="page-sub">2026 年 · 张楠 · 收支汇总与存款利息</div>
+
+      <div class="toolbar" style="margin-bottom:16px;">
+        <div class="seg"><span>月</span><span class="on">年</span><span>自定义</span></div>
+        <div class="select">2026 年 ▾</div>
+        <div class="grow"></div>
+        <span class="muted">导出：</span>
+        <div class="btn">📄 CSV</div>
+        <div class="btn">🖼 PNG</div>
+        <div class="btn">📑 PDF</div>
+        <div class="btn primary">📝 Word</div>
+      </div>
+
+      <div class="grid cols-2">
+        <div class="card">
+          <h3>月度收支趋势</h3>
+          <div class="chart-bars">
+            <div class="bar-g"><div class="bar in" style="height:30%"></div><div class="bar out" style="height:28%"></div><div class="m">1月</div></div>
+            <div class="bar-g"><div class="bar in" style="height:26%"></div><div class="bar out" style="height:22%"></div><div class="m">2月</div></div>
+            <div class="bar-g"><div class="bar in" style="height:40%"></div><div class="bar out" style="height:30%"></div><div class="m">3月</div></div>
+            <div class="bar-g"><div class="bar in" style="height:35%"></div><div class="bar out" style="height:38%"></div><div class="m">4月</div></div>
+            <div class="bar-g"><div class="bar in" style="height:48%"></div><div class="bar out" style="height:33%"></div><div class="m">5月</div></div>
+            <div class="bar-g"><div class="bar in" style="height:90%"></div><div class="bar out" style="height:36%"></div><div class="m">6月</div></div>
+            <div class="bar-g"><div class="bar in" style="height:42%"></div><div class="bar out" style="height:40%"></div><div class="m">7月</div></div>
+            <div class="bar-g"><div class="bar in" style="height:38%"></div><div class="bar out" style="height:55%"></div><div class="m">8月</div></div>
+          </div>
+          <div class="chart-legend"><span><i style="background:#2f9e6e"></i>收入</span><span><i style="background:#c4553d"></i>支出</span></div>
+        </div>
+        <div class="card">
+          <h3>支出分类占比</h3>
+          <div style="display:flex;align-items:center;gap:20px;">
+            <div class="donut"></div>
+            <ul class="legend-list" style="flex:1;">
+              <li><i style="background:#147d64;width:10px;height:10px;border-radius:2px;"></i>食品聚餐 <b>2,860</b></li>
+              <li><i style="background:#d9a441;width:10px;height:10px;border-radius:2px;"></i>学习用品 <b>1,540</b></li>
+              <li><i style="background:#00b42a;width:10px;height:10px;border-radius:2px;"></i>交通 <b>860</b></li>
+              <li><i style="background:#c4553d;width:10px;height:10px;border-radius:2px;"></i>娱乐 <b>620</b></li>
+              <li><i style="background:#b9bdb4;width:10px;height:10px;border-radius:2px;"></i>其他 <b>310</b></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid cols-2" style="margin-top:16px;">
+        <div class="card">
+          <h3>收支汇总</h3>
+          <table>
+            <thead><tr><th>月份</th><th>收入</th><th>支出</th><th>结余</th></tr></thead>
+            <tbody>
+              <tr><td>2026-06</td><td class="amount-in">+8,420.00</td><td class="amount-out">-2,180.00</td><td><b>+6,240.00</b></td></tr>
+              <tr><td>2026-07</td><td class="amount-in">+3,000.00</td><td class="amount-out">-3,540.00</td><td class="amount-out"><b>-540.00</b></td></tr>
+              <tr><td>2026-08</td><td class="amount-in">+3,200.00</td><td class="amount-out">-2,845.50</td><td><b>+354.50</b></td></tr>
+              <tr><td><b>合计</b></td><td class="amount-in"><b>+14,620.00</b></td><td class="amount-out"><b>-8,565.50</b></td><td><b>+6,054.50</b></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <h3>存款利息情况</h3>
+          <table>
+            <thead><tr><th>项</th><th>金额</th></tr></thead>
+            <tbody>
+              <tr><td>存款本金合计</td><td><b>25,000.00</b></td></tr>
+              <tr><td>本年已结算利息（已结转）</td><td class="amount-in">+1,395.33</td></tr>
+              <tr><td>当前应计利息（未结算）</td><td class="amount-in">+842.31</td></tr>
+              <tr><td>本息合计</td><td><b style="color:var(--primary);">27,237.64</b></td></tr>
+            </tbody>
+          </table>
+          <div class="muted" style="margin-top:10px;">报表导出默认包含存款利息部分</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>HomeLedger · 记账</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+  .quick { display: grid; grid-template-columns: 200px 1fr 150px 170px 1fr 110px; gap: 12px; align-items: end; }
+  .records { margin-top: 16px; }
+  .pager { display: flex; align-items: center; gap: 8px; justify-content: flex-end; padding-top: 12px; font-size: 12px; color: var(--text-3); }
+  .pager .pg { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); border-radius: 4px; }
+  .pager .pg.on { background: var(--primary); color: #fff; border-color: var(--primary); }
+</style>
+</head>
+<body>
+  <div class="titlebar">
+    <div class="logo"><div class="icon">¥</div> HomeLedger 家庭记账</div>
+    <div class="spacer"></div>
+    <div class="wbtn">—</div><div class="wbtn">▢</div><div class="wbtn close">✕</div>
+  </div>
+  <div class="body">
+    <div class="sidebar">
+      <div class="nav-item active"><span class="ico">📝</span> 记账</div>
+      <div class="nav-item"><span class="ico">🏦</span> 存款利息</div>
+      <div class="nav-item"><span class="ico">📊</span> 报表</div>
+      <div class="nav-item"><span class="ico">⚙️</span> 设置</div>
+      <div class="user">
+        <div class="avatar">楠</div>
+        <div><div class="name">张楠（儿女）</div><div class="role">成员 · 只能查看自己的账</div></div>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="page-title">记账</div>
+      <div class="page-sub">快速记一笔自己的收入或支出，回车即保存</div>
+
+      <!-- 快速记账 -->
+      <div class="card">
+        <div class="quick">
+          <div class="field">
+            <label>金额</label>
+            <div class="input big">￥ 2,450.00</div>
+          </div>
+          <div class="field">
+            <label>类型</label>
+            <div class="seg" style="height:34px;"><span class="on">支出</span><span>收入</span></div>
+          </div>
+          <div class="field">
+            <label>分类</label>
+            <div class="select" style="width:100%; justify-content:space-between;">食品聚餐 ▾</div>
+          </div>
+          <div class="field">
+            <label>日期</label>
+            <div class="input" style="width:100%;">2026-08-21 📅</div>
+          </div>
+          <div class="field">
+            <label>备注</label>
+            <div class="input" style="width:100%; color:var(--text-3);">选填…</div>
+          </div>
+          <div class="field">
+            <label>&nbsp;</label>
+            <div class="btn primary" style="height:34px;">＋ 记一笔</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 汇总卡片 -->
+      <div class="grid cols-4" style="margin-top:16px;">
+        <div class="card stat"><div class="label">本月收入</div><div class="value income">+3,200.00</div></div>
+        <div class="card stat"><div class="label">本月支出</div><div class="value expense">-2,845.50</div></div>
+        <div class="card stat"><div class="label">本月结余</div><div class="value">+354.50</div></div>
+        <div class="card stat"><div class="label">累计结余</div><div class="value">+12,460.80</div></div>
+      </div>
+
+      <!-- 筛选 + 记录列表 -->
+      <div class="card records">
+        <div class="toolbar" style="margin-bottom:12px;">
+          <div class="select">2026-08-01 ~ 2026-08-21 📅</div>
+          <div class="select">全部类型 ▾</div>
+          <div class="select">全部分类 ▾</div>
+          <div class="input grow" style="color:var(--text-3);">🔍 搜索备注关键词…</div>
+        </div>
+        <table>
+          <thead><tr>
+            <th>日期</th><th>类型</th><th>分类</th><th>金额</th><th>备注</th><th style="text-align:right;">操作</th>
+          </tr></thead>
+          <tbody>
+            <tr><td>2026-08-21</td><td><span class="tag red">支出</span></td><td>食品聚餐</td><td class="amount-out">-2,450.00</td><td>同学生日聚餐</td><td style="text-align:right;"><span class="btn link sm">编辑</span><span class="btn link sm" style="color:var(--danger);">删除</span></td></tr>
+            <tr><td>2026-08-18</td><td><span class="tag red">支出</span></td><td>交通</td><td class="amount-out">-35.50</td><td>地铁充值</td><td style="text-align:right;"><span class="btn link sm">编辑</span><span class="btn link sm" style="color:var(--danger);">删除</span></td></tr>
+            <tr><td>2026-08-15</td><td><span class="tag green">收入</span></td><td>零花钱</td><td class="amount-in">+500.00</td><td>八月零花钱</td><td style="text-align:right;"><span class="btn link sm">编辑</span><span class="btn link sm" style="color:var(--danger);">删除</span></td></tr>
+            <tr><td>2026-08-10</td><td><span class="tag red">支出</span></td><td>学习用品</td><td class="amount-out">-120.00</td><td>文具、笔记本</td><td style="text-align:right;"><span class="btn link sm">编辑</span><span class="btn link sm" style="color:var(--danger);">删除</span></td></tr>
+            <tr><td>2026-08-05</td><td><span class="tag green">收入</span></td><td>利息收入</td><td class="amount-in">+2,050.00</td><td>存款利息结算（自动生成）</td><td style="text-align:right;"><span class="btn link sm">编辑</span><span class="btn link sm" style="color:var(--danger);">删除</span></td></tr>
+          </tbody>
+        </table>
+        <div class="pager">
+          共 128 条 <div class="pg">‹</div><div class="pg on">1</div><div class="pg">2</div><div class="pg">3</div><div class="pg">›</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>HomeLedger · 存款利息</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+  .chain { font-size: 11px; color: var(--text-3); }
+  .chain .link { color: var(--primary); }
+  .sub-table td { padding: 6px 10px; font-size: 12px; }
+  .sub-table th { padding: 6px 10px; }
+</style>
+</head>
+<body>
+  <div class="titlebar">
+    <div class="logo"><div class="icon">¥</div> HomeLedger 家庭记账</div>
+    <div class="spacer"></div>
+    <div class="wbtn">—</div><div class="wbtn">▢</div><div class="wbtn close">✕</div>
+  </div>
+  <div class="body">
+    <div class="sidebar">
+      <div class="nav-item"><span class="ico">📝</span> 记账</div>
+      <div class="nav-item active"><span class="ico">🏦</span> 存款利息</div>
+      <div class="nav-item"><span class="ico">📊</span> 报表</div>
+      <div class="nav-item"><span class="ico">⚙️</span> 设置</div>
+      <div class="user">
+        <div class="avatar">楠</div>
+        <div><div class="name">张楠（儿女）</div><div class="role">成员</div></div>
+      </div>
+    </div>
+
+    <div class="main" style="position:relative;">
+      <div class="page-title">存款利息</div>
+      <div class="page-sub">存在父母处的钱 · 单利按日计息，结算后利息滚入本金（复利）</div>
+
+      <div class="grid cols-4">
+        <div class="card stat"><div class="label">存款本金合计</div><div class="value">25,000.00</div></div>
+        <div class="card stat"><div class="label">当前应计利息</div><div class="value income">+842.31</div></div>
+        <div class="card stat"><div class="label">本息合计</div><div class="value rate">25,842.31</div></div>
+        <div class="card stat"><div class="label">默认年利率</div><div class="value rate">10%<span style="font-size:12px;color:var(--text-3);"> / 每笔可改</span></div></div>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <div class="toolbar" style="margin-bottom:12px;">
+          <h3 style="margin:0;">我的存款</h3>
+          <div class="grow"></div>
+          <div class="btn">＋ 存入</div>
+          <div class="btn">↧ 支取</div>
+          <div class="btn primary">结算利息（结转本金）</div>
+        </div>
+        <table>
+          <thead><tr>
+            <th><input type="checkbox" checked></th>
+            <th>本金</th><th>年利率</th><th>起息日</th><th>应计利息</th><th>本息合计</th><th>利息链</th><th>状态</th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td><input type="checkbox" checked></td>
+              <td class="amount-in">10,000.00</td><td>10%</td><td>2026-03-01</td>
+              <td class="amount-in">+482.19</td><td><b>10,482.19</b></td>
+              <td class="chain"><span class="link">存入 10,000</span> → <span class="link">结转 418.90（06-01）</span></td>
+              <td><span class="tag green">计息中</span></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" checked></td>
+              <td class="amount-in">5,000.00</td><td>8%</td><td>2025-12-15</td>
+              <td class="amount-in">+308.49</td><td><b>5,308.49</b></td>
+              <td class="chain"><span class="link">存入 8,000</span> → <span class="link">支取 3,000（03-10）</span> → <span class="link">结转 164.38（06-01）</span></td>
+              <td><span class="tag green">计息中</span></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" checked></td>
+              <td class="amount-in">10,000.00</td><td>12%</td><td>2026-08-01</td>
+              <td class="amount-in">+51.50</td><td><b>10,051.50</b></td>
+              <td class="chain"><span class="link">存入 10,000</span></td>
+              <td><span class="tag blue">计息中 · 新</span></td>
+            </tr>
+            <tr>
+              <td></td>
+              <td class="amount-out">2,000.00</td><td>10%</td><td>2025-06-01</td>
+              <td>—</td><td>已结清</td>
+              <td class="chain"><span class="link">存入 2,000</span> → 支取 2,000（2026-01-20）</td>
+              <td><span class="tag gray">已支取</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <h3>结算历史</h3>
+        <table class="sub-table">
+          <thead><tr><th>结算日</th><th>涉及笔数</th><th>利息总额</th><th>操作人</th></tr></thead>
+          <tbody>
+            <tr><td>2026-06-01</td><td>2</td><td class="amount-in">+583.28</td><td>张楠</td></tr>
+            <tr><td>2026-01-01</td><td>2</td><td class="amount-in">+812.05</td><td>管理员（爸爸代操作）</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 结算确认弹窗 -->
+      <div class="overlay">
+        <div class="modal">
+          <div class="m-head">确认结算利息（结转本金）<span class="x">✕</span></div>
+          <div class="m-body">
+            <p class="tip">以下 <b>3</b> 笔计息中的存款，应计利息将于 <b>2026-08-21</b> 结转为本金，生成新的存款记录并重新起息（复利）。</p>
+            <div>
+              <div class="kv"><span>存入 10,000 · 10% · 起息 2026-03-01</span><b>+482.19</b></div>
+              <div class="kv"><span>存入 5,000 · 8% · 起息 2025-12-15</span><b>+308.49</b></div>
+              <div class="kv"><span>存入 10,000 · 12% · 起息 2026-08-01</span><b>+51.50</b></div>
+            </div>
+            <div class="divider" style="margin:4px 0;"></div>
+            <div class="kv"><span style="font-weight:600;">合计结转利息</span><b style="color:var(--success);font-size:16px;">+842.18</b></div>
+          </div>
+          <div class="m-foot"><div class="btn">取消</div><div class="btn primary">确认结算</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

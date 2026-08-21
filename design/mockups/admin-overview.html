@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>HomeLedger · 全家总览（管理员）</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+  .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+  .tabs span { padding: 9px 16px; font-size: 14px; color: var(--text-2); border-bottom: 2px solid transparent; }
+  .tabs span.on { color: var(--primary); border-bottom-color: var(--primary); font-weight: 500; }
+  .hbar { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--text-2); padding: 6px 0; }
+  .hbar .name { width: 64px; text-align: right; }
+  .hbar .track { flex: 1; background: #f0f1f3; border-radius: 4px; height: 16px; overflow: hidden; display: flex; }
+  .hbar .track i { height: 100%; }
+</style>
+</head>
+<body>
+  <div class="titlebar">
+    <div class="logo"><div class="icon">¥</div> HomeLedger 家庭记账</div>
+    <div class="spacer"></div>
+    <div class="wbtn">—</div><div class="wbtn">▢</div><div class="wbtn close">✕</div>
+  </div>
+  <div class="body">
+    <div class="sidebar">
+      <div class="nav-item active"><span class="ico">🏠</span> 全家总览</div>
+      <div class="nav-item"><span class="ico">🔎</span> 明细查询</div>
+      <div class="nav-item"><span class="ico">👥</span> 成员管理</div>
+      <div class="nav-item"><span class="ico">📊</span> 报表导出</div>
+      <div class="nav-item"><span class="ico">🗄️</span> 数据备份</div>
+      <div class="user">
+        <div class="avatar" style="background:#fff3e8;color:var(--warning);">管</div>
+        <div><div class="name">管理员</div><div class="role">只管理 · 不记账</div></div>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="page-title">全家总览</div>
+      <div class="page-sub">2026 年 8 月 · 全部成员（含存款利息）</div>
+
+      <div class="tabs"><span class="on">图表总览</span><span>明细查询</span></div>
+
+      <div class="grid cols-4">
+        <div class="card stat"><div class="label">本月全家收入</div><div class="value income">+28,600.00</div></div>
+        <div class="card stat"><div class="label">本月全家支出</div><div class="value expense">-14,230.80</div></div>
+        <div class="card stat"><div class="label">本月结余</div><div class="value">+14,369.20</div></div>
+        <div class="card stat"><div class="label">存款本息合计</div><div class="value rate">85,237.64</div></div>
+      </div>
+
+      <div class="grid cols-2" style="margin-top:16px;">
+        <div class="card">
+          <h3>月度收支趋势（全家）</h3>
+          <div class="chart-bars">
+            <div class="bar-g"><div class="bar in" style="height:40%"></div><div class="bar out" style="height:35%"></div><div class="m">1月</div></div>
+            <div class="bar-g"><div class="bar in" style="height:38%"></div><div class="bar out" style="height:30%"></div><div class="m">2月</div></div>
+            <div class="bar-g"><div class="bar in" style="height:52%"></div><div class="bar out" style="height:42%"></div><div class="m">3月</div></div>
+            <div class="bar-g"><div class="bar in" style="height:46%"></div><div class="bar out" style="height:48%"></div><div class="m">4月</div></div>
+            <div class="bar-g"><div class="bar in" style="height:58%"></div><div class="bar out" style="height:44%"></div><div class="m">5月</div></div>
+            <div class="bar-g"><div class="bar in" style="height:100%"></div><div class="bar out" style="height:46%"></div><div class="m">6月</div></div>
+            <div class="bar-g"><div class="bar in" style="height:50%"></div><div class="bar out" style="height:52%"></div><div class="m">7月</div></div>
+            <div class="bar-g"><div class="bar in" style="height:55%"></div><div class="bar out" style="height:60%"></div><div class="m">8月</div></div>
+          </div>
+          <div class="chart-legend"><span><i style="background:#2f9e6e"></i>收入</span><span><i style="background:#c4553d"></i>支出</span></div>
+        </div>
+        <div class="card">
+          <h3>成员收支对比（本月）</h3>
+          <div class="hbar"><span class="name">爸爸</span><div class="track"><i style="width:70%;background:#147d64;"></i><i style="width:30%;background:#c4553d;opacity:.75;"></i></div><b>12,400</b></div>
+          <div class="hbar"><span class="name">妈妈</span><div class="track"><i style="width:55%;background:#147d64;"></i><i style="width:35%;background:#c4553d;opacity:.75;"></i></div><b>9,800</b></div>
+          <div class="hbar"><span class="name">张楠</span><div class="track"><i style="width:20%;background:#147d64;"></i><i style="width:25%;background:#c4553d;opacity:.75;"></i></div><b>3,200</b></div>
+          <div class="hbar"><span class="name">张妹</span><div class="track"><i style="width:12%;background:#147d64;"></i><i style="width:15%;background:#c4553d;opacity:.75;"></i></div><b>1,600</b></div>
+          <div class="chart-legend"><span><i style="background:#147d64"></i>收入</span><span><i style="background:#c4553d"></i>支出</span></div>
+          <div class="divider"></div>
+          <h3>全家支出分类占比</h3>
+          <div style="display:flex;align-items:center;gap:16px;">
+            <div class="donut" style="width:110px;height:110px;background:conic-gradient(#147d64 0 32%, #d9a441 32% 55%, #00b42a 55% 72%, #c4553d 72% 90%, #b9bdb4 90% 100%);"></div>
+            <ul class="legend-list" style="flex:1;">
+              <li><i style="background:#147d64;width:10px;height:10px;border-radius:2px;"></i>餐饮 <b>4,560</b></li>
+              <li><i style="background:#d9a441;width:10px;height:10px;border-radius:2px;"></i>房贷 <b>3,280</b></li>
+              <li><i style="background:#00b42a;width:10px;height:10px;border-radius:2px;"></i>日常用品 <b>2,420</b></li>
+              <li><i style="background:#c4553d;width:10px;height:10px;border-radius:2px;"></i>教育 <b>2,560</b></li>
+              <li><i style="background:#b9bdb4;width:10px;height:10px;border-radius:2px;"></i>其他 <b>1,410</b></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <div class="toolbar" style="margin-bottom:12px;">
+          <h3 style="margin:0;">成员汇总明细</h3>
+          <div class="grow"></div>
+          <div class="select">全部成员 ▾</div>
+          <div class="select">2026-08 ▾</div>
+          <div class="btn">导出当前视图</div>
+        </div>
+        <table>
+          <thead><tr><th>成员</th><th>收入</th><th>支出</th><th>结余</th><th>存款本金</th><th>应计利息</th><th>本息合计</th></tr></thead>
+          <tbody>
+            <tr><td>爸爸</td><td class="amount-in">+12,000.00</td><td class="amount-out">-8,240.00</td><td><b>+3,760.00</b></td><td>30,000.00</td><td class="amount-in">+1,920.55</td><td>31,920.55</td></tr>
+            <tr><td>妈妈</td><td class="amount-in">+8,600.00</td><td class="amount-out">-6,580.00</td><td><b>+2,020.00</b></td><td>28,000.00</td><td class="amount-in">+1,475.83</td><td>29,475.83</td></tr>
+            <tr><td>张楠（儿女）</td><td class="amount-in">+3,200.00</td><td class="amount-out">-2,845.50</td><td><b>+354.50</b></td><td>25,000.00</td><td class="amount-in">+842.31</td><td>25,842.31</td></tr>
+            <tr><td>张妹（儿女）</td><td class="amount-in">+1,600.00</td><td class="amount-out">-980.00</td><td><b>+620.00</b></td><td>—</td><td>—</td><td>—</td></tr>
+            <tr><td><b>合计</b></td><td class="amount-in"><b>+25,400.00</b></td><td class="amount-out"><b>-18,645.50</b></td><td><b>+6,754.50</b></td><td><b>83,000.00</b></td><td class="amount-in"><b>+4,238.69</b></td><td><b>87,238.69</b></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

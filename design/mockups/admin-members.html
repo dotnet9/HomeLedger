@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>HomeLedger · 成员管理（管理员）</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+  <div class="titlebar">
+    <div class="logo"><div class="icon">¥</div> HomeLedger 家庭记账</div>
+    <div class="spacer"></div>
+    <div class="wbtn">—</div><div class="wbtn">▢</div><div class="wbtn close">✕</div>
+  </div>
+  <div class="body">
+    <div class="sidebar">
+      <div class="nav-item"><span class="ico">🏠</span> 全家总览</div>
+      <div class="nav-item"><span class="ico">🔎</span> 明细查询</div>
+      <div class="nav-item active"><span class="ico">👥</span> 成员管理</div>
+      <div class="nav-item"><span class="ico">📊</span> 报表导出</div>
+      <div class="nav-item"><span class="ico">🗄️</span> 数据备份</div>
+      <div class="user">
+        <div class="avatar" style="background:#fff3e8;color:var(--warning);">管</div>
+        <div><div class="name">管理员</div><div class="role">只管理 · 不记账</div></div>
+      </div>
+    </div>
+
+    <div class="main" style="position:relative;">
+      <div class="page-title">成员管理</div>
+      <div class="page-sub">创建家庭成员账号 · 停用后不能登录但数据保留</div>
+
+      <div class="toolbar" style="margin-bottom:16px;">
+        <div class="input" style="color:var(--text-3); width:220px;">🔍 搜索用户名/显示名…</div>
+        <div class="grow"></div>
+        <div class="btn primary">＋ 新建成员账号</div>
+      </div>
+
+      <div class="card">
+        <table>
+          <thead><tr>
+            <th>用户名</th><th>显示名</th><th>角色</th><th>状态</th><th>记录数</th><th>创建时间</th><th style="text-align:right;">操作</th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td>admin</td><td>管理员</td><td><span class="tag orange">管理员</span></td>
+              <td><span class="tag green">启用</span></td><td>—</td><td>2026-01-01</td>
+              <td style="text-align:right;"><span class="btn link sm">修改密码</span></td>
+            </tr>
+            <tr>
+              <td>baba</td><td>爸爸</td><td><span class="tag blue">成员</span></td>
+              <td><span class="tag green">启用</span></td><td>1,286</td><td>2026-01-01</td>
+              <td style="text-align:right;"><span class="btn link sm">重置密码</span><span class="btn link sm">停用</span></td>
+            </tr>
+            <tr>
+              <td>mama</td><td>妈妈</td><td><span class="tag blue">成员</span></td>
+              <td><span class="tag green">启用</span></td><td>986</td><td>2026-01-01</td>
+              <td style="text-align:right;"><span class="btn link sm">重置密码</span><span class="btn link sm">停用</span></td>
+            </tr>
+            <tr>
+              <td>zhangnan</td><td>张楠（儿女）</td><td><span class="tag blue">成员</span></td>
+              <td><span class="tag green">启用</span></td><td>128</td><td>2026-01-01</td>
+              <td style="text-align:right;"><span class="btn link sm">重置密码</span><span class="btn link sm">停用</span></td>
+            </tr>
+            <tr>
+              <td>zhangmei</td><td>张妹（儿女）</td><td><span class="tag blue">成员</span></td>
+              <td><span class="tag green">启用</span></td><td>54</td><td>2026-03-12</td>
+              <td style="text-align:right;"><span class="btn link sm">重置密码</span><span class="btn link sm">停用</span></td>
+            </tr>
+            <tr>
+              <td>laoye</td><td>姥爷</td><td><span class="tag blue">成员</span></td>
+              <td><span class="tag gray">已停用</span></td><td>0</td><td>2026-02-01</td>
+              <td style="text-align:right;"><span class="btn link sm">启用</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 新建账号弹窗 -->
+      <div class="overlay">
+        <div class="modal">
+          <div class="m-head">新建成员账号<span class="x">✕</span></div>
+          <div class="m-body">
+            <div class="field"><label>用户名（登录用，字母数字）</label><div class="input" style="width:100%;">zhangsan</div></div>
+            <div class="field"><label>显示名（如：爸爸、大女儿）</label><div class="input" style="width:100%;color:var(--text-3);">请输入显示名…</div></div>
+            <div class="field"><label>初始密码</label><div class="input" style="width:100%;">••••••</div></div>
+            <p class="tip">成员首次登录时将被要求修改密码。成员只能查看和记录自己的账目。</p>
+          </div>
+          <div class="m-foot"><div class="btn">取消</div><div class="btn primary">创建</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
