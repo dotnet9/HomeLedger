@@ -427,3 +427,8 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# HomeLedger 本地数据库
+*.db
+*.db-shm
+*.db-wal

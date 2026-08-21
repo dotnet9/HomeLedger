@@ -1,0 +1,17 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="global.json" />
+    <File Path="LICENSE" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/HomeLedger.Core/HomeLedger.Core.csproj" />
+    <Project Path="src/HomeLedger.Avalonia/HomeLedger.Avalonia.csproj" />
+    <Project Path="src/HomeLedger.Desktop/HomeLedger.Desktop.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/HomeLedger.Core.Tests/HomeLedger.Core.Tests.csproj" />
+  </Folder>
+</Solution>
