@@ -1,2 +1,54 @@
-# HomeLedger
-Avalonia 桌面家庭记账工具。支持多家庭成员独立账户、管理员全局汇总查询；支持自定义年利率计息（子女托管存款利息计算），收支记账，报表导出；个人自用，数据本地存储
+# HomeLedger 家庭记账
+
+Avalonia 桌面家庭记账工具。多家庭成员独立账户、管理员全局汇总；自定义年利率的家庭存款计息（复利结转）；收支记账与图形化报表导出。个人自用，数据本地 SQLite 存储。
+
+## 功能
+
+- **账号体系**：管理员（只管理不记账）+ 家庭成员每人一账号；成员只能看到自己的账；PBKDF2 密码哈希；首次登录强制改密。
+- **记账**：收入/支出、分类（内置 + 自定义）、备注、日期筛选与关键词搜索；按月汇总与累计结余。
+- **存款利息**：存在父母处的钱，每笔可单独设年利率（默认 10%）；单利按日计息（365 天）；“结算”将应计利息结转本金实现复利；支持全额/部分支取（剩余本息按原利率续存）；结算历史可查。
+- **全家总览（管理员）**：成员收支对比、月度趋势、分类占比、成员汇总明细（含存款本息）。
+- **报表导出**：CSV / PNG（图表）/ PDF / Word 四格式，成员导出自己的、管理员导出全家（含存款利息）。
+- **数据备份**：一键复制带时间戳的数据库副本。
+
+## 使用
+
+```bash
+dotnet run --project src/HomeLedger.Desktop/HomeLedger.Desktop.csproj -f net10.0
+```
+
+首次启动自动建库并初始化管理员：**admin / admin123**（首次登录需修改密码）。管理员在“成员管理”中为家人创建账号（成员首次登录也会被要求改密）。
+
+数据文件：`%LOCALAPPDATA%\HomeLedger\ledger.db`
+
+### 发布
+
+```bash
+publish_win-x64.bat
+```
+
+产出单文件 `publish/win-x64/HomeLedger.Desktop.exe`。
+
+## 利息规则
+
+- 单利按日计息：`利息 = 本金 × 年利率% × 天数 ÷ 365`，四舍五入到分；起息日为存款日（或最近结转日）。
+- 复利通过“结算结转”实现：结算生成一笔新的“利息结转”存款并重新起息，历史留痕（利息链）。
+- 部分支取：支取部分结清，剩余本息生成新存款按原利率继续计息。
+
+## 技术栈
+
+.NET 10 · Avalonia 12 · Semi.Avalonia · SQLite + Dapper · QuestPDF · OpenXML · SkiaSharp · CommunityToolkit.Mvvm
+
+## 测试
+
+```bash
+dotnet run --project tests/HomeLedger.Core.Tests/HomeLedger.Core.Tests.csproj
+```
+
+覆盖利息计算、结转复利、部分支取、账号与数据隔离、报表组装、CSV 导出。
+
+## 文档
+
+- [需求文档](docs/HomeLedger家庭记账工具需求.md)
+- [设计文档](docs/HomeLedger家庭记账工具设计.md)
+- [UI 原型](design/README.md)（玉账风格）

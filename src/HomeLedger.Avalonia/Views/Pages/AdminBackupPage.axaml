@@ -1,0 +1,20 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="HomeLedger.Avalonia.Views.Pages.AdminBackupPage">
+    <StackPanel Spacing="14">
+        <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock Text="数据备份" FontSize="21" FontWeight="Bold" VerticalAlignment="Center"/>
+            <Border Width="34" Height="4" VerticalAlignment="Center" Margin="10,12,0,0" Background="#d9a441"/>
+        </StackPanel>
+        <TextBlock Text="一键复制数据库文件到指定目录（带时间戳副本）" FontSize="13" Foreground="#99a096" Margin="0,-8,0,0"/>
+
+        <Border Background="White" BorderBrush="#e9e5dc" BorderThickness="1" CornerRadius="16" Padding="24" MaxWidth="520" HorizontalAlignment="Left">
+            <StackPanel Spacing="14">
+                <TextBlock Text="数据库位置" FontSize="13" Foreground="#5a6058"/>
+                <TextBox x:Name="DbPathText" IsReadOnly="True" FontSize="12" TextWrapping="Wrap"/>
+                <Button Content="🗄️ 备份数据库到…" Click="OnBackup" Background="#147d64" Foreground="White" CornerRadius="10" HorizontalAlignment="Left"/>
+                <TextBlock x:Name="ResultText" FontSize="12" Foreground="#2f9e6e" TextWrapping="Wrap" IsVisible="False"/>
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</UserControl>
