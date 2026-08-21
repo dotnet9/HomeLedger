@@ -1,0 +1,25 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="HomeLedger.Avalonia.Views.Dialogs.WithdrawDialog"
+        Title="支取存款" Width="420" SizeToContent="Height" CanResize="False"
+        WindowStartupLocation="CenterOwner" Background="#f7f5f0">
+    <Border Margin="14" CornerRadius="14" Background="White" BorderBrush="#e9e5dc" BorderThickness="1" Padding="24">
+        <StackPanel Spacing="12">
+            <TextBlock Text="支取存款" FontSize="16" FontWeight="Bold" Foreground="#147d64"/>
+            <TextBlock x:Name="InfoText" TextWrapping="Wrap" FontSize="12" Foreground="#5a6058"/>
+            <TextBlock Text="支取金额" FontSize="12" Foreground="#5a6058"/>
+            <TextBox x:Name="AmountBox" Height="40" FontSize="18" FontFamily="Georgia"/>
+            <TextBlock x:Name="MaxText" FontSize="11" Foreground="#99a096"/>
+            <TextBlock Text="支取日期" FontSize="12" Foreground="#5a6058"/>
+            <DatePicker x:Name="DatePicker"/>
+            <TextBlock Text="备注" FontSize="12" Foreground="#5a6058"/>
+            <TextBox x:Name="NoteBox" Watermark="选填…" Height="36"/>
+            <TextBlock Text="部分支取时，剩余本息将按原利率生成新存款继续计息" FontSize="11" Foreground="#99a096" TextWrapping="Wrap"/>
+            <TextBlock x:Name="ErrorText" Foreground="#c4553d" FontSize="12" IsVisible="False" TextWrapping="Wrap"/>
+            <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right" Margin="0,8,0,0">
+                <Button Content="取消" Click="OnCancel" CornerRadius="10" MinWidth="72"/>
+                <Button Content="支取" Click="OnConfirm" Background="#147d64" Foreground="White" CornerRadius="10" MinWidth="88"/>
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</Window>

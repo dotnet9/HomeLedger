@@ -1,0 +1,103 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="HomeLedger.Avalonia.Views.Pages.MemberDepositsPage">
+    <StackPanel Spacing="14">
+        <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock Text="存款利息" FontSize="21" FontWeight="Bold" VerticalAlignment="Center"/>
+            <Border Width="34" Height="4" VerticalAlignment="Center" Margin="10,12,0,0" Background="#d9a441"/>
+        </StackPanel>
+        <TextBlock Text="存在父母处的钱 · 单利按日计息，结算后利息滚入本金（复利）" FontSize="13" Foreground="#99a096" Margin="0,-8,0,0"/>
+
+        <UniformGrid Columns="4">
+            <Border Background="White" BorderBrush="#e9e5dc" BorderThickness="1" CornerRadius="16" Padding="16" Margin="0,0,7,0">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal"><Border Width="6" Height="6" Background="#d9a441"/><TextBlock Text=" 存款本金合计" FontSize="12" Foreground="#99a096"/></StackPanel>
+                    <TextBlock x:Name="PrincipalText" FontSize="24" FontWeight="Bold" FontFamily="Georgia" Margin="0,7,0,0"/>
+                </StackPanel>
+            </Border>
+            <Border Background="White" BorderBrush="#e9e5dc" BorderThickness="1" CornerRadius="16" Padding="16" Margin="0,0,7,0">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal"><Border Width="6" Height="6" Background="#d9a441"/><TextBlock Text=" 当前应计利息" FontSize="12" Foreground="#99a096"/></StackPanel>
+                    <TextBlock x:Name="AccruedText" FontSize="24" FontWeight="Bold" FontFamily="Georgia" Foreground="#2f9e6e" Margin="0,7,0,0"/>
+                </StackPanel>
+            </Border>
+            <Border Background="White" BorderBrush="#e9e5dc" BorderThickness="1" CornerRadius="16" Padding="16" Margin="0,0,7,0">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal"><Border Width="6" Height="6" Background="#d9a441"/><TextBlock Text=" 本息合计" FontSize="12" Foreground="#99a096"/></StackPanel>
+                    <TextBlock x:Name="TotalText" FontSize="24" FontWeight="Bold" FontFamily="Georgia" Foreground="#147d64" Margin="0,7,0,0"/>
+                </StackPanel>
+            </Border>
+            <Border Background="White" BorderBrush="#e9e5dc" BorderThickness="1" CornerRadius="16" Padding="16" Margin="7,0,0,0">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal"><Border Width="6" Height="6" Background="#d9a441"/><TextBlock Text=" 计息笔数" FontSize="12" Foreground="#99a096"/></StackPanel>
+                    <TextBlock x:Name="ActiveCountText" FontSize="24" FontWeight="Bold" FontFamily="Georgia" Margin="0,7,0,0"/>
+                </StackPanel>
+            </Border>
+        </UniformGrid>
+
+        <Border Background="White" BorderBrush="#e9e5dc" BorderThickness="1" CornerRadius="16" Padding="16">
+            <StackPanel Spacing="12">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <TextBlock Text="我的存款" FontSize="14" FontWeight="Bold" VerticalAlignment="Center"/>
+                    <Panel Width="20"/>
+                    <Button Content="＋ 存入" Click="OnDeposit" Background="#147d64" Foreground="White" CornerRadius="10"/>
+                    <Button Content="↧ 支取" Click="OnWithdraw" CornerRadius="10"/>
+                    <Button x:Name="SettleButton" Content="结算利息（结转本金）" Click="OnSettle" Background="#d9a441" Foreground="White" CornerRadius="10"/>
+                </StackPanel>
+
+                <Grid ColumnDefinitions="1.2*,0.7*,1.1*,1*,1.2*,2.6*,0.9*,0.9*" Margin="8,0">
+                    <TextBlock Text="本金" FontSize="12" Foreground="#99a096"/>
+                    <TextBlock Text="年利率" FontSize="12" Foreground="#99a096" Grid.Column="1"/>
+                    <TextBlock Text="起息日" FontSize="12" Foreground="#99a096" Grid.Column="2"/>
+                    <TextBlock Text="应计利息" FontSize="12" Foreground="#99a096" Grid.Column="3"/>
+                    <TextBlock Text="本息合计" FontSize="12" Foreground="#99a096" Grid.Column="4"/>
+                    <TextBlock Text="利息链" FontSize="12" Foreground="#99a096" Grid.Column="5"/>
+                    <TextBlock Text="状态" FontSize="12" Foreground="#99a096" Grid.Column="6"/>
+                    <TextBlock Text="操作" FontSize="12" Foreground="#99a096" Grid.Column="7" HorizontalAlignment="Right"/>
+                </Grid>
+                <ScrollViewer Height="300">
+                    <ItemsControl x:Name="ListHost">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="1.2*,0.7*,1.1*,1*,1.2*,2.6*,0.9*,0.9*" Margin="8,7" MinHeight="30">
+                                    <TextBlock Text="{Binding Principal}" FontSize="13" FontWeight="Bold" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Rate}" FontSize="13" Grid.Column="1" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding StartDate}" FontSize="13" Grid.Column="2" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Accrued}" FontSize="13" Foreground="#2f9e6e" Grid.Column="3" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Total}" FontSize="13" FontWeight="Bold" Grid.Column="4" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Chain}" FontSize="11" Foreground="#99a096" Grid.Column="5" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                    <Border Grid.Column="6" Background="{Binding StatusBg}" CornerRadius="6" Padding="7,2" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Status}" FontSize="11" Foreground="{Binding StatusFg}"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="7" Orientation="Horizontal" HorizontalAlignment="Right" IsVisible="{Binding CanOperate}">
+                                        <Button Content="支取" FontSize="12" CornerRadius="8" Padding="10,4" Command="{Binding WithdrawCommand}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </StackPanel>
+        </Border>
+
+        <Border Background="White" BorderBrush="#e9e5dc" BorderThickness="1" CornerRadius="16" Padding="16">
+            <StackPanel Spacing="10">
+                <TextBlock Text="结算历史" FontSize="14" FontWeight="Bold"/>
+                <ScrollViewer Height="120">
+                    <ItemsControl x:Name="SettleListHost">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="1.2*,1*,1*,2*" Margin="8,6">
+                                    <TextBlock Text="{Binding Date}" FontSize="13"/>
+                                    <TextBlock Text="{Binding Count}" FontSize="13" Grid.Column="1"/>
+                                    <TextBlock Text="{Binding Total}" FontSize="13" Foreground="#2f9e6e" FontWeight="Bold" Grid.Column="2"/>
+                                    <TextBlock Text="{Binding By}" FontSize="13" Foreground="#99a096" Grid.Column="3"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</UserControl>

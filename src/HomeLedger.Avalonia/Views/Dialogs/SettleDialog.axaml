@@ -1,0 +1,20 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="HomeLedger.Avalonia.Views.Dialogs.SettleDialog"
+        Title="结算利息（结转本金）" Width="440" SizeToContent="Height" CanResize="False"
+        WindowStartupLocation="CenterOwner" Background="#f7f5f0">
+    <Border Margin="14" CornerRadius="14" Background="White" BorderBrush="#e9e5dc" BorderThickness="1" Padding="24">
+        <StackPanel Spacing="12">
+            <TextBlock Text="确认结算利息（结转本金）" FontSize="16" FontWeight="Bold" Foreground="#147d64"/>
+            <TextBlock Text="应计利息将结转为新的存款本金并重新起息（复利）。" FontSize="12" Foreground="#5a6058" TextWrapping="Wrap"/>
+            <TextBlock Text="结算日" FontSize="12" Foreground="#5a6058"/>
+            <DatePicker x:Name="DatePicker"/>
+            <TextBlock x:Name="DetailText" FontSize="12" Foreground="#5a6058" TextWrapping="Wrap"/>
+            <TextBlock x:Name="TotalText" FontSize="14" FontWeight="Bold" Foreground="#2f9e6e"/>
+            <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right" Margin="0,8,0,0">
+                <Button Content="取消" Click="OnCancel" CornerRadius="10" MinWidth="72"/>
+                <Button Content="确认结算" Click="OnConfirm" Background="#147d64" Foreground="White" CornerRadius="10" MinWidth="88"/>
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</Window>
