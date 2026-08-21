@@ -1,0 +1,89 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="HomeLedger.Avalonia.Views.Pages.MemberLedgerPage">
+    <StackPanel Spacing="14">
+        <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock Text="记账" FontSize="21" FontWeight="Bold" VerticalAlignment="Center"/>
+            <Border Width="34" Height="4" VerticalAlignment="Center" Margin="10,12,0,0" Background="#d9a441"/>
+        </StackPanel>
+        <TextBlock Text="记录自己的收入与支出 · 只能查看自己的账" FontSize="13" Foreground="#99a096" Margin="0,-8,0,0"/>
+
+        <!-- 汇总卡片 -->
+        <UniformGrid Columns="4">
+            <Border Background="White" BorderBrush="#e9e5dc" BorderThickness="1" CornerRadius="16" Padding="16" Margin="0,0,7,0">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal"><Border Width="6" Height="6" Background="#d9a441"/><TextBlock Text=" 本月收入" FontSize="12" Foreground="#99a096"/></StackPanel>
+                    <TextBlock x:Name="MonthIncomeText" Text="0.00" FontSize="24" FontWeight="Bold" FontFamily="Georgia" Foreground="#2f9e6e" Margin="0,7,0,0"/>
+                </StackPanel>
+            </Border>
+            <Border Background="White" BorderBrush="#e9e5dc" BorderThickness="1" CornerRadius="16" Padding="16" Margin="0,0,7,0">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal"><Border Width="6" Height="6" Background="#d9a441"/><TextBlock Text=" 本月支出" FontSize="12" Foreground="#99a096"/></StackPanel>
+                    <TextBlock x:Name="MonthExpenseText" Text="0.00" FontSize="24" FontWeight="Bold" FontFamily="Georgia" Foreground="#c4553d" Margin="0,7,0,0"/>
+                </StackPanel>
+            </Border>
+            <Border Background="White" BorderBrush="#e9e5dc" BorderThickness="1" CornerRadius="16" Padding="16" Margin="0,0,7,0">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal"><Border Width="6" Height="6" Background="#d9a441"/><TextBlock Text=" 本月结余" FontSize="12" Foreground="#99a096"/></StackPanel>
+                    <TextBlock x:Name="MonthBalanceText" Text="0.00" FontSize="24" FontWeight="Bold" FontFamily="Georgia" Margin="0,7,0,0"/>
+                </StackPanel>
+            </Border>
+            <Border Background="White" BorderBrush="#e9e5dc" BorderThickness="1" CornerRadius="16" Padding="16" Margin="7,0,0,0">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal"><Border Width="6" Height="6" Background="#d9a441"/><TextBlock Text=" 累计结余" FontSize="12" Foreground="#99a096"/></StackPanel>
+                    <TextBlock x:Name="TotalBalanceText" Text="0.00" FontSize="24" FontWeight="Bold" FontFamily="Georgia" Margin="0,7,0,0"/>
+                </StackPanel>
+            </Border>
+        </UniformGrid>
+
+        <!-- 记录列表 -->
+        <Border Background="White" BorderBrush="#e9e5dc" BorderThickness="1" CornerRadius="16" Padding="16">
+            <StackPanel Spacing="12">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <Button Content="＋ 记一笔" Click="OnAdd" Background="#147d64" Foreground="White" CornerRadius="10"/>
+                    <DatePicker x:Name="FromDate" Width="150"/>
+                    <TextBlock Text="~" VerticalAlignment="Center" Foreground="#99a096"/>
+                    <DatePicker x:Name="ToDate" Width="150"/>
+                    <ComboBox x:Name="KindBox" MinWidth="100">
+                        <ComboBoxItem Content="全部类型" IsSelected="True"/>
+                        <ComboBoxItem Content="收入"/>
+                        <ComboBoxItem Content="支出"/>
+                    </ComboBox>
+                    <TextBox x:Name="KeywordBox" Watermark="🔍 搜索备注…" MinWidth="160"/>
+                    <Button Content="筛选" Click="OnFilter" CornerRadius="10"/>
+                </StackPanel>
+
+                <Grid ColumnDefinitions="1.1*,0.8*,1.2*,1*,2.4*,1.1*" Margin="8,0">
+                    <TextBlock Text="日期" FontSize="12" Foreground="#99a096"/>
+                    <TextBlock Text="类型" FontSize="12" Foreground="#99a096" Grid.Column="1"/>
+                    <TextBlock Text="分类" FontSize="12" Foreground="#99a096" Grid.Column="2"/>
+                    <TextBlock Text="金额" FontSize="12" Foreground="#99a096" Grid.Column="3"/>
+                    <TextBlock Text="备注" FontSize="12" Foreground="#99a096" Grid.Column="4"/>
+                    <TextBlock Text="操作" FontSize="12" Foreground="#99a096" Grid.Column="5" HorizontalAlignment="Right"/>
+                </Grid>
+                <ScrollViewer Height="360">
+                    <ItemsControl x:Name="ListHost">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="1.1*,0.8*,1.2*,1*,2.4*,1.1*" Margin="8,7" MinHeight="30">
+                                    <TextBlock Text="{Binding DateText}" FontSize="13" VerticalAlignment="Center"/>
+                                    <Border Grid.Column="1" Background="{Binding KindBg}" CornerRadius="6" Padding="8,2" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding KindText}" FontSize="11" Foreground="{Binding KindFg}"/>
+                                    </Border>
+                                    <TextBlock Text="{Binding CategoryName}" FontSize="13" Grid.Column="2" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding AmountText}" FontSize="13" FontWeight="Bold" Foreground="{Binding AmountBrush}" Grid.Column="3" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Note}" FontSize="13" Foreground="#5a6058" Grid.Column="4" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                    <StackPanel Grid.Column="5" Orientation="Horizontal" HorizontalAlignment="Right">
+                                        <Button Content="编辑" FontSize="12" CornerRadius="8" Padding="10,4" Margin="0,0,6,0" Command="{Binding EditCommand}"/>
+                                        <Button Content="删除" FontSize="12" CornerRadius="8" Padding="10,4" Foreground="#c4553d" Command="{Binding DeleteCommand}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+                <TextBlock x:Name="SummaryText" FontSize="12" Foreground="#99a096"/>
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</UserControl>
