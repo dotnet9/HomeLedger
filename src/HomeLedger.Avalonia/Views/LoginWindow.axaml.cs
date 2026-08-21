@@ -1,15 +1,21 @@
+using Avalonia;
 using Avalonia.Controls;
+using HomeLedger.Avalonia.Controls;
 using Avalonia.Interactivity;
 using HomeLedger.Core.Models;
 using HomeLedger.Core.Services;
+using Avalonia.Media;
+using Avalonia.Layout;
 
 namespace HomeLedger.Avalonia.Views;
 
-public partial class LoginWindow : Window
+public partial class LoginWindow : JadeWindow
 {
     public LoginWindow()
     {
         InitializeComponent();
+        LeftContent = new TextBlock { Text = "HomeLedger 家庭记账", FontSize = 13, FontWeight = FontWeight.SemiBold,
+            Foreground = Brush.Parse("#2b2f2c"), Margin = new Thickness(14, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center };
     }
 
     private User? _pendingUser;
@@ -34,9 +40,12 @@ public partial class LoginWindow : Window
 
         if (user.MustChangePassword)
         {
+            // 先建立会话：改密对话框与后续流程都依赖 Session.Current
+            Session.Current = user;
             var dialog = new Dialogs.ChangePasswordDialog { WindowStartupLocation = WindowStartupLocation.CenterOwner };
             if (await dialog.ShowDialog<bool>(this) != true)
             {
+                Session.Current = null;
                 ShowHint("请先完成密码修改");
                 return;
             }

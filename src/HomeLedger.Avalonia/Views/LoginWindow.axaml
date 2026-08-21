@@ -1,4 +1,4 @@
-<Window xmlns="https://github.com/avaloniaui"
+<jade:JadeWindow xmlns="https://github.com/avaloniaui" xmlns:jade="using:HomeLedger.Avalonia.Controls"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="HomeLedger.Avalonia.Views.LoginWindow"
         Title="HomeLedger 家庭记账 · 登录" Width="440" Height="560"
@@ -41,4 +41,4 @@
             </StackPanel>
         </ScrollViewer>
     </Border>
-</Window>
+</jade:JadeWindow>

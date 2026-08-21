@@ -5,4 +5,11 @@
     <Application.Styles>
         <StyleInclude Source="avares://Semi.Avalonia/Index.axaml" />
     </Application.Styles>
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://HomeLedger.Avalonia/Themes/JadeWindow.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
 </Application>

@@ -1,11 +1,15 @@
+using Avalonia;
 using Avalonia.Controls;
+using HomeLedger.Avalonia.Controls;
 using Avalonia.Interactivity;
 using HomeLedger.Core.Models;
+using Avalonia.Media;
+using Avalonia.Layout;
 
 namespace HomeLedger.Avalonia.Views.Dialogs;
 
 /// <summary>结算确认：列出将被结转的利息合计。</summary>
-public partial class SettleDialog : Window
+public partial class SettleDialog : JadeWindow
 {
     private readonly long _userId;
     private readonly IReadOnlyList<DepositChainView> _chains;
@@ -13,6 +17,8 @@ public partial class SettleDialog : Window
     public SettleDialog(long userId, IReadOnlyList<DepositChainView> chains)
     {
         InitializeComponent();
+        LeftContent = new TextBlock { Text = "结算利息", FontSize = 13, FontWeight = FontWeight.SemiBold,
+            Foreground = Brush.Parse("#2b2f2c"), Margin = new Thickness(14, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center };
         _userId = userId;
         _chains = chains;
         DatePicker.SelectedDate = DateTimeOffset.Now;

@@ -1,4 +1,7 @@
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Layout;
+using HomeLedger.Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using HomeLedger.Avalonia.Views.Pages;
@@ -6,7 +9,7 @@ using HomeLedger.Core.Models;
 
 namespace HomeLedger.Avalonia.Views;
 
-public partial class MainWindow : Window
+public partial class MainWindow : JadeWindow
 {
     private readonly List<(string Title, Func<Control> Factory)> _memberPages =
     [
@@ -25,6 +28,8 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        LeftContent = new TextBlock { Text = "HomeLedger 家庭记账", FontSize = 13, FontWeight = FontWeight.SemiBold,
+            Foreground = Brush.Parse("#2b2f2c"), Margin = new Thickness(14, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center };
         var user = Session.Current ?? throw new InvalidOperationException("未登录");
         UserNameText.Text = user.DisplayName;
         RoleText.Text = user.Role == Role.Admin ? "管理员 · 只管理不记账" : "成员 · 只能查看自己的账";

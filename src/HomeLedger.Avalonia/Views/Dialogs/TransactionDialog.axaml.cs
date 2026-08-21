@@ -1,11 +1,15 @@
+using Avalonia;
 using Avalonia.Controls;
+using HomeLedger.Avalonia.Controls;
 using Avalonia.Interactivity;
 using HomeLedger.Core.Models;
 using HomeLedger.Core.Services;
+using Avalonia.Media;
+using Avalonia.Layout;
 
 namespace HomeLedger.Avalonia.Views.Dialogs;
 
-public partial class TransactionDialog : Window
+public partial class TransactionDialog : JadeWindow
 {
     private readonly long _userId;
     private readonly LedgerService _ledger = AppServices.Ledger;
@@ -14,6 +18,8 @@ public partial class TransactionDialog : Window
     public TransactionDialog(long userId, TransactionItem? editing = null)
     {
         InitializeComponent();
+        LeftContent = new TextBlock { Text = "记一笔", FontSize = 13, FontWeight = FontWeight.SemiBold,
+            Foreground = Brush.Parse("#2b2f2c"), Margin = new Thickness(14, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center };
         _userId = userId;
         _editing = editing;
         HeaderText.Text = editing is null ? "记一笔" : "编辑记录";

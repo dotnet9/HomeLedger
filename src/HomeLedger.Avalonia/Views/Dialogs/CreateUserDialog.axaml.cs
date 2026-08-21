@@ -1,13 +1,19 @@
+using Avalonia;
 using Avalonia.Controls;
+using HomeLedger.Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Media;
+using Avalonia.Layout;
 
 namespace HomeLedger.Avalonia.Views.Dialogs;
 
-public partial class CreateUserDialog : Window
+public partial class CreateUserDialog : JadeWindow
 {
     public CreateUserDialog()
     {
         InitializeComponent();
+        LeftContent = new TextBlock { Text = "新建成员账号", FontSize = 13, FontWeight = FontWeight.SemiBold,
+            Foreground = Brush.Parse("#2b2f2c"), Margin = new Thickness(14, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center };
     }
 
     private void OnCancel(object? sender, RoutedEventArgs e) => Close(false);

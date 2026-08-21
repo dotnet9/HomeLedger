@@ -1,11 +1,15 @@
+using Avalonia;
 using Avalonia.Controls;
+using HomeLedger.Avalonia.Controls;
 using Avalonia.Interactivity;
 using HomeLedger.Core.Models;
+using Avalonia.Media;
+using Avalonia.Layout;
 
 namespace HomeLedger.Avalonia.Views.Dialogs;
 
 /// <summary>支取：整链结清或部分支取，剩余本息按原利率续存。</summary>
-public partial class WithdrawDialog : Window
+public partial class WithdrawDialog : JadeWindow
 {
     private readonly long _userId;
     private readonly DepositChainView _chain;
@@ -13,6 +17,8 @@ public partial class WithdrawDialog : Window
     public WithdrawDialog(long userId, DepositChainView chain)
     {
         InitializeComponent();
+        LeftContent = new TextBlock { Text = "支取存款", FontSize = 13, FontWeight = FontWeight.SemiBold,
+            Foreground = Brush.Parse("#2b2f2c"), Margin = new Thickness(14, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center };
         _userId = userId;
         _chain = chain;
         DatePicker.SelectedDate = DateTimeOffset.Now;

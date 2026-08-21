@@ -1,16 +1,22 @@
+using Avalonia;
 using Avalonia.Controls;
+using HomeLedger.Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Media;
+using Avalonia.Layout;
 
 namespace HomeLedger.Avalonia.Views.Dialogs;
 
 /// <summary>存入存款：金额、日期、年利率（默认 10%，每笔可单独设置）。</summary>
-public partial class DepositDialog : Window
+public partial class DepositDialog : JadeWindow
 {
     private readonly long _userId;
 
     public DepositDialog(long userId)
     {
         InitializeComponent();
+        LeftContent = new TextBlock { Text = "存入存款", FontSize = 13, FontWeight = FontWeight.SemiBold,
+            Foreground = Brush.Parse("#2b2f2c"), Margin = new Thickness(14, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center };
         _userId = userId;
         DatePicker.SelectedDate = DateTimeOffset.Now;
         RateBox.Text = "10";

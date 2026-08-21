@@ -1,14 +1,20 @@
 using Avalonia;
+using HomeLedger.Avalonia.Controls;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Media;
+using Avalonia.Layout;
 
 namespace HomeLedger.Avalonia.Views.Dialogs;
 
-public partial class ChangePasswordDialog : Window
+public partial class ChangePasswordDialog : JadeWindow
 {
     public ChangePasswordDialog()
     {
         InitializeComponent();
+        LeftContent = new TextBlock { Text = "修改密码", FontSize = 13, FontWeight = FontWeight.SemiBold,
+            Foreground = Brush.Parse("#2b2f2c"), Margin = new Thickness(14, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center };
     }
 
     private void OnCancel(object? sender, RoutedEventArgs e) => Close(false);

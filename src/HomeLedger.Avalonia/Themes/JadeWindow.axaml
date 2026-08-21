@@ -1,0 +1,136 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:primitives="using:Avalonia.Controls.Primitives"
+                    xmlns:jade="using:HomeLedger.Avalonia.Controls"
+>
+    <x:Double x:Key="JadeResizeGripThickness">4</x:Double>
+    <x:Double x:Key="JadeResizeCornerSize">10</x:Double>
+    <CornerRadius x:Key="JadeWindowCornerRadius">12</CornerRadius>
+
+    <!-- 标题栏按钮：细线图标，悬停玉绿、关闭悬停赭红 -->
+    <ControlTheme x:Key="JadeCaptionButtonTheme" TargetType="Button">
+        <Setter Property="Width" Value="42" />
+        <Setter Property="Height" Value="30" />
+        <Setter Property="Margin" Value="2,0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Template">
+            <ControlTemplate TargetType="Button">
+                <Border Background="{TemplateBinding Background}" CornerRadius="{TemplateBinding CornerRadius}">
+                    <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^:pointerover">
+            <Setter Property="Background" Value="#e3f2ec" />
+        </Style>
+        <Style Selector="^:pointerover">
+            <Setter Property="Foreground" Value="#147d64" />
+        </Style>
+        <Style Selector="^:pressed">
+            <Setter Property="Background" Value="#cfe6dc" />
+        </Style>
+    </ControlTheme>
+
+    <StreamGeometry x:Key="IconMinimize">M7,12 H17</StreamGeometry>
+    <StreamGeometry x:Key="IconMaximize">M5,5 H19 V19 H5 Z</StreamGeometry>
+    <StreamGeometry x:Key="IconRestore">M9,4 H20 V15 M4,9 H15 V20 H4 Z</StreamGeometry>
+    <StreamGeometry x:Key="IconClose">M5,5 L19,19 M19,5 L5,19</StreamGeometry>
+
+    <ControlTheme x:Key="{x:Type jade:JadeWindow}" TargetType="jade:JadeWindow">
+        <Setter Property="Background" Value="#f7f5f0" />
+        <Setter Property="Foreground" Value="#2b2f2c" />
+        <Setter Property="BorderBrush" Value="#e9e5dc" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="TitleBarBackground" Value="#fbfaf7" />
+        <Setter Property="TitleBarForeground" Value="#5a6058" />
+        <Setter Property="WindowCornerRadius" Value="{StaticResource JadeWindowCornerRadius}" />
+        <Setter Property="Template">
+            <ControlTemplate TargetType="jade:JadeWindow">
+                <Panel>
+                    <primitives:VisualLayerManager Name="PART_VisualLayerManager"
+                                                   EnableAdornerLayer="True"
+                                                   EnableOverlayLayer="True"
+                                                   EnableTextSelectorLayer="True">
+                        <Border Name="WindowFrame"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{TemplateBinding WindowCornerRadius}"
+                                ClipToBounds="True">
+                            <Grid RowDefinitions="Auto,*">
+                                <Border Name="PART_TitleBar"
+                                        Height="{TemplateBinding TitleBarHeight}"
+                                        Background="{TemplateBinding TitleBarBackground}"
+                                        BorderBrush="#eeeae0"
+                                        BorderThickness="0,0,0,1"
+                                        IsVisible="{TemplateBinding IsTitleBarVisible}">
+                                    <Grid>
+                                        <ContentPresenter HorizontalAlignment="Left"
+                                                          VerticalAlignment="Stretch"
+                                                          Content="{TemplateBinding LeftContent}" />
+                                        <ContentPresenter HorizontalAlignment="Center"
+                                                          VerticalAlignment="Stretch"
+                                                          Content="{TemplateBinding TitleBarContent}" />
+                                        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,6,0">
+                                            <Button Name="PART_MinimizeButton" Theme="{StaticResource JadeCaptionButtonTheme}" ToolTip.Tip="最小化">
+                                                <Path Data="{StaticResource IconMinimize}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.6" />
+                                            </Button>
+                                            <Button Name="PART_MaximizeButton" Theme="{StaticResource JadeCaptionButtonTheme}" ToolTip.Tip="最大化 / 还原">
+                                                <Grid Width="13" Height="13">
+                                                    <Path Name="MaximizeGlyph" Data="{StaticResource IconMaximize}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.6" />
+                                                    <Path Name="RestoreGlyph" Data="{StaticResource IconRestore}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.6" IsVisible="False" />
+                                                </Grid>
+                                            </Button>
+                                            <Button Name="PART_CloseButton" Classes="close" Theme="{StaticResource JadeCaptionButtonTheme}" ToolTip.Tip="关闭">
+                                                <Path Data="{StaticResource IconClose}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.6" />
+                                            </Button>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+
+                                <ContentPresenter Name="PART_ContentPresenter"
+                                                  Grid.Row="1"
+                                                  Content="{TemplateBinding Content}"
+                                                  ContentTemplate="{TemplateBinding ContentTemplate}" />
+                            </Grid>
+                        </Border>
+                    </primitives:VisualLayerManager>
+
+                    <Border Name="PART_ResizeTop" Height="{StaticResource JadeResizeGripThickness}" VerticalAlignment="Top" Background="Transparent" Cursor="TopSide" />
+                    <Border Name="PART_ResizeBottom" Height="{StaticResource JadeResizeGripThickness}" VerticalAlignment="Bottom" Background="Transparent" Cursor="BottomSide" />
+                    <Border Name="PART_ResizeLeft" Width="{StaticResource JadeResizeGripThickness}" HorizontalAlignment="Left" VerticalAlignment="Stretch" Background="Transparent" Cursor="LeftSide" />
+                    <Border Name="PART_ResizeRight" Width="{StaticResource JadeResizeGripThickness}" HorizontalAlignment="Right" VerticalAlignment="Stretch" Background="Transparent" Cursor="RightSide" />
+                    <Border Name="PART_ResizeTopLeft" Width="{StaticResource JadeResizeCornerSize}" Height="{StaticResource JadeResizeCornerSize}" HorizontalAlignment="Left" VerticalAlignment="Top" Background="Transparent" Cursor="TopLeftCorner" />
+                    <Border Name="PART_ResizeTopRight" Width="{StaticResource JadeResizeCornerSize}" Height="{StaticResource JadeResizeCornerSize}" HorizontalAlignment="Right" VerticalAlignment="Top" Background="Transparent" Cursor="TopRightCorner" />
+                    <Border Name="PART_ResizeBottomLeft" Width="{StaticResource JadeResizeCornerSize}" Height="{StaticResource JadeResizeCornerSize}" HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="Transparent" Cursor="BottomLeftCorner" />
+                    <Border Name="PART_ResizeBottomRight" Width="{StaticResource JadeResizeCornerSize}" Height="{StaticResource JadeResizeCornerSize}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Background="Transparent" Cursor="BottomRightCorner" />
+                </Panel>
+            </ControlTemplate>
+        </Setter>
+
+        <Style Selector="^:maximized /template/ Border#WindowFrame">
+            <Setter Property="CornerRadius" Value="0" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+        <Style Selector="^:fullscreen /template/ Border#WindowFrame">
+            <Setter Property="CornerRadius" Value="0" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+        <Style Selector="^:native-window-corners /template/ Border#WindowFrame">
+            <Setter Property="CornerRadius" Value="0" />
+        </Style>
+        <Style Selector="^:maximized /template/ Path#MaximizeGlyph">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+        <Style Selector="^:maximized /template/ Path#RestoreGlyph">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+        <Style Selector="^ /template/ Button.close:pointerover">
+            <Setter Property="Background" Value="#c4553d" />
+            <Setter Property="Foreground" Value="#ffffff" />
+        </Style>
+    </ControlTheme>
+</ResourceDictionary>
