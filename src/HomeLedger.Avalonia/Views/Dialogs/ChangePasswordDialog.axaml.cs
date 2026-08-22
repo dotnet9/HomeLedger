@@ -1,4 +1,3 @@
-using Avalonia;
 using HomeLedger.Avalonia.Controls;
 using Avalonia;
 using Avalonia.Controls;

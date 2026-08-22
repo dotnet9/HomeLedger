@@ -53,7 +53,7 @@ public class DepositSummaryRow
 }
 
 /// <summary>组装报表中间模型；userId 为 null 表示全家（管理员）。</summary>
-public class ReportBuilder(LedgerService ledger, DepositService deposits, AuthService auth)
+public class ReportBuilder(LedgerService ledger, DepositService deposits)
 {
     public ReportModel Build(long? userId, DateOnly from, DateOnly to, string ownerName = "")
     {

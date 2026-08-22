@@ -8,7 +8,7 @@
         </StackPanel>
         <TextBlock Text="创建家庭成员账号 · 停用后不能登录但数据保留" FontSize="13" Foreground="#99a096" Margin="0,-8,0,0"/>
 
-        <Button Content="＋ 新建成员账号" Click="OnCreate" Background="#147d64" Foreground="White" CornerRadius="10"
+        <Button Content="＋ 新建成员账号" Command="{Binding CreateCommand}" Background="#147d64" Foreground="White" CornerRadius="10"
                 HorizontalAlignment="Left"/>
 
         <Border Background="White" BorderBrush="#e9e5dc" BorderThickness="1" CornerRadius="16" Padding="16">
@@ -22,7 +22,7 @@
                     <TextBlock Text="创建时间" FontSize="12" Foreground="#99a096" Grid.Column="5"/>
                     <TextBlock Text="操作" FontSize="12" Foreground="#99a096" Grid.Column="6" HorizontalAlignment="Right"/>
                 </Grid>
-                <ItemsControl x:Name="ListHost">
+                <ItemsControl ItemsSource="{Binding Users}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Grid ColumnDefinitions="1*,1.2*,0.9*,0.9*,0.8*,1.1*,2.2*" Margin="8,8" MinHeight="28">

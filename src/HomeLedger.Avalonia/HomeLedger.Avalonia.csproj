@@ -2,12 +2,12 @@
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
-      <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
+    <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" />
     <PackageReference Include="Semi.Avalonia" />
-    <PackageReference Include="CommunityToolkit.Mvvm" />
+    <PackageReference Include="Prism.Avalonia" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HomeLedger.Core\HomeLedger.Core.csproj" />

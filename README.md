@@ -37,12 +37,12 @@ publish_win-x64.bat
 
 ## 技术栈
 
-.NET 10 · Avalonia 12 · Semi.Avalonia · SQLite + Dapper · QuestPDF · OpenXML · SkiaSharp · CommunityToolkit.Mvvm
+.NET 10 · Avalonia 12 · Semi.Avalonia · Prism.Avalonia · SQLite + Dapper · QuestPDF · OpenXML · SkiaSharp
 
 ## 测试
 
 ```bash
-dotnet run --project tests/HomeLedger.Core.Tests/HomeLedger.Core.Tests.csproj
+dotnet test
 ```
 
 覆盖利息计算、结转复利、部分支取、账号与数据隔离、报表组装、CSV 导出。

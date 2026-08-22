@@ -14,6 +14,11 @@ public partial class SettleDialog : JadeWindow
     private readonly long _userId;
     private readonly IReadOnlyList<DepositChainView> _chains;
 
+    public SettleDialog()
+        : this(Session.Current?.Id ?? 0, [])
+    {
+    }
+
     public SettleDialog(long userId, IReadOnlyList<DepositChainView> chains)
     {
         InitializeComponent();

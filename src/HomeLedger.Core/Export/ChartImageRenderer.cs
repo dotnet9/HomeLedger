@@ -34,7 +34,7 @@ public static class ChartImageRenderer
             canvas.DrawRoundRect(cx - barW - 2, plotBottom - hIn, barW, Math.Max(hIn, 1), 4, 4, p1);
             canvas.DrawRoundRect(cx + 2, plotBottom - hOut, barW, Math.Max(hOut, 1), 4, 4, p2);
             using var tp = new SKPaint { Color = new SKColor(0x99, 0xa0, 0x96), IsAntialias = true };
-            canvas.DrawText(data[i].Label, cx - font.MeasureText(data[i].Label) / 2, height - 12, font, tp);
+            canvas.DrawText(data[i].Label, cx, height - 12, SKTextAlign.Center, font, tp);
         }
         return Encode(bmp);
     }
@@ -58,9 +58,7 @@ public static class ChartImageRenderer
         {
             var sweep = (float)(data[i].Value / total) * 360;
             using var paint = new SKPaint { Color = Palette[i % Palette.Length], IsAntialias = true, Style = SKPaintStyle.Stroke, StrokeWidth = 40 };
-            using var path = new SKPath();
-            path.AddArc(rect, start, Math.Max(sweep - 1.5f, 0.5f));
-            canvas.DrawPath(path, paint);
+            canvas.DrawArc(rect, start, Math.Max(sweep - 1.5f, 0.5f), false, paint);
             start += sweep;
         }
         return Encode(bmp);

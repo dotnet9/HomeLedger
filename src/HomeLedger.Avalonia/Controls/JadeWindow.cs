@@ -11,8 +11,7 @@ using Avalonia.VisualTree;
 namespace HomeLedger.Avalonia.Controls;
 
 /// <summary>
-/// 玉账自定义窗体：无系统装饰（WindowDecorations.None），自绘标题栏 + 手动拖拽/八向缩放，
-/// Win11 使用系统原生圆角，旧系统以透明 + 圆角 Border 模拟。移植自 Zitie 的 ZitieWindow。
+/// 玉账自定义窗体：无系统装饰（WindowDecorations.None），自绘标题栏 + 手动拖拽/八向缩放。
 /// </summary>
 [PseudoClasses(":normal", ":maximized", ":fullscreen", ":native-window-corners")]
 [TemplatePart("PART_TitleBar", typeof(InputElement))]
@@ -56,9 +55,8 @@ public class JadeWindow : Window
     {
         WindowDecorations = WindowDecorations.None;
         ExtendClientAreaToDecorationsHint = false;
-        _usesNativeWindowCorners = WindowsWindowCornerHelper.IsSupported;
-        TransparencyLevelHint =
-            [_usesNativeWindowCorners ? WindowTransparencyLevel.None : WindowTransparencyLevel.Transparent];
+        _usesNativeWindowCorners = false;
+        TransparencyLevelHint = [WindowTransparencyLevel.Transparent];
         TransparencyBackgroundFallback = Brushes.Transparent;
         PseudoClasses.Set(":native-window-corners", _usesNativeWindowCorners);
     }

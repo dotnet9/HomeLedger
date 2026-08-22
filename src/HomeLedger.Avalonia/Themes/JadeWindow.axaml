@@ -5,15 +5,17 @@
 >
     <x:Double x:Key="JadeResizeGripThickness">4</x:Double>
     <x:Double x:Key="JadeResizeCornerSize">10</x:Double>
-    <CornerRadius x:Key="JadeWindowCornerRadius">12</CornerRadius>
+    <CornerRadius x:Key="JadeWindowCornerRadius">16</CornerRadius>
 
     <!-- 标题栏按钮：细线图标，悬停玉绿、关闭悬停赭红 -->
     <ControlTheme x:Key="JadeCaptionButtonTheme" TargetType="Button">
-        <Setter Property="Width" Value="42" />
-        <Setter Property="Height" Value="30" />
-        <Setter Property="Margin" Value="2,0" />
+        <Setter Property="Width" Value="30" />
+        <Setter Property="Height" Value="26" />
+        <Setter Property="MinWidth" Value="30" />
+        <Setter Property="MinHeight" Value="26" />
+        <Setter Property="Margin" Value="0" />
         <Setter Property="Padding" Value="0" />
-        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="CornerRadius" Value="7" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Template">
@@ -44,7 +46,13 @@
         <Setter Property="Foreground" Value="#2b2f2c" />
         <Setter Property="BorderBrush" Value="#e9e5dc" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="TitleBarBackground" Value="#fbfaf7" />
+        <Setter Property="TitleBarHeight" Value="46" />
+        <Setter Property="TitleBarBackground">
+            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                <GradientStop Color="#f4f8f3" Offset="0" />
+                <GradientStop Color="#fbf7ef" Offset="1" />
+            </LinearGradientBrush>
+        </Setter>
         <Setter Property="TitleBarForeground" Value="#5a6058" />
         <Setter Property="WindowCornerRadius" Value="{StaticResource JadeWindowCornerRadius}" />
         <Setter Property="Template">
@@ -64,27 +72,29 @@
                                 <Border Name="PART_TitleBar"
                                         Height="{TemplateBinding TitleBarHeight}"
                                         Background="{TemplateBinding TitleBarBackground}"
-                                        BorderBrush="#eeeae0"
-                                        BorderThickness="0,0,0,1"
-                                        IsVisible="{TemplateBinding IsTitleBarVisible}">
+                                        BorderThickness="0"
+                                        IsVisible="{TemplateBinding IsTitleBarVisible}"
+                                        WindowDecorationProperties.ElementRole="TitleBar">
                                     <Grid>
                                         <ContentPresenter HorizontalAlignment="Left"
                                                           VerticalAlignment="Stretch"
-                                                          Content="{TemplateBinding LeftContent}" />
+                                                          Content="{TemplateBinding LeftContent}"
+                                                          WindowDecorationProperties.ElementRole="User" />
                                         <ContentPresenter HorizontalAlignment="Center"
                                                           VerticalAlignment="Stretch"
-                                                          Content="{TemplateBinding TitleBarContent}" />
-                                        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,6,0">
-                                            <Button Name="PART_MinimizeButton" Theme="{StaticResource JadeCaptionButtonTheme}" ToolTip.Tip="最小化">
+                                                          Content="{TemplateBinding TitleBarContent}"
+                                                          WindowDecorationProperties.ElementRole="User" />
+                                        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,12,0">
+                                            <Button Name="PART_MinimizeButton" Theme="{StaticResource JadeCaptionButtonTheme}" ToolTip.Tip="最小化" WindowDecorationProperties.ElementRole="MinimizeButton">
                                                 <Path Data="{StaticResource IconMinimize}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.6" />
                                             </Button>
-                                            <Button Name="PART_MaximizeButton" Theme="{StaticResource JadeCaptionButtonTheme}" ToolTip.Tip="最大化 / 还原">
+                                            <Button Name="PART_MaximizeButton" Theme="{StaticResource JadeCaptionButtonTheme}" ToolTip.Tip="最大化 / 还原" WindowDecorationProperties.ElementRole="MaximizeButton">
                                                 <Grid Width="13" Height="13">
                                                     <Path Name="MaximizeGlyph" Data="{StaticResource IconMaximize}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.6" />
                                                     <Path Name="RestoreGlyph" Data="{StaticResource IconRestore}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.6" IsVisible="False" />
                                                 </Grid>
                                             </Button>
-                                            <Button Name="PART_CloseButton" Classes="close" Theme="{StaticResource JadeCaptionButtonTheme}" ToolTip.Tip="关闭">
+                                            <Button Name="PART_CloseButton" Classes="close" Theme="{StaticResource JadeCaptionButtonTheme}" ToolTip.Tip="关闭" WindowDecorationProperties.ElementRole="CloseButton">
                                                 <Path Data="{StaticResource IconClose}" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.6" />
                                             </Button>
                                         </StackPanel>

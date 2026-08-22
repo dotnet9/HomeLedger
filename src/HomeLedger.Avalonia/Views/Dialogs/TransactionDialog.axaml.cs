@@ -15,6 +15,11 @@ public partial class TransactionDialog : JadeWindow
     private readonly LedgerService _ledger = AppServices.Ledger;
     private readonly TransactionItem? _editing;
 
+    public TransactionDialog()
+        : this(Session.Current?.Id ?? 0)
+    {
+    }
+
     public TransactionDialog(long userId, TransactionItem? editing = null)
     {
         InitializeComponent();

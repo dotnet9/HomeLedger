@@ -12,6 +12,11 @@ public partial class DepositDialog : JadeWindow
 {
     private readonly long _userId;
 
+    public DepositDialog()
+        : this(Session.Current?.Id ?? 0)
+    {
+    }
+
     public DepositDialog(long userId)
     {
         InitializeComponent();

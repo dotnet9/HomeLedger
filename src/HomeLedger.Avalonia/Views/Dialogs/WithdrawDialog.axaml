@@ -13,7 +13,7 @@
             <TextBlock Text="支取日期" FontSize="12" Foreground="#5a6058"/>
             <DatePicker x:Name="DatePicker"/>
             <TextBlock Text="备注" FontSize="12" Foreground="#5a6058"/>
-            <TextBox x:Name="NoteBox" Watermark="选填…" Height="36"/>
+            <TextBox x:Name="NoteBox" PlaceholderText="选填…" Height="36"/>
             <TextBlock Text="部分支取时，剩余本息将按原利率生成新存款继续计息" FontSize="11" Foreground="#99a096" TextWrapping="Wrap"/>
             <TextBlock x:Name="ErrorText" Foreground="#c4553d" FontSize="12" IsVisible="False" TextWrapping="Wrap"/>
             <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right" Margin="0,8,0,0">

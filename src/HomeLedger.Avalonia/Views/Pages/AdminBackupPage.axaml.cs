@@ -24,12 +24,13 @@ public partial class AdminBackupPage : UserControl
         {
             var file = BackupService.Backup(AppServices.DbPath, target);
             ResultText.Text = "备份成功：" + file;
+            ResultText.Foreground = global::Avalonia.Media.Brush.Parse("#2f9e6e");
         }
         catch (Exception ex)
         {
             ResultText.Text = "备份失败：" + ex.Message;
+            ResultText.Foreground = global::Avalonia.Media.Brush.Parse("#c4553d");
         }
-        ResultText.Foreground = global::Avalonia.Media.Brush.Parse("#2f9e6e");
         ResultText.IsVisible = true;
     }
 }

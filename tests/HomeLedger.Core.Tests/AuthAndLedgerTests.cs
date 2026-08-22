@@ -61,7 +61,7 @@ public class AuthAndLedgerTests : IDisposable
         _ledger.AddTransaction(user.Id, TxKind.Expense, 100m, new(2026, 1, 1), null, "test");
         _auth.SetActive(user.Id, false);
         Assert.Null(_auth.Login("baba", "123456"));
-        Assert.Equal(1, _ledger.ListTransactions(new TransactionFilter { UserId = user.Id }).Count);
+        Assert.Single(_ledger.ListTransactions(new TransactionFilter { UserId = user.Id }));
     }
 
     [Fact]
@@ -111,7 +111,7 @@ public class AuthAndLedgerTests : IDisposable
         new DepositService(_factory).AddDeposit(baba.Id, 5000m, new(2026, 1, 1), 10m, "");
         _ledger.AddTransaction(baba.Id, TxKind.Income, 1000m, new(2026, 3, 1), null, "");
 
-        var reports = new ReportBuilder(_ledger, new DepositService(_factory), _auth);
+        var reports = new ReportBuilder(_ledger, new DepositService(_factory));
         var model = reports.Build(null, new(2026, 1, 1), new(2026, 12, 31), "全家");
         Assert.Equal(1000m, model.Income);
         Assert.NotNull(model.Deposit);
@@ -124,7 +124,7 @@ public class AuthAndLedgerTests : IDisposable
     {
         var baba = _auth.Login("baba", "123456")!;
         _ledger.AddTransaction(baba.Id, TxKind.Income, 1000m, new(2026, 3, 1), null, "工资");
-        var model = new ReportBuilder(_ledger, new DepositService(_factory), _auth)
+        var model = new ReportBuilder(_ledger, new DepositService(_factory))
             .Build(baba.Id, new(2026, 1, 1), new(2026, 12, 31), "爸爸");
         var path = Path.Combine(Path.GetTempPath(), $"hl-csv-{Guid.NewGuid():N}.csv");
         Export.CsvExporter.Export(model, path);

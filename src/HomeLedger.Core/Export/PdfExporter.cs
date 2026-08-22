@@ -36,13 +36,13 @@ public static class PdfExporter
 
                 c.Item().Row(r =>
                 {
-                    r.RelativeItem().Box().Border(1).BorderColor("#e9e5dc").Padding(8)
+                    r.RelativeItem().Shrink().Border(1).BorderColor("#e9e5dc").Padding(8)
                         .Column(x => { x.Item().Text("收入").FontColor(Colors.Grey.Darken1); x.Item().Text($"￥{m.Income:0.00}").FontSize(14).Bold().FontColor("#2f9e6e"); });
-                    r.ConstantColumn(10);
-                    r.RelativeItem().Box().Border(1).BorderColor("#e9e5dc").Padding(8)
+                    r.ConstantItem(10);
+                    r.RelativeItem().Shrink().Border(1).BorderColor("#e9e5dc").Padding(8)
                         .Column(x => { x.Item().Text("支出").FontColor(Colors.Grey.Darken1); x.Item().Text($"￥{m.Expense:0.00}").FontSize(14).Bold().FontColor("#c4553d"); });
-                    r.ConstantColumn(10);
-                    r.RelativeItem().Box().Border(1).BorderColor("#e9e5dc").Padding(8)
+                    r.ConstantItem(10);
+                    r.RelativeItem().Shrink().Border(1).BorderColor("#e9e5dc").Padding(8)
                         .Column(x => { x.Item().Text("结余").FontColor(Colors.Grey.Darken1); x.Item().Text($"￥{m.Balance:0.00}").FontSize(14).Bold(); });
                 });
 

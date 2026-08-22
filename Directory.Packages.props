@@ -9,8 +9,9 @@
     <PackageVersion Include="Avalonia" Version="12.1.1" />
     <PackageVersion Include="Avalonia.Desktop" Version="12.1.1" />
     <PackageVersion Include="Semi.Avalonia" Version="12.1.0.1" />
-    <!-- MVVM -->
-    <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <!-- MVVM / DI -->
+    <PackageVersion Include="Prism.Avalonia" Version="8.1.97.11073" />
+    <PackageVersion Include="Prism.DryIoc.Avalonia" Version="8.1.97.11073" />
     <!-- 数据 -->
     <PackageVersion Include="Dapper" Version="2.1.79" />
     <PackageVersion Include="Microsoft.Data.Sqlite" Version="10.0.11" />
@@ -22,5 +23,7 @@
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.9.0" />
     <PackageVersion Include="xunit.v3" Version="4.0.0" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
+    <!-- 传递依赖钉版（消除旧版漏洞告警） -->
+    <PackageVersion Include="System.Drawing.Common" Version="10.0.10" />
   </ItemGroup>
 </Project>

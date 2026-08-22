@@ -86,8 +86,11 @@ public partial class MemberReportPage : UserControl
                 using var bmp = new SkiaSharp.SKBitmap(1100, 920);
                 using var canvas = new SkiaSharp.SKCanvas(bmp);
                 canvas.Clear(SkiaSharp.SKColors.White);
-                canvas.DrawBitmap(SkiaSharp.SKBitmap.Decode(barPng), 0, 0);
-                canvas.DrawBitmap(SkiaSharp.SKBitmap.Decode(donutPng), 320, 440);
+                using var barBitmap = SkiaSharp.SKBitmap.Decode(barPng);
+                using var donutBitmap = SkiaSharp.SKBitmap.Decode(donutPng);
+                var sampling = new SkiaSharp.SKSamplingOptions(SkiaSharp.SKFilterMode.Linear, SkiaSharp.SKMipmapMode.None);
+                canvas.DrawBitmap(barBitmap, 0, 0, sampling);
+                canvas.DrawBitmap(donutBitmap, 320, 440, sampling);
                 using var image = SkiaSharp.SKImage.FromBitmap(bmp);
                 using var data = image.Encode(SkiaSharp.SKEncodedImageFormat.Png, 100);
                 File.WriteAllBytes(p, data.ToArray());

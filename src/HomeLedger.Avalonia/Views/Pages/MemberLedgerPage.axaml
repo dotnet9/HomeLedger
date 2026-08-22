@@ -13,25 +13,25 @@
             <Border Background="White" BorderBrush="#e9e5dc" BorderThickness="1" CornerRadius="16" Padding="16" Margin="0,0,7,0">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal"><Border Width="6" Height="6" Background="#d9a441"/><TextBlock Text=" 本月收入" FontSize="12" Foreground="#99a096"/></StackPanel>
-                    <TextBlock x:Name="MonthIncomeText" Text="0.00" FontSize="24" FontWeight="Bold" FontFamily="Georgia" Foreground="#2f9e6e" Margin="0,7,0,0"/>
+                    <TextBlock Text="{Binding MonthIncomeText}" FontSize="24" FontWeight="Bold" FontFamily="Georgia" Foreground="#2f9e6e" Margin="0,7,0,0"/>
                 </StackPanel>
             </Border>
             <Border Background="White" BorderBrush="#e9e5dc" BorderThickness="1" CornerRadius="16" Padding="16" Margin="0,0,7,0">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal"><Border Width="6" Height="6" Background="#d9a441"/><TextBlock Text=" 本月支出" FontSize="12" Foreground="#99a096"/></StackPanel>
-                    <TextBlock x:Name="MonthExpenseText" Text="0.00" FontSize="24" FontWeight="Bold" FontFamily="Georgia" Foreground="#c4553d" Margin="0,7,0,0"/>
+                    <TextBlock Text="{Binding MonthExpenseText}" FontSize="24" FontWeight="Bold" FontFamily="Georgia" Foreground="#c4553d" Margin="0,7,0,0"/>
                 </StackPanel>
             </Border>
             <Border Background="White" BorderBrush="#e9e5dc" BorderThickness="1" CornerRadius="16" Padding="16" Margin="0,0,7,0">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal"><Border Width="6" Height="6" Background="#d9a441"/><TextBlock Text=" 本月结余" FontSize="12" Foreground="#99a096"/></StackPanel>
-                    <TextBlock x:Name="MonthBalanceText" Text="0.00" FontSize="24" FontWeight="Bold" FontFamily="Georgia" Margin="0,7,0,0"/>
+                    <TextBlock Text="{Binding MonthBalanceText}" FontSize="24" FontWeight="Bold" FontFamily="Georgia" Margin="0,7,0,0"/>
                 </StackPanel>
             </Border>
             <Border Background="White" BorderBrush="#e9e5dc" BorderThickness="1" CornerRadius="16" Padding="16" Margin="7,0,0,0">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal"><Border Width="6" Height="6" Background="#d9a441"/><TextBlock Text=" 累计结余" FontSize="12" Foreground="#99a096"/></StackPanel>
-                    <TextBlock x:Name="TotalBalanceText" Text="0.00" FontSize="24" FontWeight="Bold" FontFamily="Georgia" Margin="0,7,0,0"/>
+                    <TextBlock Text="{Binding TotalBalanceText}" FontSize="24" FontWeight="Bold" FontFamily="Georgia" Margin="0,7,0,0"/>
                 </StackPanel>
             </Border>
         </UniformGrid>
@@ -40,17 +40,17 @@
         <Border Background="White" BorderBrush="#e9e5dc" BorderThickness="1" CornerRadius="16" Padding="16">
             <StackPanel Spacing="12">
                 <StackPanel Orientation="Horizontal" Spacing="10">
-                    <Button Content="＋ 记一笔" Click="OnAdd" Background="#147d64" Foreground="White" CornerRadius="10"/>
-                    <DatePicker x:Name="FromDate" Width="150"/>
+                    <Button Content="＋ 记一笔" Command="{Binding AddCommand}" Background="#147d64" Foreground="White" CornerRadius="10"/>
+                    <DatePicker SelectedDate="{Binding FromDate}" Width="150"/>
                     <TextBlock Text="~" VerticalAlignment="Center" Foreground="#99a096"/>
-                    <DatePicker x:Name="ToDate" Width="150"/>
-                    <ComboBox x:Name="KindBox" MinWidth="100">
+                    <DatePicker SelectedDate="{Binding ToDate}" Width="150"/>
+                    <ComboBox SelectedIndex="{Binding KindFilterIndex}" MinWidth="100">
                         <ComboBoxItem Content="全部类型" IsSelected="True"/>
                         <ComboBoxItem Content="收入"/>
                         <ComboBoxItem Content="支出"/>
                     </ComboBox>
-                    <TextBox x:Name="KeywordBox" Watermark="🔍 搜索备注…" MinWidth="160"/>
-                    <Button Content="筛选" Click="OnFilter" CornerRadius="10"/>
+                    <TextBox Text="{Binding Keyword, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="🔍 搜索备注…" MinWidth="160"/>
+                    <Button Content="筛选" Command="{Binding FilterCommand}" CornerRadius="10"/>
                 </StackPanel>
 
                 <Grid ColumnDefinitions="1.1*,0.8*,1.2*,1*,2.4*,1.1*" Margin="8,0">
@@ -62,7 +62,7 @@
                     <TextBlock Text="操作" FontSize="12" Foreground="#99a096" Grid.Column="5" HorizontalAlignment="Right"/>
                 </Grid>
                 <ScrollViewer Height="360">
-                    <ItemsControl x:Name="ListHost">
+                    <ItemsControl ItemsSource="{Binding Transactions}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Grid ColumnDefinitions="1.1*,0.8*,1.2*,1*,2.4*,1.1*" Margin="8,7" MinHeight="30">
@@ -82,7 +82,7 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                 </ScrollViewer>
-                <TextBlock x:Name="SummaryText" FontSize="12" Foreground="#99a096"/>
+                <TextBlock Text="{Binding SummaryText}" FontSize="12" Foreground="#99a096"/>
             </StackPanel>
         </Border>
     </StackPanel>

@@ -29,6 +29,6 @@ public static class AppServices
         Auth = new AuthService(Db);
         Ledger = new LedgerService(Db);
         Deposits = new DepositService(Db);
-        Reports = new ReportBuilder(Ledger, Deposits, Auth);
+        Reports = new ReportBuilder(Ledger, Deposits);
     }
 }

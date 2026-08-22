@@ -1,15 +1,37 @@
 <jade:JadeWindow xmlns="https://github.com/avaloniaui" xmlns:jade="using:HomeLedger.Avalonia.Controls"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="HomeLedger.Avalonia.Views.LoginWindow"
-        Title="HomeLedger 家庭记账 · 登录" Width="440" Height="560"
-        WindowStartupLocation="CenterScreen" CanResize="False"
+        Title="HomeLedger 家庭记账" Width="1280" Height="840" MinWidth="960" MinHeight="640"
+        WindowStartupLocation="CenterScreen" CanResize="True"
         Background="#f7f5f0">
-    <Border Margin="16" CornerRadius="16" Background="White" BorderBrush="#e9e5dc" BorderThickness="1"
-            BoxShadow="0 16 50 0 #1e463724">
-        <ScrollViewer>
-            <StackPanel Margin="36,32" Spacing="14">
-                <StackPanel Orientation="Horizontal" Spacing="12">
-                    <Border Width="44" Height="44" CornerRadius="12">
+    <Grid>
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                <GradientStop Color="#eef2ea" Offset="0" />
+                <GradientStop Color="#f7f5f0" Offset="0.42" />
+                <GradientStop Color="#f3efe6" Offset="1" />
+            </LinearGradientBrush>
+        </Grid.Background>
+
+        <Canvas IsHitTestVisible="False">
+            <Ellipse Canvas.Left="150" Canvas.Top="84" Width="560" Height="300" Fill="#1a147d64" />
+            <Ellipse Canvas.Left="930" Canvas.Top="515" Width="480" Height="280" Fill="#1fd9a441" />
+            <Ellipse Canvas.Left="90" Canvas.Top="130" Width="150" Height="150" Stroke="#12147d64" StrokeThickness="14" />
+            <Ellipse Canvas.Left="1100" Canvas.Top="588" Width="90" Height="90" Stroke="#1fd9a441" StrokeThickness="10" />
+        </Canvas>
+
+        <Border Width="384"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Background="White"
+                BorderBrush="#e9e5dc"
+                BorderThickness="1"
+                CornerRadius="20"
+                Padding="36,38,36,28"
+                BoxShadow="0 16 50 0 #1e463724">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,0,0,6">
+                    <Border Width="44" Height="44" CornerRadius="10">
                         <Border.Background>
                             <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
                                 <GradientStop Color="#147d64" Offset="0"/>
@@ -18,27 +40,36 @@
                         </Border.Background>
                         <TextBlock Text="¥" FontSize="22" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
-                    <StackPanel VerticalAlignment="Center">
-                        <TextBlock Text="家庭记账" FontSize="20" FontWeight="Bold"/>
-                        <TextBlock Text="记录一家人的收入与支出" FontSize="12" Foreground="#99a096"/>
-                    </StackPanel>
+                    <TextBlock Text="家庭记账" FontSize="20" FontWeight="Bold" VerticalAlignment="Center"/>
                 </StackPanel>
+                <TextBlock Text="HomeLedger · 记录一家人的收入与支出" FontSize="13" Foreground="#99a096" Margin="56,0,0,26"/>
 
-                <TextBlock Text="用户名" FontSize="12" Foreground="#5a6058" Margin="0,10,0,0"/>
-                <TextBox x:Name="UsernameBox" Watermark="用户名" Height="38"/>
+                <Border Background="#fff7e8" BorderBrush="#ffe1ba" BorderThickness="1" CornerRadius="10" Padding="10,9" Margin="0,0,0,16">
+                    <TextBlock Text="首次登录或被重置密码后，需先设置新密码。" FontSize="12" Foreground="#a97822" TextWrapping="Wrap"/>
+                </Border>
 
-                <TextBlock Text="密码" FontSize="12" Foreground="#5a6058"/>
-                <TextBox x:Name="PasswordBox" Watermark="密码" Height="38" PasswordChar="●"/>
+                <TextBlock Text="用户名" FontSize="12" Foreground="#5a6058" Margin="0,0,0,6"/>
+                <TextBox x:Name="UsernameBox" PlaceholderText="用户名" Height="40" Margin="0,0,0,16" CornerRadius="10"/>
 
-                <Button x:Name="LoginButton" Content="登 录" Click="OnLogin" Height="40" Margin="0,8,0,0"
-                        Background="#147d64" Foreground="White" CornerRadius="10" FontWeight="Bold"/>
+                <TextBlock Text="密码" FontSize="12" Foreground="#5a6058" Margin="0,0,0,6"/>
+                <TextBox x:Name="PasswordBox" PlaceholderText="密码" Height="40" Margin="0,0,0,6" CornerRadius="10" PasswordChar="●"/>
+
+                <Button x:Name="LoginButton" Content="登 录" Click="OnLogin" Height="40" Margin="0,6,0,0"
+                        HorizontalAlignment="Stretch" Foreground="White" CornerRadius="10" FontWeight="Bold" FontSize="14">
+                    <Button.Background>
+                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                            <GradientStop Color="#147d64" Offset="0"/>
+                            <GradientStop Color="#1d9379" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Button.Background>
+                </Button>
 
                 <TextBlock x:Name="HintText" TextWrapping="Wrap" FontSize="12" Foreground="#c4553d"
-                           IsVisible="False" Margin="0,4,0,0"/>
+                           IsVisible="False" Margin="0,12,0,0"/>
 
-                <TextBlock Text="首次启动管理员：admin / admin123（首次登录需改密）"
-                           FontSize="11" Foreground="#99a096" HorizontalAlignment="Center" Margin="0,10,0,0"/>
+                <TextBlock Text="数据保存在本机 · 家庭内部使用"
+                           FontSize="11" Foreground="#99a096" HorizontalAlignment="Center" Margin="0,22,0,0"/>
             </StackPanel>
-        </ScrollViewer>
-    </Border>
+        </Border>
+    </Grid>
 </jade:JadeWindow>

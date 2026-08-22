@@ -14,6 +14,11 @@ public partial class WithdrawDialog : JadeWindow
     private readonly long _userId;
     private readonly DepositChainView _chain;
 
+    public WithdrawDialog()
+        : this(Session.Current?.Id ?? 0, new DepositChainView { StartDate = DateOnly.FromDateTime(DateTime.Today) })
+    {
+    }
+
     public WithdrawDialog(long userId, DepositChainView chain)
     {
         InitializeComponent();

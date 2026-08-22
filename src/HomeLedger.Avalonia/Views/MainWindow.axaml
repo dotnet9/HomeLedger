@@ -13,22 +13,46 @@
                             Margin="0,0,0,8" HorizontalAlignment="Stretch" CornerRadius="10"/>
                     <StackPanel Orientation="Horizontal" Spacing="10" Margin="4,0,0,6">
                         <Border Width="36" Height="36" CornerRadius="12" Background="#e3f2ec">
-                            <TextBlock x:Name="AvatarText" Text="家" Foreground="#0c5a48" FontWeight="Bold"
+                            <TextBlock Text="{Binding AvatarText}" Foreground="#0c5a48" FontWeight="Bold"
                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <StackPanel VerticalAlignment="Center">
-                            <TextBlock x:Name="UserNameText" FontSize="13" FontWeight="Bold"/>
-                            <TextBlock x:Name="RoleText" FontSize="11" Foreground="#99a096"/>
+                            <TextBlock Text="{Binding UserName}" FontSize="13" FontWeight="Bold"/>
+                            <TextBlock Text="{Binding RoleText}" FontSize="11" Foreground="#99a096"/>
                         </StackPanel>
                     </StackPanel>
                 </StackPanel>
                 <ListBox x:Name="NavList" Background="Transparent" BorderThickness="0" Padding="0"
-                         SelectionChanged="OnNavSelected"/>
+                         ItemsSource="{Binding Pages}" SelectedIndex="{Binding SelectedPageIndex}">
+                    <ListBox.Styles>
+                        <Style Selector="ListBoxItem">
+                            <Setter Property="Padding" Value="12,10"/>
+                            <Setter Property="Margin" Value="0,2"/>
+                            <Setter Property="CornerRadius" Value="11"/>
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="Foreground" Value="#5a6058"/>
+                        </Style>
+                        <Style Selector="ListBoxItem:pointerover">
+                            <Setter Property="Background" Value="#f3f1ea"/>
+                            <Setter Property="Foreground" Value="#2b2f2c"/>
+                        </Style>
+                        <Style Selector="ListBoxItem:selected">
+                            <Setter Property="Background" Value="#147d64"/>
+                            <Setter Property="Foreground" Value="White"/>
+                            <Setter Property="FontWeight" Value="SemiBold"/>
+                        </Style>
+                    </ListBox.Styles>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Title}" FontSize="14"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
             </DockPanel>
         </Border>
 
         <ScrollViewer HorizontalScrollBarVisibility="Disabled">
-            <ContentControl x:Name="PageHost" Margin="16,16,16,20"/>
+            <ContentControl Content="{Binding CurrentPage}" Margin="16,16,16,20"/>
         </ScrollViewer>
     </DockPanel>
 </jade:JadeWindow>

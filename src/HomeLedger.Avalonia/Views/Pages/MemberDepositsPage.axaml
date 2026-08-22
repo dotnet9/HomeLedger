@@ -12,25 +12,25 @@
             <Border Background="White" BorderBrush="#e9e5dc" BorderThickness="1" CornerRadius="16" Padding="16" Margin="0,0,7,0">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal"><Border Width="6" Height="6" Background="#d9a441"/><TextBlock Text=" 存款本金合计" FontSize="12" Foreground="#99a096"/></StackPanel>
-                    <TextBlock x:Name="PrincipalText" FontSize="24" FontWeight="Bold" FontFamily="Georgia" Margin="0,7,0,0"/>
+                    <TextBlock Text="{Binding PrincipalText}" FontSize="24" FontWeight="Bold" FontFamily="Georgia" Margin="0,7,0,0"/>
                 </StackPanel>
             </Border>
             <Border Background="White" BorderBrush="#e9e5dc" BorderThickness="1" CornerRadius="16" Padding="16" Margin="0,0,7,0">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal"><Border Width="6" Height="6" Background="#d9a441"/><TextBlock Text=" 当前应计利息" FontSize="12" Foreground="#99a096"/></StackPanel>
-                    <TextBlock x:Name="AccruedText" FontSize="24" FontWeight="Bold" FontFamily="Georgia" Foreground="#2f9e6e" Margin="0,7,0,0"/>
+                    <TextBlock Text="{Binding AccruedText}" FontSize="24" FontWeight="Bold" FontFamily="Georgia" Foreground="#2f9e6e" Margin="0,7,0,0"/>
                 </StackPanel>
             </Border>
             <Border Background="White" BorderBrush="#e9e5dc" BorderThickness="1" CornerRadius="16" Padding="16" Margin="0,0,7,0">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal"><Border Width="6" Height="6" Background="#d9a441"/><TextBlock Text=" 本息合计" FontSize="12" Foreground="#99a096"/></StackPanel>
-                    <TextBlock x:Name="TotalText" FontSize="24" FontWeight="Bold" FontFamily="Georgia" Foreground="#147d64" Margin="0,7,0,0"/>
+                    <TextBlock Text="{Binding TotalText}" FontSize="24" FontWeight="Bold" FontFamily="Georgia" Foreground="#147d64" Margin="0,7,0,0"/>
                 </StackPanel>
             </Border>
             <Border Background="White" BorderBrush="#e9e5dc" BorderThickness="1" CornerRadius="16" Padding="16" Margin="7,0,0,0">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal"><Border Width="6" Height="6" Background="#d9a441"/><TextBlock Text=" 计息笔数" FontSize="12" Foreground="#99a096"/></StackPanel>
-                    <TextBlock x:Name="ActiveCountText" FontSize="24" FontWeight="Bold" FontFamily="Georgia" Margin="0,7,0,0"/>
+                    <TextBlock Text="{Binding ActiveCountText}" FontSize="24" FontWeight="Bold" FontFamily="Georgia" Margin="0,7,0,0"/>
                 </StackPanel>
             </Border>
         </UniformGrid>
@@ -40,9 +40,9 @@
                 <StackPanel Orientation="Horizontal" Spacing="10">
                     <TextBlock Text="我的存款" FontSize="14" FontWeight="Bold" VerticalAlignment="Center"/>
                     <Panel Width="20"/>
-                    <Button Content="＋ 存入" Click="OnDeposit" Background="#147d64" Foreground="White" CornerRadius="10"/>
-                    <Button Content="↧ 支取" Click="OnWithdraw" CornerRadius="10"/>
-                    <Button x:Name="SettleButton" Content="结算利息（结转本金）" Click="OnSettle" Background="#d9a441" Foreground="White" CornerRadius="10"/>
+                    <Button Content="＋ 存入" Command="{Binding DepositCommand}" Background="#147d64" Foreground="White" CornerRadius="10"/>
+                    <Button Content="↧ 支取" Command="{Binding WithdrawFirstCommand}" CornerRadius="10"/>
+                    <Button Content="结算利息（结转本金）" Command="{Binding SettleCommand}" Background="#d9a441" Foreground="White" CornerRadius="10"/>
                 </StackPanel>
 
                 <Grid ColumnDefinitions="1.2*,0.7*,1.1*,1*,1.2*,2.6*,0.9*,0.9*" Margin="8,0">
@@ -56,7 +56,7 @@
                     <TextBlock Text="操作" FontSize="12" Foreground="#99a096" Grid.Column="7" HorizontalAlignment="Right"/>
                 </Grid>
                 <ScrollViewer Height="300">
-                    <ItemsControl x:Name="ListHost">
+                    <ItemsControl ItemsSource="{Binding DepositRows}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Grid ColumnDefinitions="1.2*,0.7*,1.1*,1*,1.2*,2.6*,0.9*,0.9*" Margin="8,7" MinHeight="30">
@@ -65,7 +65,7 @@
                                     <TextBlock Text="{Binding StartDate}" FontSize="13" Grid.Column="2" VerticalAlignment="Center"/>
                                     <TextBlock Text="{Binding Accrued}" FontSize="13" Foreground="#2f9e6e" Grid.Column="3" VerticalAlignment="Center"/>
                                     <TextBlock Text="{Binding Total}" FontSize="13" FontWeight="Bold" Grid.Column="4" VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding Chain}" FontSize="11" Foreground="#99a096" Grid.Column="5" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                    <TextBlock Text="{Binding ChainText}" FontSize="11" Foreground="#99a096" Grid.Column="5" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
                                     <Border Grid.Column="6" Background="{Binding StatusBg}" CornerRadius="6" Padding="7,2" HorizontalAlignment="Left" VerticalAlignment="Center">
                                         <TextBlock Text="{Binding Status}" FontSize="11" Foreground="{Binding StatusFg}"/>
                                     </Border>
@@ -84,7 +84,7 @@
             <StackPanel Spacing="10">
                 <TextBlock Text="结算历史" FontSize="14" FontWeight="Bold"/>
                 <ScrollViewer Height="120">
-                    <ItemsControl x:Name="SettleListHost">
+                    <ItemsControl ItemsSource="{Binding SettlementRows}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Grid ColumnDefinitions="1.2*,1*,1*,2*" Margin="8,6">

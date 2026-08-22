@@ -26,8 +26,8 @@ HomeLedger/
 | 项 | 选型 | 说明 |
 |----|------|------|
 | 运行时 | .NET 10 | 与 Zitie 一致 |
-| UI | Avalonia 11 + Semi.Avalonia | 中文友好、明暗主题 |
-| MVVM | CommunityToolkit.Mvvm | Source Generator，减少样板 |
+| UI | Avalonia 12 + Semi.Avalonia | 中文友好、明暗主题 |
+| MVVM | Prism.Avalonia / Prism.DryIoc.Avalonia | 与 Zitie 一致，`BindableBase` + `DelegateCommand` + Prism 应用入口 |
 | 数据库 | SQLite + Microsoft.Data.Sqlite + Dapper | 单文件、零运维 |
 | 图表 | LiveCharts2 (LiveChartsCore.SkiaSharpView.Avalonia) | UI 展示与 PNG 导出复用 |
 | PDF | QuestPDF | 图文报表排版（非商用免费） |

@@ -14,11 +14,40 @@ public partial class LoginWindow : JadeWindow
     public LoginWindow()
     {
         InitializeComponent();
-        LeftContent = new TextBlock { Text = "HomeLedger 家庭记账", FontSize = 13, FontWeight = FontWeight.SemiBold,
-            Foreground = Brush.Parse("#2b2f2c"), Margin = new Thickness(14, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center };
+        LeftContent = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            Spacing = 9,
+            Margin = new Thickness(16, 0, 0, 0),
+            VerticalAlignment = VerticalAlignment.Center,
+            Children =
+            {
+                new Border
+                {
+                    Width = 26,
+                    Height = 26,
+                    CornerRadius = new CornerRadius(9),
+                    Background = Brush.Parse("#147d64"),
+                    Child = new TextBlock
+                    {
+                        Text = "¥",
+                        FontSize = 14,
+                        Foreground = Brushes.White,
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        VerticalAlignment = VerticalAlignment.Center,
+                    },
+                },
+                new TextBlock
+                {
+                    Text = "HomeLedger 家庭记账",
+                    FontSize = 14,
+                    FontWeight = FontWeight.SemiBold,
+                    Foreground = Brush.Parse("#2b2f2c"),
+                    VerticalAlignment = VerticalAlignment.Center,
+                },
+            },
+        };
     }
-
-    private User? _pendingUser;
 
     private async void OnLogin(object? sender, RoutedEventArgs e)
     {
@@ -49,7 +78,7 @@ public partial class LoginWindow : JadeWindow
                 ShowHint("请先完成密码修改");
                 return;
             }
-            user = AppServices.Auth.Login(username, password)!;
+            user.MustChangePassword = false;
         }
 
         Session.Current = user;
