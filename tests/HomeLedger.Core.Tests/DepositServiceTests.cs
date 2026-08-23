@@ -49,11 +49,14 @@ public class DepositServiceTests : IDisposable
 
         Assert.Equal(252.05m, settlement.TotalInterest); // 10000×10%×92/365
         var chains = _deposits.ListChains(_userId, settleDate);
-        Assert.Equal(2, chains.Count);
-        // 结转后新本金 = 252.05，且原链停息
-        var active = chains.Single(c => c.IsActive);
-        Assert.Equal(252.05m, active.Principal);
+        var active = Assert.Single(chains);
+        Assert.True(active.IsActive);
+        // 结转后新本金 = 原本金 + 应计利息，并从结算日重新起息
+        Assert.Equal(10252.05m, active.Principal);
         Assert.Equal(new(2026, 6, 1), active.StartDate);
+        Assert.Contains("结转利息 252.05", active.ChainText);
+        active = _deposits.ListChains(_userId, new(2026, 7, 1)).Single();
+        Assert.Equal(84.26m, active.AccruedInterest); // 10252.05×10%×30/365
         // 结算历史
         Assert.Single(_deposits.ListSettlements(_userId));
     }

@@ -59,6 +59,7 @@ public class DepositService(IDbConnectionFactory db)
         {
             decimal total = 0;
             var count = 0;
+            var interestIds = new List<long>();
             foreach (var headId in headIds)
             {
                 var head = GetActiveHead(conn, tx, userId, headId);
@@ -66,16 +67,19 @@ public class DepositService(IDbConnectionFactory db)
                 if (interest <= 0) continue;
                 total += interest;
                 count++;
-                conn.Execute(
-                    "INSERT INTO Deposits(UserId, Kind, Amount, Date, AnnualRate, SourceDepositId, Note) VALUES(@uid, 2, @a, @d, @r, @src, @n)",
-                    new { uid = userId, a = interest, d = settleDate, r = head.AnnualRate, src = headId, n = "利息结转本金" }, tx);
+                var newPrincipal = Math.Round(head.Amount + interest, 2);
+                var interestId = conn.ExecuteScalar<long>(
+                    "INSERT INTO Deposits(UserId, Kind, Amount, Date, AnnualRate, SourceDepositId, Note) VALUES(@uid, 2, @a, @d, @r, @src, @n); SELECT last_insert_rowid()",
+                    new { uid = userId, a = newPrincipal, d = settleDate, r = head.AnnualRate, src = headId, n = $"利息 {interest:0.00} 结转本金" }, tx);
+                interestIds.Add(interestId);
             }
 
             var settlementId = conn.ExecuteScalar<long>(
                 "INSERT INTO InterestSettlements(UserId, SettledAt, DepositCount, TotalInterest, CreatedBy) VALUES(@uid, @d, @c, @t, @by); SELECT last_insert_rowid()",
                 new { uid = userId, d = settleDate, c = count, t = Math.Round(total, 2), by = createdBy }, tx);
-            conn.Execute("UPDATE Deposits SET SettlementId = @s WHERE Kind = 2 AND SettlementId IS NULL AND Id IN @ids",
-                new { s = settlementId, ids = conn.Query<long>("SELECT Id FROM Deposits WHERE Kind = 2 AND SettlementId IS NULL AND UserId = @uid", new { uid = userId }, tx) }, tx);
+            if (interestIds.Count > 0)
+                conn.Execute("UPDATE Deposits SET SettlementId = @s WHERE Id IN @ids",
+                    new { s = settlementId, ids = interestIds }, tx);
 
             tx.Commit();
             return new Settlement { Id = settlementId, UserId = userId, SettledAt = settleDate, DepositCount = count, TotalInterest = Math.Round(total, 2), CreatedBy = createdBy };
@@ -128,33 +132,37 @@ public class DepositService(IDbConnectionFactory db)
                            .GroupBy(r => r.SourceDepositId!.Value)
                            .ToDictionary(g => g.Key, g => g.OrderBy(r => r.Date).ThenBy(r => r.Id).Last());
         var result = new List<DepositChainView>();
-        foreach (var row in rows.Where(r => r.Kind != DepositKind.Withdrawal))
+        foreach (var row in rows.Where(r => r is { Kind: not DepositKind.Withdrawal, SourceDepositId: null }))
         {
-            var hasChild = children.ContainsKey(row.Id);
+            var current = row;
+            var parts = new List<string> { $"存入 {row.Amount:0.##}" };
+            DateOnly? closedAt = null;
+            while (children.TryGetValue(current.Id, out var child))
+            {
+                if (child.Kind == DepositKind.Withdrawal)
+                {
+                    parts.Add($"支取 {child.Amount:0.##}（{child.Date:MM-dd}）");
+                    closedAt = child.Date;
+                    break;
+                }
+
+                var interest = Math.Max(0, child.Amount - current.Amount);
+                parts.Add($"结转利息 {interest:0.##}（{child.Date:MM-dd}）");
+                current = child;
+            }
+
+            var isActive = closedAt is null;
             var view = new DepositChainView
             {
-                HeadId = row.Id,
-                Principal = row.Amount,
-                AnnualRate = row.AnnualRate,
-                StartDate = row.Date,
-                IsActive = !hasChild,
-                AccruedInterest = hasChild ? 0 : InterestCalculator.Accrued(row.Amount, row.AnnualRate, row.Date, today),
+                HeadId = current.Id,
+                Principal = current.Amount,
+                AnnualRate = current.AnnualRate,
+                StartDate = current.Date,
+                IsActive = isActive,
+                AccruedInterest = isActive ? InterestCalculator.Accrued(current.Amount, current.AnnualRate, current.Date, today) : 0,
+                ChainText = string.Join(" → ", parts),
+                ClosedAt = closedAt,
             };
-            // 沿链溯源生成可读文本
-            var parts = new List<string> { row.Kind switch {
-                DepositKind.Deposit => $"存入 {row.Amount:0.##}",
-                _ => $"{(row.Kind == DepositKind.Interest ? "结转" : "?")} {row.Amount:0.##}（{row.Date:MM-dd}）" } };
-            var child = rows.FirstOrDefault(r => r.SourceDepositId == row.Id);
-            while (child is not null)
-            {
-                parts.Add(child.Kind == DepositKind.Withdrawal
-                    ? $"支取 {child.Amount:0.##}（{child.Date:MM-dd}）"
-                    : $"结转 {child.Amount:0.##}（{child.Date:MM-dd}）");
-                child = rows.FirstOrDefault(r => r.SourceDepositId == child.Id);
-            }
-            view.ChainText = string.Join(" → ", parts);
-            if (!view.IsActive)
-                view.ClosedAt = children[row.Id].Date;
             result.Add(view);
         }
         return result.OrderByDescending(c => c.IsActive).ThenBy(c => c.StartDate).ToList();

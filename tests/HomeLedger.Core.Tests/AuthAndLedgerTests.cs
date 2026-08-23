@@ -105,6 +105,56 @@ public class AuthAndLedgerTests : IDisposable
     }
 
     [Fact]
+    public void 记账金额必须大于零()
+    {
+        var baba = _auth.Login("baba", "123456")!;
+
+        Assert.Throws<InvalidOperationException>(() =>
+            _ledger.AddTransaction(baba.Id, TxKind.Expense, 0m, new(2026, 1, 1), null, ""));
+        Assert.Throws<InvalidOperationException>(() =>
+            _ledger.AddTransaction(baba.Id, TxKind.Income, -1m, new(2026, 1, 1), null, ""));
+    }
+
+    [Fact]
+    public void 不能使用其他成员的自定义分类()
+    {
+        var baba = _auth.Login("baba", "123456")!;
+        var mama = _auth.Login("mama", "123456")!;
+        var mamaCategoryId = _ledger.AddCategory(mama.Id, "妈妈专属", TxKind.Expense);
+
+        Assert.Throws<InvalidOperationException>(() =>
+            _ledger.AddTransaction(baba.Id, TxKind.Expense, 10m, new(2026, 1, 1), mamaCategoryId, ""));
+        Assert.Empty(_ledger.ListTransactions(new TransactionFilter { UserId = baba.Id }));
+    }
+
+    [Fact]
+    public void 分类筛选只返回指定分类记录()
+    {
+        var baba = _auth.Login("baba", "123456")!;
+        var foodId = _ledger.AddCategory(baba.Id, "外食", TxKind.Expense);
+        var trafficId = _ledger.AddCategory(baba.Id, "打车", TxKind.Expense);
+        _ledger.AddTransaction(baba.Id, TxKind.Expense, 80m, new(2026, 1, 1), foodId, "午饭");
+        _ledger.AddTransaction(baba.Id, TxKind.Expense, 30m, new(2026, 1, 2), trafficId, "通勤");
+
+        var rows = _ledger.ListTransactions(new TransactionFilter { UserId = baba.Id, CategoryId = foodId });
+
+        var row = Assert.Single(rows);
+        Assert.Equal("外食", row.CategoryName);
+        Assert.Equal(80m, row.Amount);
+    }
+
+    [Fact]
+    public void 管理员分类列表包含成员自定义分类()
+    {
+        var baba = _auth.Login("baba", "123456")!;
+        _ledger.AddCategory(baba.Id, "爸爸自定义支出", TxKind.Expense);
+
+        var categories = _ledger.ListAllCategories(TxKind.Expense);
+
+        Assert.Contains(categories, c => c.Name == "爸爸自定义支出" && c.UserId == baba.Id);
+    }
+
+    [Fact]
     public void 报表包含存款利息与成员汇总()
     {
         var baba = _auth.Login("baba", "123456")!;
@@ -130,5 +180,28 @@ public class AuthAndLedgerTests : IDisposable
         Export.CsvExporter.Export(model, path);
         Assert.True(File.Exists(path));
         Assert.Contains("工资", File.ReadAllText(path));
+    }
+
+    [Fact]
+    public void 空报表导出不会异常()
+    {
+        var baba = _auth.Login("baba", "123456")!;
+        var model = new ReportBuilder(_ledger, new DepositService(_factory))
+            .Build(baba.Id, new(2035, 1, 1), new(2035, 12, 31), "爸爸");
+
+        Assert.Empty(model.Transactions);
+        Assert.Empty(model.Monthly);
+
+        var csv = Path.Combine(Path.GetTempPath(), $"hl-empty-{Guid.NewGuid():N}.csv");
+        var pdf = Path.Combine(Path.GetTempPath(), $"hl-empty-{Guid.NewGuid():N}.pdf");
+        var docx = Path.Combine(Path.GetTempPath(), $"hl-empty-{Guid.NewGuid():N}.docx");
+
+        Export.CsvExporter.Export(model, csv);
+        Export.PdfExporter.Export(model, pdf);
+        Export.DocxExporter.Export(model, docx);
+
+        Assert.Contains("明细", File.ReadAllText(csv));
+        Assert.True(new FileInfo(pdf).Length > 0);
+        Assert.True(new FileInfo(docx).Length > 0);
     }
 }

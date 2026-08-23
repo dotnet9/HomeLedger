@@ -28,6 +28,7 @@ public class LedgerService(IDbConnectionFactory db)
     public void AddTransaction(long userId, TxKind kind, decimal amount, DateOnly date, long? categoryId, string note)
     {
         using var conn = db.Create();
+        ValidateTransaction(conn, userId, kind, amount, categoryId);
         var now = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         conn.Execute(
             "INSERT INTO Transactions(UserId, Kind, Amount, Date, CategoryId, Note, IsDeleted, CreatedAt, UpdatedAt) VALUES(@uid, @k, @a, @d, @c, @n, 0, @t, @t)",
@@ -37,6 +38,7 @@ public class LedgerService(IDbConnectionFactory db)
     public void UpdateTransaction(long userId, long id, TxKind kind, decimal amount, DateOnly date, long? categoryId, string note)
     {
         using var conn = db.Create();
+        ValidateTransaction(conn, userId, kind, amount, categoryId);
         conn.Execute(
             "UPDATE Transactions SET Kind=@k, Amount=@a, Date=@d, CategoryId=@c, Note=@n, UpdatedAt=@t WHERE Id=@id AND UserId=@uid",
             new { k = (int)kind, a = amount, d = date, c = categoryId, n = note, t = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), id, uid = userId });
@@ -141,10 +143,36 @@ public class LedgerService(IDbConnectionFactory db)
     // ── 分类 ───────────────────────────
     public List<Category> ListCategories(long userId, TxKind kind)
     {
+        return ListCategories(userId, (TxKind?)kind);
+    }
+
+    public List<Category> ListCategories(long userId, TxKind? kind)
+    {
         using var conn = db.Create();
-        return conn.Query<Category>(
-            "SELECT * FROM Categories WHERE (UserId IS NULL OR UserId = @uid) AND Kind = @k ORDER BY SortOrder, Id",
-            new { uid = userId, k = (int)kind }).ToList();
+        var sql = new StringBuilder("SELECT * FROM Categories WHERE (UserId IS NULL OR UserId = @uid)");
+        var p = new DynamicParameters();
+        p.Add("uid", userId);
+        if (kind is { } k)
+        {
+            sql.Append(" AND Kind = @k");
+            p.Add("k", (int)k);
+        }
+        sql.Append(" ORDER BY Kind, SortOrder, Id");
+        return conn.Query<Category>(sql.ToString(), p).ToList();
+    }
+
+    public List<Category> ListAllCategories(TxKind? kind = null)
+    {
+        using var conn = db.Create();
+        var sql = new StringBuilder("SELECT * FROM Categories");
+        var p = new DynamicParameters();
+        if (kind is { } k)
+        {
+            sql.Append(" WHERE Kind = @k");
+            p.Add("k", (int)k);
+        }
+        sql.Append(" ORDER BY Kind, SortOrder, Id");
+        return conn.Query<Category>(sql.ToString(), p).ToList();
     }
 
     public long AddCategory(long userId, string name, TxKind kind)
@@ -159,5 +187,23 @@ public class LedgerService(IDbConnectionFactory db)
     {
         using var conn = db.Create();
         conn.Execute("DELETE FROM Categories WHERE Id = @id AND UserId = @uid", new { id = categoryId, uid = userId });
+    }
+
+    private static void ValidateTransaction(System.Data.IDbConnection conn, long userId, TxKind kind, decimal amount, long? categoryId)
+    {
+        if (amount <= 0)
+            throw new InvalidOperationException("记账金额必须大于 0");
+
+        if (categoryId is null) return;
+
+        var category = conn.QuerySingleOrDefault<Category>(
+            "SELECT * FROM Categories WHERE Id = @id",
+            new { id = categoryId });
+        if (category is null)
+            throw new InvalidOperationException("分类不存在");
+        if (category.Kind != kind)
+            throw new InvalidOperationException("分类类型与收支类型不匹配");
+        if (category.UserId is { } ownerId && ownerId != userId)
+            throw new InvalidOperationException("不能使用其他成员的自定义分类");
     }
 }
