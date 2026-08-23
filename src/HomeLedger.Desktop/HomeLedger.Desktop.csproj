@@ -14,4 +14,10 @@
   <ItemGroup>
     <ProjectReference Include="..\HomeLedger.Avalonia\HomeLedger.Avalonia.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\ledger.db"
+             Link="ledger.db"
+             CopyToOutputDirectory="PreserveNewest"
+             CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>

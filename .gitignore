@@ -430,5 +430,7 @@ FodyWeavers.xsd
 
 # HomeLedger 本地数据库
 *.db
+!/ledger.db
+*.db-journal
 *.db-shm
 *.db-wal
