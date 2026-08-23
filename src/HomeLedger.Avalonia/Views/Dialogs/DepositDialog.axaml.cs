@@ -4,6 +4,7 @@ using HomeLedger.Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Layout;
+using Avalonia.Threading;
 
 namespace HomeLedger.Avalonia.Views.Dialogs;
 
@@ -25,20 +26,36 @@ public partial class DepositDialog : JadeWindow
         _userId = userId;
         DatePicker.SelectedDate = DateTimeOffset.Now;
         RateBox.Text = "10";
+        Dispatcher.UIThread.Post(() =>
+        {
+            AmountBox.Focus();
+            AmountBox.SelectAll();
+        });
+        UpdateConfirmState();
     }
 
     private void OnCancel(object? sender, RoutedEventArgs e) => Close(false);
+
+    private void OnInputChanged(object? sender, TextChangedEventArgs e)
+    {
+        ErrorText.IsVisible = false;
+        UpdateConfirmState();
+    }
 
     private void OnConfirm(object? sender, RoutedEventArgs e)
     {
         if (!decimal.TryParse(AmountBox.Text?.Trim(), out var amount) || amount <= 0)
         {
             ShowError("请输入正确的金额");
+            AmountBox.Focus();
+            AmountBox.SelectAll();
             return;
         }
         if (!decimal.TryParse(RateBox.Text?.Trim(), out var rate) || rate is < 0 or > 100)
         {
             ShowError("年利率需在 0 ~ 100 之间（百分数，如 10 表示 10%）");
+            RateBox.Focus();
+            RateBox.SelectAll();
             return;
         }
         var date = DateOnly.FromDateTime((DatePicker.SelectedDate ?? DateTimeOffset.Now).Date);
@@ -50,5 +67,11 @@ public partial class DepositDialog : JadeWindow
     {
         ErrorText.Text = message;
         ErrorText.IsVisible = true;
+    }
+
+    private void UpdateConfirmState()
+    {
+        ConfirmButton.IsEnabled = !string.IsNullOrWhiteSpace(AmountBox.Text)
+                                  && !string.IsNullOrWhiteSpace(RateBox.Text);
     }
 }

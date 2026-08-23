@@ -11,6 +11,9 @@
                 <StackPanel DockPanel.Dock="Bottom">
                     <Button x:Name="ChangePasswordButton" Content="修改密码" Click="OnChangePassword"
                             Margin="0,0,0,8" HorizontalAlignment="Stretch" CornerRadius="10"/>
+                    <Button x:Name="LogoutButton" Content="切换账号" Click="OnLogout"
+                            ToolTip.Tip="退出当前账号并返回登录页"
+                            Margin="0,0,0,12" HorizontalAlignment="Stretch" CornerRadius="10"/>
                     <StackPanel Orientation="Horizontal" Spacing="10" Margin="4,0,0,6">
                         <Border Width="36" Height="36" CornerRadius="12" Background="#e3f2ec">
                             <TextBlock Text="{Binding AvatarText}" Foreground="#0c5a48" FontWeight="Bold"

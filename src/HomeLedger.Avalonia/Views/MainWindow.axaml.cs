@@ -25,4 +25,12 @@ public partial class MainWindow : JadeWindow
         var dialog = new Dialogs.ChangePasswordDialog { WindowStartupLocation = WindowStartupLocation.CenterOwner };
         await dialog.ShowDialog<bool>(this);
     }
+
+    private void OnLogout(object? sender, RoutedEventArgs e)
+    {
+        Session.Current = null;
+        var login = new LoginWindow { WindowStartupLocation = WindowStartupLocation.CenterScreen };
+        login.Show();
+        Close();
+    }
 }

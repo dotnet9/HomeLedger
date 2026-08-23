@@ -1,4 +1,6 @@
 using Avalonia.Controls;
+using Avalonia.Threading;
+using HomeLedger.Avalonia.Views;
 using HomeLedger.Avalonia.ViewModels;
 using HomeLedger.Avalonia.Views.Dialogs;
 using HomeLedger.Core.Models;
@@ -20,6 +22,7 @@ public partial class MemberDepositsPage : UserControl
             ShowSettleDialogAsync = ShowSettleDialogAsync,
         };
         DataContext = viewModel;
+        Dispatcher.UIThread.Post(() => DepositButton.Focus());
     }
 
     private async Task<bool> ShowDepositDialogAsync()
@@ -40,5 +43,5 @@ public partial class MemberDepositsPage : UserControl
         return await dialog.ShowDialog<bool>(Owner());
     }
 
-    private Window Owner() => VisualRoot as Window ?? throw new InvalidOperationException();
+    private Window Owner() => TopLevelHost.GetOwnerWindow(this);
 }

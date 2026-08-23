@@ -49,13 +49,17 @@
                 </Border>
 
                 <TextBlock Text="用户名" FontSize="12" Foreground="#5a6058" Margin="0,0,0,6"/>
-                <TextBox x:Name="UsernameBox" PlaceholderText="用户名" Height="40" Margin="0,0,0,16" CornerRadius="10"/>
+                <TextBox x:Name="UsernameBox" PlaceholderText="用户名" Height="40" Margin="0,0,0,16" CornerRadius="10"
+                         TextChanged="OnLoginInputChanged"
+                         KeyDown="OnUsernameKeyDown"/>
 
                 <TextBlock Text="密码" FontSize="12" Foreground="#5a6058" Margin="0,0,0,6"/>
-                <TextBox x:Name="PasswordBox" PlaceholderText="密码" Height="40" Margin="0,0,0,6" CornerRadius="10" PasswordChar="●"/>
+                <TextBox x:Name="PasswordBox" PlaceholderText="密码" Height="40" Margin="0,0,0,6" CornerRadius="10" PasswordChar="●"
+                         TextChanged="OnLoginInputChanged"/>
 
                 <Button x:Name="LoginButton" Content="登 录" Click="OnLogin" Height="40" Margin="0,6,0,0"
-                        HorizontalAlignment="Stretch" Foreground="White" CornerRadius="10" FontWeight="Bold" FontSize="14">
+                        HorizontalAlignment="Stretch" Foreground="White" CornerRadius="10" FontWeight="Bold" FontSize="14"
+                        IsDefault="True" IsEnabled="False">
                     <Button.Background>
                         <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
                             <GradientStop Color="#147d64" Offset="0"/>

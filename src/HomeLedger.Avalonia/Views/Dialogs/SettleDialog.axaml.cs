@@ -5,6 +5,7 @@ using Avalonia.Interactivity;
 using HomeLedger.Core.Models;
 using Avalonia.Media;
 using Avalonia.Layout;
+using Avalonia.Threading;
 
 namespace HomeLedger.Avalonia.Views.Dialogs;
 
@@ -30,6 +31,7 @@ public partial class SettleDialog : JadeWindow
         DetailText.Text = string.Join("\n", chains.Select(c =>
             $"存入 {c.Principal:0.00} · {c.AnnualRate:0.##}% · 起息 {c.StartDate:yyyy-MM-dd} → 利息 {c.AccruedInterest:0.00}"));
         TotalText.Text = $"合计结转利息：{chains.Sum(c => c.AccruedInterest):0.00}";
+        Dispatcher.UIThread.Post(() => ConfirmButton.Focus());
     }
 
     private void OnCancel(object? sender, RoutedEventArgs e) => Close(false);

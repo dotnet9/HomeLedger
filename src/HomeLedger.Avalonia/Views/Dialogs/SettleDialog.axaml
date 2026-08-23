@@ -12,8 +12,8 @@
             <TextBlock x:Name="DetailText" FontSize="12" Foreground="#5a6058" TextWrapping="Wrap"/>
             <TextBlock x:Name="TotalText" FontSize="14" FontWeight="Bold" Foreground="#2f9e6e"/>
             <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right" Margin="0,8,0,0">
-                <Button Content="取消" Click="OnCancel" CornerRadius="10" MinWidth="72"/>
-                <Button Content="确认结算" Click="OnConfirm" Background="#147d64" Foreground="White" CornerRadius="10" MinWidth="88"/>
+                <Button Content="取消" Click="OnCancel" IsCancel="True" CornerRadius="10" MinWidth="72"/>
+                <Button x:Name="ConfirmButton" Content="确认结算" Click="OnConfirm" IsDefault="True" Background="#147d64" Foreground="White" CornerRadius="10" MinWidth="88"/>
             </StackPanel>
         </StackPanel>
     </Border>

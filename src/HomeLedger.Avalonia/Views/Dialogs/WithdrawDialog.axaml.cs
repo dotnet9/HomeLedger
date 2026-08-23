@@ -5,6 +5,7 @@ using Avalonia.Interactivity;
 using HomeLedger.Core.Models;
 using Avalonia.Media;
 using Avalonia.Layout;
+using Avalonia.Threading;
 
 namespace HomeLedger.Avalonia.Views.Dialogs;
 
@@ -31,15 +32,29 @@ public partial class WithdrawDialog : JadeWindow
             + $"应计利息 {chain.AccruedInterest:0.00}，本息合计 {chain.Total:0.00}";
         MaxText.Text = $"最多可支取：{chain.Total:0.00}";
         AmountBox.Text = chain.Total.ToString("0.##");
+        Dispatcher.UIThread.Post(() =>
+        {
+            AmountBox.Focus();
+            AmountBox.SelectAll();
+        });
+        UpdateConfirmState();
     }
 
     private void OnCancel(object? sender, RoutedEventArgs e) => Close(false);
+
+    private void OnInputChanged(object? sender, TextChangedEventArgs e)
+    {
+        ErrorText.IsVisible = false;
+        UpdateConfirmState();
+    }
 
     private void OnConfirm(object? sender, RoutedEventArgs e)
     {
         if (!decimal.TryParse(AmountBox.Text?.Trim(), out var amount) || amount <= 0)
         {
             ShowError("请输入正确的支取金额");
+            AmountBox.Focus();
+            AmountBox.SelectAll();
             return;
         }
         try
@@ -58,5 +73,10 @@ public partial class WithdrawDialog : JadeWindow
     {
         ErrorText.Text = message;
         ErrorText.IsVisible = true;
+    }
+
+    private void UpdateConfirmState()
+    {
+        ConfirmButton.IsEnabled = !string.IsNullOrWhiteSpace(AmountBox.Text);
     }
 }

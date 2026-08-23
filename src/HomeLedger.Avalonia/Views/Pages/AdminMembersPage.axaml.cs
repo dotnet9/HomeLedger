@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using HomeLedger.Avalonia.ViewModels;
+using HomeLedger.Avalonia.Views;
 using HomeLedger.Avalonia.Views.Dialogs;
 
 namespace HomeLedger.Avalonia.Views.Pages;
@@ -22,5 +23,5 @@ public partial class AdminMembersPage : UserControl
         return await dialog.ShowDialog<bool>(Owner());
     }
 
-    private Window Owner() => VisualRoot as Window ?? throw new InvalidOperationException();
+    private Window Owner() => TopLevelHost.GetOwnerWindow(this);
 }

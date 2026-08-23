@@ -40,7 +40,7 @@
                 <StackPanel Orientation="Horizontal" Spacing="10">
                     <TextBlock Text="我的存款" FontSize="14" FontWeight="Bold" VerticalAlignment="Center"/>
                     <Panel Width="20"/>
-                    <Button Content="＋ 存入" Command="{Binding DepositCommand}" Background="#147d64" Foreground="White" CornerRadius="10"/>
+                    <Button x:Name="DepositButton" Content="＋ 存入" Command="{Binding DepositCommand}" Background="#147d64" Foreground="White" CornerRadius="10"/>
                     <Button Content="↧ 支取" Command="{Binding WithdrawFirstCommand}" CornerRadius="10"/>
                     <Button Content="结算利息（结转本金）" Command="{Binding SettleCommand}" Background="#d9a441" Foreground="White" CornerRadius="10"/>
                 </StackPanel>

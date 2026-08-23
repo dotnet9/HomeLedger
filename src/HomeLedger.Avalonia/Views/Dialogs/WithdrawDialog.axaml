@@ -8,7 +8,7 @@
             <TextBlock Text="支取存款" FontSize="16" FontWeight="Bold" Foreground="#147d64"/>
             <TextBlock x:Name="InfoText" TextWrapping="Wrap" FontSize="12" Foreground="#5a6058"/>
             <TextBlock Text="支取金额" FontSize="12" Foreground="#5a6058"/>
-            <TextBox x:Name="AmountBox" Height="40" FontSize="18" FontFamily="Georgia"/>
+            <TextBox x:Name="AmountBox" Height="40" FontSize="18" FontFamily="Georgia" TextChanged="OnInputChanged"/>
             <TextBlock x:Name="MaxText" FontSize="11" Foreground="#99a096"/>
             <TextBlock Text="支取日期" FontSize="12" Foreground="#5a6058"/>
             <DatePicker x:Name="DatePicker"/>
@@ -17,8 +17,8 @@
             <TextBlock Text="部分支取时，剩余本息将按原利率生成新存款继续计息" FontSize="11" Foreground="#99a096" TextWrapping="Wrap"/>
             <TextBlock x:Name="ErrorText" Foreground="#c4553d" FontSize="12" IsVisible="False" TextWrapping="Wrap"/>
             <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right" Margin="0,8,0,0">
-                <Button Content="取消" Click="OnCancel" CornerRadius="10" MinWidth="72"/>
-                <Button Content="支取" Click="OnConfirm" Background="#147d64" Foreground="White" CornerRadius="10" MinWidth="88"/>
+                <Button Content="取消" Click="OnCancel" IsCancel="True" CornerRadius="10" MinWidth="72"/>
+                <Button x:Name="ConfirmButton" Content="支取" Click="OnConfirm" IsDefault="True" IsEnabled="False" Background="#147d64" Foreground="White" CornerRadius="10" MinWidth="88"/>
             </StackPanel>
         </StackPanel>
     </Border>

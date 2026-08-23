@@ -12,17 +12,17 @@
                 <RadioButton x:Name="IncomeRadio" Content="收入" CornerRadius="8"/>
             </StackPanel>
             <TextBlock Text="金额" FontSize="12" Foreground="#5a6058"/>
-            <TextBox x:Name="AmountBox" PlaceholderText="0.00" Height="40" FontSize="18" FontFamily="Georgia"/>
+            <TextBox x:Name="AmountBox" PlaceholderText="0.00" Height="40" FontSize="18" FontFamily="Georgia" TextChanged="OnInputChanged"/>
             <TextBlock Text="日期" FontSize="12" Foreground="#5a6058"/>
             <DatePicker x:Name="DatePicker"/>
             <TextBlock Text="分类" FontSize="12" Foreground="#5a6058"/>
-            <ComboBox x:Name="CategoryBox" Height="36" HorizontalAlignment="Stretch"/>
+            <ComboBox x:Name="CategoryBox" Height="36" HorizontalAlignment="Stretch" SelectionChanged="OnCategoryChanged"/>
             <TextBlock Text="备注" FontSize="12" Foreground="#5a6058"/>
             <TextBox x:Name="NoteBox" PlaceholderText="选填…" Height="36"/>
             <TextBlock x:Name="ErrorText" Foreground="#c4553d" FontSize="12" IsVisible="False" TextWrapping="Wrap"/>
             <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right" Margin="0,8,0,0">
-                <Button Content="取消" Click="OnCancel" CornerRadius="10" MinWidth="72"/>
-                <Button Content="保存" Click="OnConfirm" Background="#147d64" Foreground="White" CornerRadius="10" MinWidth="88"/>
+                <Button Content="取消" Click="OnCancel" IsCancel="True" CornerRadius="10" MinWidth="72"/>
+                <Button x:Name="ConfirmButton" Content="保存" Click="OnConfirm" IsDefault="True" IsEnabled="False" Background="#147d64" Foreground="White" CornerRadius="10" MinWidth="88"/>
             </StackPanel>
         </StackPanel>
     </Border>

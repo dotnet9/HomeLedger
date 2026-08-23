@@ -1,11 +1,13 @@
 using Avalonia;
 using Avalonia.Controls;
 using HomeLedger.Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using HomeLedger.Core.Models;
 using HomeLedger.Core.Services;
 using Avalonia.Media;
 using Avalonia.Layout;
+using Avalonia.Threading;
 
 namespace HomeLedger.Avalonia.Views;
 
@@ -47,6 +49,21 @@ public partial class LoginWindow : JadeWindow
                 },
             },
         };
+        Dispatcher.UIThread.Post(() => UsernameBox.Focus());
+    }
+
+    private void OnLoginInputChanged(object? sender, TextChangedEventArgs e)
+    {
+        LoginButton.IsEnabled = !string.IsNullOrWhiteSpace(UsernameBox.Text)
+                                && !string.IsNullOrEmpty(PasswordBox.Text);
+    }
+
+    private void OnUsernameKeyDown(object? sender, KeyEventArgs e)
+    {
+        if (e.Key != Key.Enter || !string.IsNullOrEmpty(PasswordBox.Text)) return;
+
+        PasswordBox.Focus();
+        e.Handled = true;
     }
 
     private async void OnLogin(object? sender, RoutedEventArgs e)
@@ -54,9 +71,16 @@ public partial class LoginWindow : JadeWindow
         HintText.IsVisible = false;
         var username = UsernameBox.Text?.Trim();
         var password = PasswordBox.Text ?? "";
-        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+        if (string.IsNullOrEmpty(username))
         {
-            ShowHint("请输入用户名和密码");
+            ShowHint("请输入用户名");
+            FocusAndSelect(UsernameBox);
+            return;
+        }
+        if (string.IsNullOrEmpty(password))
+        {
+            ShowHint("请输入密码");
+            FocusAndSelect(PasswordBox);
             return;
         }
 
@@ -64,6 +88,7 @@ public partial class LoginWindow : JadeWindow
         if (user == null)
         {
             ShowHint("用户名或密码错误，或账号已停用");
+            FocusAndSelect(PasswordBox);
             return;
         }
 
@@ -91,5 +116,11 @@ public partial class LoginWindow : JadeWindow
     {
         HintText.Text = message;
         HintText.IsVisible = true;
+    }
+
+    private static void FocusAndSelect(TextBox textBox)
+    {
+        textBox.Focus();
+        textBox.SelectAll();
     }
 }

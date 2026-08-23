@@ -6,6 +6,7 @@ using HomeLedger.Core.Models;
 using HomeLedger.Core.Services;
 using Avalonia.Media;
 using Avalonia.Layout;
+using Avalonia.Threading;
 
 namespace HomeLedger.Avalonia.Views.Dialogs;
 
@@ -37,37 +38,67 @@ public partial class TransactionDialog : JadeWindow
             (editing.Kind == TxKind.Income ? IncomeRadio : ExpenseRadio).IsChecked = true;
         }
         LoadCategories();
-        ExpenseRadio.IsCheckedChanged += (_, _) => LoadCategories();
-        IncomeRadio.IsCheckedChanged += (_, _) => LoadCategories();
+        ExpenseRadio.IsCheckedChanged += (_, _) => { LoadCategories(); ErrorText.IsVisible = false; };
+        IncomeRadio.IsCheckedChanged += (_, _) => { LoadCategories(); ErrorText.IsVisible = false; };
+        Dispatcher.UIThread.Post(() =>
+        {
+            AmountBox.Focus();
+            AmountBox.SelectAll();
+        });
+        UpdateConfirmState();
     }
 
     private void LoadCategories()
     {
         var kind = IncomeRadio.IsChecked == true ? TxKind.Income : TxKind.Expense;
         var categories = _ledger.ListCategories(_userId, kind);
+        var previousIndex = CategoryBox.SelectedIndex;
         CategoryBox.ItemsSource = categories.Select(c => c.Name).ToList();
         if (_editing is { } e && e.Kind == kind && !string.IsNullOrEmpty(e.CategoryName))
         {
             var idx = categories.FindIndex(c => c.Name == e.CategoryName);
             if (idx >= 0) CategoryBox.SelectedIndex = idx;
         }
-        else if (CategoryBox.SelectedIndex < 0 && categories.Count > 0)
-            CategoryBox.SelectedIndex = 0;
+        else if (previousIndex >= 0 && previousIndex < categories.Count)
+            CategoryBox.SelectedIndex = previousIndex;
+        else
+            CategoryBox.SelectedIndex = categories.Count > 0 ? 0 : -1;
+        UpdateConfirmState();
     }
 
     private void OnCancel(object? sender, RoutedEventArgs e) => Close(false);
+
+    private void OnInputChanged(object? sender, TextChangedEventArgs e)
+    {
+        ErrorText.IsVisible = false;
+        UpdateConfirmState();
+    }
+
+    private void OnCategoryChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        ErrorText.IsVisible = false;
+        UpdateConfirmState();
+    }
 
     private void OnConfirm(object? sender, RoutedEventArgs e)
     {
         if (!decimal.TryParse(AmountBox.Text?.Trim(), out var amount) || amount <= 0)
         {
             ShowError("请输入正确的金额");
+            AmountBox.Focus();
+            AmountBox.SelectAll();
             return;
         }
         var kind = IncomeRadio.IsChecked == true ? TxKind.Income : TxKind.Expense;
         var date = DateOnly.FromDateTime((DatePicker.SelectedDate ?? DateTimeOffset.Now).Date);
         var categories = _ledger.ListCategories(_userId, kind);
-        long? categoryId = CategoryBox.SelectedIndex >= 0 ? categories[CategoryBox.SelectedIndex].Id : null;
+        if (CategoryBox.SelectedIndex < 0 || CategoryBox.SelectedIndex >= categories.Count)
+        {
+            ShowError("请选择分类");
+            CategoryBox.Focus();
+            return;
+        }
+        long? categoryId = categories[CategoryBox.SelectedIndex].Id;
         var note = NoteBox.Text?.Trim() ?? "";
 
         if (_editing is null)
@@ -81,5 +112,11 @@ public partial class TransactionDialog : JadeWindow
     {
         ErrorText.Text = message;
         ErrorText.IsVisible = true;
+    }
+
+    private void UpdateConfirmState()
+    {
+        ConfirmButton.IsEnabled = !string.IsNullOrWhiteSpace(AmountBox.Text)
+                                  && CategoryBox.SelectedIndex >= 0;
     }
 }
