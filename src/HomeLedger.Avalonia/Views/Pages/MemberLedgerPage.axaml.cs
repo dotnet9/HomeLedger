@@ -1,4 +1,7 @@
 using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Threading;
+using HomeLedger.Avalonia.Views;
 using HomeLedger.Avalonia.ViewModels;
 using HomeLedger.Avalonia.Views.Dialogs;
 using HomeLedger.Core.Models;
@@ -17,12 +20,55 @@ public partial class MemberLedgerPage : UserControl
         {
             ShowTransactionDialogAsync = ShowTransactionDialogAsync
         };
+        viewModel.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(MemberLedgerPageViewModel.QuickMessage))
+                Dispatcher.UIThread.Post(FocusQuickAmount);
+        };
         DataContext = viewModel;
+        Dispatcher.UIThread.Post(FocusQuickAmount);
     }
 
     private async Task<bool> ShowTransactionDialogAsync(TransactionItem? item)
     {
         var dialog = new TransactionDialog(_userId, item) { WindowStartupLocation = WindowStartupLocation.CenterOwner };
-        return await dialog.ShowDialog<bool>(VisualRoot as Window ?? throw new InvalidOperationException());
+        return await dialog.ShowDialog<bool>(TopLevelHost.GetOwnerWindow(this));
+    }
+
+    private void OnQuickFormKeyDown(object? sender, KeyEventArgs e)
+    {
+        if (e.Key != Key.Enter || DataContext is not MemberLedgerPageViewModel viewModel) return;
+        if (!viewModel.SaveQuickCommand.CanExecute(null)) return;
+
+        viewModel.SaveQuickCommand.Execute(null);
+        e.Handled = true;
+    }
+
+    private void OnFilterKeywordKeyDown(object? sender, KeyEventArgs e)
+    {
+        if (e.Key != Key.Enter || DataContext is not MemberLedgerPageViewModel viewModel) return;
+
+        ExecuteFilter(viewModel);
+        e.Handled = true;
+    }
+
+    private void OnFilterAreaKeyDown(object? sender, KeyEventArgs e)
+    {
+        if (e.Key != Key.Enter || e.Source is Button || DataContext is not MemberLedgerPageViewModel viewModel) return;
+
+        ExecuteFilter(viewModel);
+        e.Handled = true;
+    }
+
+    private static void ExecuteFilter(MemberLedgerPageViewModel viewModel)
+    {
+        if (viewModel.FilterCommand.CanExecute())
+            viewModel.FilterCommand.Execute();
+    }
+
+    private void FocusQuickAmount()
+    {
+        QuickAmountBox.Focus();
+        QuickAmountBox.SelectAll();
     }
 }
