@@ -70,6 +70,7 @@ public sealed class MainWindowViewModel : BindableBase
     private static IReadOnlyList<NavigationItemViewModel> CreateAdminPages() =>
     [
         new("🏠 全家总览", () => new AdminOverviewPage()),
+        new("🔎 明细查询", () => new AdminDetailsPage()),
         new("👥 成员管理", () => new AdminMembersPage()),
         new("🗄️ 数据备份", () => new AdminBackupPage()),
     ];

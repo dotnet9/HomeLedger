@@ -1,0 +1,77 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="HomeLedger.Avalonia.Views.Pages.AdminDetailsPage">
+    <StackPanel Spacing="14">
+        <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock Text="明细查询" FontSize="21" FontWeight="Bold" VerticalAlignment="Center"/>
+            <Border Width="34" Height="4" VerticalAlignment="Center" Margin="10,12,0,0" Background="#d9a441"/>
+        </StackPanel>
+        <TextBlock Text="按成员、日期、类型、分类和备注关键词查看全家收支明细" FontSize="13" Foreground="#99a096" Margin="0,-8,0,0"/>
+
+        <Border Background="White" BorderBrush="#e9e5dc" BorderThickness="1" CornerRadius="16" Padding="16">
+            <StackPanel Spacing="12">
+                <Grid ColumnDefinitions="150,24,150,130,110,130,*,88,116" ColumnSpacing="10" KeyDown="OnFilterAreaKeyDown">
+                    <DatePicker SelectedDate="{Binding FromDate}" Height="36"/>
+                    <TextBlock Grid.Column="1" Text="~" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#99a096"/>
+                    <DatePicker Grid.Column="2" SelectedDate="{Binding ToDate}" Height="36"/>
+                    <ComboBox Grid.Column="3" ItemsSource="{Binding Members}" SelectedIndex="{Binding MemberFilterIndex}" Height="36">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <ComboBox Grid.Column="4" SelectedIndex="{Binding KindFilterIndex}" Height="36">
+                        <ComboBoxItem Content="全部类型" IsSelected="True"/>
+                        <ComboBoxItem Content="收入"/>
+                        <ComboBoxItem Content="支出"/>
+                    </ComboBox>
+                    <ComboBox Grid.Column="5" ItemsSource="{Binding Categories}" SelectedIndex="{Binding CategoryFilterIndex}" Height="36">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <TextBox x:Name="KeywordBox" Grid.Column="6" Text="{Binding Keyword, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="🔍 搜索备注关键词…" Height="36"
+                             KeyDown="OnKeywordKeyDown"/>
+                    <Button Grid.Column="7" Content="筛选" Command="{Binding FilterCommand}" CornerRadius="10"/>
+                    <Button Grid.Column="8" Content="导出当前视图" Command="{Binding ExportCsvCommand}" CornerRadius="10"/>
+                </Grid>
+
+                <Grid ColumnDefinitions="1*,1.1*,0.8*,1.2*,1*,2.6*" Margin="8,2,8,0">
+                    <TextBlock Text="成员" FontSize="12" Foreground="#99a096"/>
+                    <TextBlock Text="日期" FontSize="12" Foreground="#99a096" Grid.Column="1"/>
+                    <TextBlock Text="类型" FontSize="12" Foreground="#99a096" Grid.Column="2"/>
+                    <TextBlock Text="分类" FontSize="12" Foreground="#99a096" Grid.Column="3"/>
+                    <TextBlock Text="金额" FontSize="12" Foreground="#99a096" Grid.Column="4"/>
+                    <TextBlock Text="备注" FontSize="12" Foreground="#99a096" Grid.Column="5"/>
+                </Grid>
+
+                <ScrollViewer Height="500">
+                    <ItemsControl ItemsSource="{Binding Transactions}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="1*,1.1*,0.8*,1.2*,1*,2.6*" Margin="8,7" MinHeight="30">
+                                    <TextBlock Text="{Binding MemberName}" FontSize="13" FontWeight="Bold" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding DateText}" FontSize="13" Grid.Column="1" VerticalAlignment="Center"/>
+                                    <Border Grid.Column="2" Background="{Binding KindBg}" CornerRadius="6" Padding="8,2" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding KindText}" FontSize="11" Foreground="{Binding KindFg}"/>
+                                    </Border>
+                                    <TextBlock Text="{Binding CategoryName}" FontSize="13" Grid.Column="3" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding AmountText}" FontSize="13" FontWeight="Bold" Foreground="{Binding AmountBrush}" Grid.Column="4" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Note}" FontSize="13" Foreground="#5a6058" Grid.Column="5" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Text="{Binding SummaryText}" FontSize="12" Foreground="#99a096"/>
+                    <TextBlock Grid.Column="1" Text="{Binding StatusMessage}" IsVisible="{Binding HasStatusMessage}" Foreground="{Binding StatusBrush}" FontSize="12"/>
+                </Grid>
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</UserControl>
