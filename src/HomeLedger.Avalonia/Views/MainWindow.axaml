@@ -2,6 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="HomeLedger.Avalonia.Views.MainWindow"
         Title="HomeLedger 家庭记账" Width="1280" Height="840" MinWidth="960" MinHeight="640"
+        Icon="avares://HomeLedger.Avalonia/Assets/logo.ico"
         WindowStartupLocation="CenterScreen" Background="#f7f5f0">
     <DockPanel>
         <!-- 侧边导航：玉账浮层 -->

@@ -12,4 +12,8 @@
   <ItemGroup>
     <ProjectReference Include="..\HomeLedger.Core\HomeLedger.Core.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <AvaloniaResource Include="..\..\logo.png" Link="Assets\logo.png" />
+    <AvaloniaResource Include="..\..\logo.ico" Link="Assets\logo.ico" />
+  </ItemGroup>
 </Project>
