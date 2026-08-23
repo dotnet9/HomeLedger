@@ -44,6 +44,7 @@
             <Button Content="📄 CSV" Click="OnExportCsv" CornerRadius="10"/>
             <Button Content="📑 PDF" Click="OnExportPdf" CornerRadius="10"/>
             <Button Content="📝 Word" Click="OnExportDocx" Background="#147d64" Foreground="White" CornerRadius="10"/>
+            <TextBlock x:Name="StatusText" FontSize="12" VerticalAlignment="Center" MaxWidth="420" TextTrimming="CharacterEllipsis" IsVisible="False"/>
         </StackPanel>
 
         <Grid ColumnDefinitions="1.2*,1*">

@@ -1,6 +1,8 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using Avalonia.Platform.Storage;
+using HomeLedger.Avalonia.Views;
 using HomeLedger.Core.Export;
 using HomeLedger.Core.Services;
 
@@ -69,34 +71,90 @@ public partial class AdminOverviewPage : UserControl
 
     private async Task<string?> PickFile(string ext)
     {
-        var storage = (VisualRoot as Window)!.StorageProvider;
-        var file = await storage.SaveFilePickerAsync(new FilePickerSaveOptions
+        var storage = TopLevelHost.TryGetStorageProvider(this);
+        if (storage is null)
         {
-            SuggestedFileName = $"HomeLedger-全家-{SelectedYear}",
-            FileTypeChoices = [new FilePickerFileType(ext) { Patterns = ["*." + ext] }],
-        });
-        return file?.TryGetLocalPath();
+            ShowStatus("无法打开文件保存窗口，请稍后重试", "#c4553d");
+            return null;
+        }
+
+        FilePickerFileType fileType = new(ext.ToUpperInvariant()) { Patterns = ["*." + ext.TrimStart('.')] };
+        IStorageFile? file;
+        try
+        {
+            file = await storage.SaveFilePickerAsync(new FilePickerSaveOptions
+            {
+                SuggestedFileName = $"HomeLedger-全家-{SelectedYear}",
+                FileTypeChoices = [fileType],
+            });
+        }
+        catch (Exception ex)
+        {
+            ShowStatus("打开保存窗口失败：" + ex.Message, "#c4553d");
+            return null;
+        }
+        if (file is null) return null;
+
+        var path = file.TryGetLocalPath();
+        if (path is null)
+            ShowStatus("请选择本机磁盘路径后再导出", "#c4553d");
+        return path;
     }
 
-    private void Export(string path, string ext, Action<ReportModel, string> writer)
+    private async Task ExportAsync(string ext, Action<ReportModel, string> writer)
     {
         var (from, to) = Range();
         var model = AppServices.Reports.Build(null, from, to, "全家");
-        writer(model, Path.ChangeExtension(path, ext));
+        if (!HasReportData(model))
+        {
+            ShowStatus($"{SelectedYear} 年没有可导出的财务数据", "#a97822");
+            return;
+        }
+
+        var path = await PickFile(ext);
+        if (path is null) return;
+
+        try
+        {
+            var final = Path.ChangeExtension(path, ext);
+            writer(model, final);
+            ShowStatus("已导出：" + final, "#2f9e6e");
+        }
+        catch (Exception ex)
+        {
+            ShowStatus("导出失败：" + ex.Message, "#c4553d");
+        }
     }
 
     private async void OnExportCsv(object? sender, RoutedEventArgs e)
     {
-        if (await PickFile("csv") is { } path) Export(path, "csv", CsvExporter.Export);
+        await ExportAsync("csv", CsvExporter.Export);
     }
 
     private async void OnExportPdf(object? sender, RoutedEventArgs e)
     {
-        if (await PickFile("pdf") is { } path) Export(path, "pdf", PdfExporter.Export);
+        await ExportAsync("pdf", PdfExporter.Export);
     }
 
     private async void OnExportDocx(object? sender, RoutedEventArgs e)
     {
-        if (await PickFile("docx") is { } path) Export(path, "docx", DocxExporter.Export);
+        await ExportAsync("docx", DocxExporter.Export);
+    }
+
+    private static bool HasReportData(ReportModel model)
+    {
+        return model.Transactions.Count > 0
+               || model.Monthly.Count > 0
+               || model.ExpenseByCategory.Count > 0
+               || model.IncomeByCategory.Count > 0
+               || model.Deposit is { Principal: not 0 } or { Accrued: not 0 }
+               || model.Members.Any(m => m.Income != 0 || m.Expense != 0 || m.DepositTotal != 0);
+    }
+
+    private void ShowStatus(string message, string color)
+    {
+        StatusText.Text = message;
+        StatusText.Foreground = Brush.Parse(color);
+        StatusText.IsVisible = true;
     }
 }

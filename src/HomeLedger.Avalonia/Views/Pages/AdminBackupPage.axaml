@@ -12,7 +12,7 @@
             <StackPanel Spacing="14">
                 <TextBlock Text="数据库位置" FontSize="13" Foreground="#5a6058"/>
                 <TextBox x:Name="DbPathText" IsReadOnly="True" FontSize="12" TextWrapping="Wrap"/>
-                <Button Content="🗄️ 备份数据库到…" Click="OnBackup" Background="#147d64" Foreground="White" CornerRadius="10" HorizontalAlignment="Left"/>
+                <Button x:Name="BackupButton" Content="🗄️ 备份数据库到…" Click="OnBackup" Background="#147d64" Foreground="White" CornerRadius="10" HorizontalAlignment="Left"/>
                 <TextBlock x:Name="ResultText" FontSize="12" Foreground="#2f9e6e" TextWrapping="Wrap" IsVisible="False"/>
             </StackPanel>
         </Border>
