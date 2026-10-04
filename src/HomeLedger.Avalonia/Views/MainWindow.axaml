@@ -1,4 +1,4 @@
-<jade:JadeWindow xmlns="https://github.com/avaloniaui" xmlns:jade="using:HomeLedger.Avalonia.Controls"
+﻿<jade:JadeWindow xmlns="https://github.com/avaloniaui" xmlns:jade="using:HomeLedger.Avalonia.Controls"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="HomeLedger.Avalonia.Views.MainWindow"
         Title="HomeLedger 家庭记账" Width="1280" Height="840" MinWidth="960" MinHeight="640"
@@ -14,6 +14,9 @@
                             Margin="0,0,0,8" HorizontalAlignment="Stretch" CornerRadius="10"/>
                     <Button x:Name="LogoutButton" Content="切换账号" Click="OnLogout"
                             ToolTip.Tip="退出当前账号并返回登录页"
+                            Margin="0,0,0,12" HorizontalAlignment="Stretch" CornerRadius="10"/>
+                    <Button x:Name="CheckUpdateButton" Content="检查更新" Click="OnCheckUpdate"
+                            ToolTip.Tip="检查 GitHub Releases 是否有新版本"
                             Margin="0,0,0,12" HorizontalAlignment="Stretch" CornerRadius="10"/>
                     <StackPanel Orientation="Horizontal" Spacing="10" Margin="4,0,0,6">
                         <Border Width="36" Height="36" CornerRadius="12" Background="#e3f2ec">
