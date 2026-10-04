@@ -1,7 +1,11 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)]
     [string] $Version,
+
+    # 目标架构：linux-x64（默认，amd64）或 linux-arm64（arm64）
+    [ValidateSet("linux-x64", "linux-arm64")]
+    [string] $RuntimeIdentifier = "linux-x64",
 
     [string] $SourceDirectory = "",
     [string] $OutputDirectory = "",
@@ -26,7 +30,8 @@ if ($cleanVersion -notmatch '^\d+(\.\d+){1,3}$') {
     throw "Version must be numeric (for example 0.1.0): $Version"
 }
 
-$packageName = "HomeLedger-v$cleanVersion-linux-x64.deb"
+$architecture = if ($RuntimeIdentifier -eq "linux-arm64") { "arm64" } else { "amd64" }
+$packageName = "HomeLedger-v$cleanVersion-$RuntimeIdentifier.deb"
 $packagePath = Join-Path $outputPath $packageName
 $stageRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("HomeLedger-deb-" + [Guid]::NewGuid().ToString("N"))
 $appPath = Join-Path $stageRoot "usr/lib/homeledger"
@@ -72,7 +77,7 @@ try {
         "Version: $cleanVersion",
         "Section: office",
         "Priority: optional",
-        "Architecture: amd64",
+        "Architecture: $architecture",
         "Maintainer: Dotnet9 <1012434131@qq.com>",
         "Depends: libc6, libx11-6, libxrandr2, libxrender1, libxi6, libfontconfig1, libfreetype6, libglib2.0-0",
         "Description: HomeLedger personal bookkeeping application",
