@@ -1,4 +1,4 @@
-name: release
+﻿name: release
 
 # 推送 v* 标签发布 HomeLedger 全平台安装包（net10.0 单目标，四平台自包含单文件）：
 # win-x64 用 Inno Setup 生成 setup.exe，linux-x64 生成 deb，macOS 生成 dmg。
@@ -52,6 +52,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: 安装 NativeAOT 依赖 (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y clang zlib1g-dev
+
       - name: 安装 .NET SDK
         uses: actions/setup-dotnet@v4
         with:
@@ -74,13 +78,18 @@ jobs:
       - name: 发布
         shell: pwsh
         run: |
+          # 全平台 NativeAOT：完整反射元数据保全（Prism/DryIoc），单线程 ILC 更稳
           dotnet publish src/HomeLedger.Desktop/HomeLedger.Desktop.csproj `
             -c Release `
             -f net10.0 `
             -r "${{ matrix.rid }}" `
             --self-contained true `
-            -p:PublishSingleFile=true `
-            -p:IncludeNativeLibrariesForSelfExtract=true `
+            -p:PublishAot=true `
+            -p:PublishTrimmed=true `
+            -p:PublishSingleFile=false `
+            -p:IlcGenerateCompleteTypeMetadata=true `
+            -p:IlcTrimMetadata=false `
+            -p:IlcSingleThreaded=true `
             -p:DebugType=none `
             -p:DebugSymbols=false `
             -p:Version=$env:APP_VERSION `
