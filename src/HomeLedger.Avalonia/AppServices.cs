@@ -33,15 +33,19 @@ public static class AppServices
 
     private static string ResolveDbPath()
     {
-        const string fileName = "ledger.db";
-        var directory = new DirectoryInfo(AppContext.BaseDirectory);
-        while (directory is not null)
+        var directory = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "HomeLedger");
+        var dbPath = Path.Combine(directory, "ledger.db");
+
+        // 旧版把库放在 exe 旁；首次升级时迁移已有数据到应用数据目录。
+        var legacyPath = Path.Combine(AppContext.BaseDirectory, "ledger.db");
+        if (!File.Exists(dbPath) && File.Exists(legacyPath))
         {
-            if (File.Exists(Path.Combine(directory.FullName, "HomeLedger.slnx")))
-                return Path.Combine(directory.FullName, fileName);
-            directory = directory.Parent;
+            Directory.CreateDirectory(directory);
+            File.Copy(legacyPath, dbPath);
         }
 
-        return Path.Combine(AppContext.BaseDirectory, fileName);
+        return dbPath;
     }
 }

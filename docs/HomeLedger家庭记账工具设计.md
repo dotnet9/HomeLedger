@@ -36,7 +36,7 @@ HomeLedger/
 
 ### 数据库位置
 
-开发运行时使用仓库根目录 `ledger.db`；发布后随程序输出到程序目录并由程序直接使用。首次启动自动建库、建表、初始化管理员。
+数据库文件 `ledger.db` 存放在操作系统应用数据目录（通过 `Environment.SpecialFolder.LocalApplicationData` 定位，Windows 为 `%LOCALAPPDATA%\HomeLedger\`），与安装目录无关，不放入代码仓库；首次启动自动建库、建表、初始化管理员，旧版 exe 旁的数据库自动迁移。
 
 ## 2. 数据模型
 

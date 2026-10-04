@@ -19,7 +19,7 @@ dotnet run --project src/HomeLedger.Desktop/HomeLedger.Desktop.csproj -f net10.0
 
 首次启动自动建库并初始化管理员：**admin / admin123**（首次登录需修改密码）。管理员在“成员管理”中为家人创建账号（成员首次登录也会被要求改密）。
 
-数据文件：开发运行时使用仓库根目录 `ledger.db`；发布后使用程序目录旁的 `ledger.db`。
+数据文件：存放在操作系统应用数据目录（Windows 为 `%LOCALAPPDATA%\HomeLedger\ledger.db`），不随安装目录走，也不入仓库；首次启动自动建库，旧版放在 exe 旁的数据库会自动迁移过来。
 
 ### 发布
 

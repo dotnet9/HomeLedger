@@ -428,9 +428,8 @@ FodyWeavers.xsd
 *.msm
 *.msp
 
-# HomeLedger 本地数据库
+# HomeLedger 本地数据库（存放在操作系统应用数据目录，不入仓库）
 *.db
-!/ledger.db
 *.db-journal
 *.db-shm
 *.db-wal
