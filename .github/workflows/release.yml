@@ -113,7 +113,7 @@ jobs:
       - name: 打包 Linux deb 安装包 (linux-arm64)
         if: matrix.rid == 'linux-arm64'
         shell: pwsh
-        run: pwsh scripts/package_linux_deb.ps1 -RuntimeIdentifier 'linux-arm64' -Version $env:APP_VERSION -SourceDirectory 'artifacts/publish/linux-arm64/HomeLedger.Desktop' -Force
+        run: pwsh scripts/package_linux_deb.ps1 -RuntimeIdentifier 'linux-arm64' -Version $env:APP_VERSION -SourceDirectory 'publish/linux-arm64' -Force
 
       - name: 打包 macOS dmg
         if: startsWith(matrix.rid, 'osx-')
