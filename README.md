@@ -63,3 +63,7 @@ dotnet test
 ./publish_win-x64.bat
 ./scripts/build_installer.ps1 -Version 0.1.0
 ```
+
+## 发布
+
+标准发布流程与发布说明规范见 [docs/RELEASE.md](docs/RELEASE.md)。
