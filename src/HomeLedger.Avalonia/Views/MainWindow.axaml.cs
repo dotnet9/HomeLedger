@@ -8,6 +8,7 @@ using Avalonia.Media;
 using HomeLedger.Avalonia.ViewModels;
 using HomeLedger.Core.Models;
 using HomeLedger.Core.Services;
+using CodeWF.Tools.UpdateChecking;
 using System.Diagnostics;
 using System.Reflection;
 
