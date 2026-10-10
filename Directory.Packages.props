@@ -5,7 +5,7 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="CodeWF.Toolkit.Core" Version="1.0.0.0-preview.1" />
+    <PackageVersion Include="CodeWF.Toolkit.Core" Version="1.0.0.1" />
     <!-- Avalonia -->
     <PackageVersion Include="Avalonia" Version="12.1.4" />
     <PackageVersion Include="Avalonia.Desktop" Version="12.1.4" />
