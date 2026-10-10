@@ -7,8 +7,8 @@
   <ItemGroup>
     <PackageVersion Include="CodeWF.Toolkit.Core" Version="1.0.0.0-preview.1" />
     <!-- Avalonia -->
-    <PackageVersion Include="Avalonia" Version="12.1.1" />
-    <PackageVersion Include="Avalonia.Desktop" Version="12.1.1" />
+    <PackageVersion Include="Avalonia" Version="12.1.4" />
+    <PackageVersion Include="Avalonia.Desktop" Version="12.1.4" />
     <PackageVersion Include="Semi.Avalonia" Version="12.1.0.1" />
     <!-- MVVM / DI -->
     <PackageVersion Include="Prism.Avalonia" Version="8.1.97.11073" />
