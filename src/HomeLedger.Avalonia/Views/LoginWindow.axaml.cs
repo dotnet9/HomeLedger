@@ -1,6 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
-using HomeLedger.Avalonia.Controls;
+using CodeWF.Avalonia.Controls.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using HomeLedger.Core.Models;
@@ -11,7 +11,7 @@ using Avalonia.Threading;
 
 namespace HomeLedger.Avalonia.Views;
 
-public partial class LoginWindow : JadeWindow
+public partial class LoginWindow : CodeWFWindow
 {
     public LoginWindow()
     {

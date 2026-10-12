@@ -1,6 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
-using HomeLedger.Avalonia.Controls;
+using CodeWF.Avalonia.Controls.Controls;
 using Avalonia.Interactivity;
 using HomeLedger.Core.Models;
 using Avalonia.Media;
@@ -10,7 +10,7 @@ using Avalonia.Threading;
 namespace HomeLedger.Avalonia.Views.Dialogs;
 
 /// <summary>结算确认：列出将被结转的利息合计。</summary>
-public partial class SettleDialog : JadeWindow
+public partial class SettleDialog : CodeWFWindow
 {
     private readonly long _userId;
     private readonly IReadOnlyList<DepositChainView> _chains;

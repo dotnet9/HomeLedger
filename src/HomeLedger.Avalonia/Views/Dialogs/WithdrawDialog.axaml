@@ -1,4 +1,4 @@
-<jade:JadeWindow xmlns="https://github.com/avaloniaui" xmlns:jade="using:HomeLedger.Avalonia.Controls"
+<codewf:CodeWFWindow xmlns="https://github.com/avaloniaui" xmlns:codewf="https://codewf.com"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="HomeLedger.Avalonia.Views.Dialogs.WithdrawDialog"
         Title="支取存款" Width="420" SizeToContent="Height" CanResize="False"
@@ -22,4 +22,4 @@
             </StackPanel>
         </StackPanel>
     </Border>
-</jade:JadeWindow>
+</codewf:CodeWFWindow>

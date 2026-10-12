@@ -2,7 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Threading;
-using HomeLedger.Avalonia.Controls;
+using CodeWF.Avalonia.Controls.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using HomeLedger.Avalonia.ViewModels;
@@ -14,7 +14,7 @@ using System.Reflection;
 
 namespace HomeLedger.Avalonia.Views;
 
-public partial class MainWindow : JadeWindow
+public partial class MainWindow : CodeWFWindow
 {
     public MainWindow()
     {

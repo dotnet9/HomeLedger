@@ -1,6 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
-using HomeLedger.Avalonia.Controls;
+using CodeWF.Avalonia.Controls.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Layout;
@@ -8,7 +8,7 @@ using Avalonia.Threading;
 
 namespace HomeLedger.Avalonia.Views.Dialogs;
 
-public partial class CreateUserDialog : JadeWindow
+public partial class CreateUserDialog : CodeWFWindow
 {
     public CreateUserDialog()
     {

@@ -1,4 +1,4 @@
-using HomeLedger.Avalonia.Controls;
+using CodeWF.Avalonia.Controls.Controls;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -8,7 +8,7 @@ using Avalonia.Threading;
 
 namespace HomeLedger.Avalonia.Views.Dialogs;
 
-public partial class ChangePasswordDialog : JadeWindow
+public partial class ChangePasswordDialog : CodeWFWindow
 {
     public ChangePasswordDialog()
     {

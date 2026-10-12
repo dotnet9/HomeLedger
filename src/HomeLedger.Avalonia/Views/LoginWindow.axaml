@@ -1,4 +1,4 @@
-<jade:JadeWindow xmlns="https://github.com/avaloniaui" xmlns:jade="using:HomeLedger.Avalonia.Controls"
+<codewf:CodeWFWindow xmlns="https://github.com/avaloniaui" xmlns:codewf="https://codewf.com"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="HomeLedger.Avalonia.Views.LoginWindow"
         Title="HomeLedger 家庭记账" Width="1280" Height="840" MinWidth="960" MinHeight="640"
@@ -77,4 +77,4 @@
             </StackPanel>
         </Border>
     </Grid>
-</jade:JadeWindow>
+</codewf:CodeWFWindow>

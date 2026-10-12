@@ -1,6 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
-using HomeLedger.Avalonia.Controls;
+using CodeWF.Avalonia.Controls.Controls;
 using Avalonia.Interactivity;
 using HomeLedger.Core.Models;
 using Avalonia.Media;
@@ -10,7 +10,7 @@ using Avalonia.Threading;
 namespace HomeLedger.Avalonia.Views.Dialogs;
 
 /// <summary>支取：整链结清或部分支取，剩余本息按原利率续存。</summary>
-public partial class WithdrawDialog : JadeWindow
+public partial class WithdrawDialog : CodeWFWindow
 {
     private readonly long _userId;
     private readonly DepositChainView _chain;

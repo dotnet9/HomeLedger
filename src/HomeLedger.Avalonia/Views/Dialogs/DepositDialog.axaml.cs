@@ -1,6 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
-using HomeLedger.Avalonia.Controls;
+using CodeWF.Avalonia.Controls.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Layout;
@@ -9,7 +9,7 @@ using Avalonia.Threading;
 namespace HomeLedger.Avalonia.Views.Dialogs;
 
 /// <summary>存入存款：金额、日期、年利率（默认 10%，每笔可单独设置）。</summary>
-public partial class DepositDialog : JadeWindow
+public partial class DepositDialog : CodeWFWindow
 {
     private readonly long _userId;
 

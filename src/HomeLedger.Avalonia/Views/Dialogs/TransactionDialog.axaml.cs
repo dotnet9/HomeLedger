@@ -1,6 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
-using HomeLedger.Avalonia.Controls;
+using CodeWF.Avalonia.Controls.Controls;
 using Avalonia.Interactivity;
 using HomeLedger.Core.Models;
 using HomeLedger.Core.Services;
@@ -10,7 +10,7 @@ using Avalonia.Threading;
 
 namespace HomeLedger.Avalonia.Views.Dialogs;
 
-public partial class TransactionDialog : JadeWindow
+public partial class TransactionDialog : CodeWFWindow
 {
     private readonly long _userId;
     private readonly LedgerService _ledger = AppServices.Ledger;
