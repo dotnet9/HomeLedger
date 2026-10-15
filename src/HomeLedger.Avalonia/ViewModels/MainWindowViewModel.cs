@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Threading;
 using HomeLedger.Avalonia.Views.Pages;
 using HomeLedger.Core.Models;
 using Prism.Mvvm;
@@ -28,6 +29,7 @@ public sealed class MainWindowViewModel : BindableBase, IDisposable
     private int _selectedPageIndex;
     private Control? _currentPage;
     private readonly User _user;
+    private bool _disposed;
 
     public MainWindowViewModel(User user)
     {
@@ -84,6 +86,8 @@ public sealed class MainWindowViewModel : BindableBase, IDisposable
 
     private void OnCultureChanged(object? sender, EventArgs args)
     {
+        if (_disposed) return;
+        if (!Dispatcher.UIThread.CheckAccess()) { Dispatcher.UIThread.Post(() => OnCultureChanged(sender, args)); return; }
         RoleText = AppText.Get(_user.Role == Role.Admin ? Language.AdministratorRole : Language.MemberRole);
         RaisePropertyChanged(nameof(RoleText));
         foreach (var page in Pages) page.Refresh();
@@ -100,6 +104,8 @@ public sealed class MainWindowViewModel : BindableBase, IDisposable
 
     public void Dispose()
     {
+        if (_disposed) return;
+        _disposed = true;
         I18nManager.Instance.CultureChanged -= OnCultureChanged;
         if (global::Avalonia.Application.Current is { } app) app.ActualThemeVariantChanged -= OnCultureChanged;
     }

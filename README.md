@@ -2,7 +2,7 @@
 
 Avalonia 桌面家庭记账工具。多家庭成员独立账户、管理员全局汇总；自定义年利率的家庭存款计息（复利结转）；收支记账与图形化报表导出。个人自用，数据本地 SQLite 存储。
 
-当前版本：**0.1.9**。
+当前版本：**0.1.12**。
 
 ## 功能
 
@@ -41,7 +41,7 @@ publish_win-x64.bat
 
 ## 技术栈
 
-.NET 10 · Avalonia 12 · Semi.Avalonia · Ursa · CodeWF.Avalonia 12.1.4.20 · Toolkit 1.0.0.19 · Prism.Core · SQLite + Dapper.AOT · QuestPDF · OpenXML · SkiaSharp
+.NET 10 · Avalonia 12 · Semi.Avalonia · Ursa · CodeWF.Avalonia 12.1.4.24 · Toolkit 1.0.0.19 · Prism.Core · SQLite + Dapper.AOT · QuestPDF · OpenXML · SkiaSharp
 
 ## 测试
 

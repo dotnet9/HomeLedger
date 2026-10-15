@@ -30,13 +30,7 @@ public sealed class AppearanceService : BindableBase
         AppText.Initialize(settings.CultureName);
         _controller = new StudioThemeController(app) { Palette = settings.Palette, Mode = settings.Mode };
         _controller.PropertyChanged += (_, _) => { RaisePropertyChanged(nameof(SelectedMode)); RaisePropertyChanged(nameof(SelectedPalette)); RaisePropertyChanged(nameof(ThemeMode)); Save(); };
-        I18nManager.Instance.CultureChanged += (_, _) =>
-        {
-            foreach (var option in Modes.Concat(Palettes).Concat(Languages)) option.Refresh();
-            RaisePropertyChanged(nameof(SelectedLanguage));
-            ApplyControlCulture();
-            Save();
-        };
+        I18nManager.Instance.CultureChanged += OnCultureChanged;
         ApplyControlCulture();
         _loading = false;
     }
@@ -70,6 +64,15 @@ public sealed class AppearanceService : BindableBase
         }
         catch (Exception error) when (error is IOException or UnauthorizedAccessException or JsonException) { }
         return new();
+    }
+
+    private void OnCultureChanged(object? sender, EventArgs args)
+    {
+        if (!Dispatcher.UIThread.CheckAccess()) { Dispatcher.UIThread.Post(() => OnCultureChanged(sender, args)); return; }
+        foreach (var option in Modes.Concat(Palettes).Concat(Languages)) option.Refresh();
+        RaisePropertyChanged(nameof(SelectedLanguage));
+        ApplyControlCulture();
+        Save();
     }
 
     private void Save()

@@ -78,8 +78,13 @@ Check(ledger.Transactions.All(row => !firstPageIds.Contains(row.Item.Id)) && led
 ledger.PreviousPageCommand.Execute();
 Check(ledger.Transactions.Select(row => row.Item.Id).SequenceEqual(firstPageIds), "Previous page restores the first records");
 ledger.QuickAmountText = "42.70"; ledger.QuickNote = "Keep draft";
-appearance.SelectedLanguage = appearance.Languages[1]; Pump();
+SetBackgroundCulture("en-US");
 Check(ledger.QuickAmountText == "42.70" && ledger.QuickNote == "Keep draft", "Language switching preserves the quick-entry draft");
+Check(AppearanceService.Read(Path.Combine(AppServices.DataDirectory, "appearance.json")).CultureName == "en-US",
+    "Background language change persists the actual appearance preference");
+Check(appearance.SelectedLanguage.Key == "en-US" &&
+      (window.GetVisualDescendants().OfType<TitleBarAppearance>().Single().FindControl<ComboBox>("TitleBarLanguageSelector")!.SelectedItem as AppearanceOption)?.Key == "en-US",
+    "Background language change synchronizes the existing title selector");
 appearance.SelectedLanguage = appearance.Languages[0];
 ledger.QuickAmountText = null; ledger.QuickNote = null;
 ledger.FromDate = new DateTimeOffset(today.AddDays(-30).ToDateTime(TimeOnly.MinValue));
@@ -112,6 +117,8 @@ foreach (var language in appearance.Languages)
     for (var page = 0; page < model.Pages.Count; page++)
     {
         model.SelectedPageIndex = page;
+        SetBackgroundCulture(language.Key == "zh-CN" ? "en-US" : "zh-CN");
+        SetBackgroundCulture(language.Key);
         Capture(window, $"member-{page}-{language.Key}.png");
         CheckLocalized(window);
     }
@@ -146,6 +153,8 @@ foreach (var language in appearance.Languages)
     for (var page = 0; page < model.Pages.Count; page++)
     {
         model.SelectedPageIndex = page;
+        SetBackgroundCulture(language.Key == "zh-CN" ? "en-US" : "zh-CN");
+        SetBackgroundCulture(language.Key);
         Capture(window, $"admin-{page}-{language.Key}.png");
         CheckLocalized(window);
     }
@@ -160,7 +169,7 @@ Check(members.Users.Count == 1 && members.Users[0].DisplayName == "Sam", "Member
 members.Keyword = null;
 Check(members.Users.Count == 3, "Clearing member search restores the complete list");
 Check(settings.GetVisualDescendants().OfType<ComboBox>().Count() == 3, "Appearance exposes three real selectors");
-Capture(settings, "appearance-en-US.png"); settings.Close();
+Capture(settings, "appearance-en-US.png");
 var fake = new FakeUpdates();
 var opened = new List<string>(); var exits = 0;
 using var updates = new UpdateViewModel(fake, opened.Add, () => exits++);
@@ -168,7 +177,7 @@ var metadata = new AboutViewModel(updates);
 var about = new AboutWindow(metadata); about.Show(window); VerifyCaptionCapabilities(about);
 foreach (var language in appearance.Languages)
 {
-    appearance.SelectedLanguage = language;
+    SetBackgroundCulture(language.Key);
     Capture(about, "about-" + language.Key + ".png");
     Check(I18nManager.Instance.Culture.Name == language.Key && (language.Key != "en-US" || about.Title == "About HomeLedger"), "About stays in requested language: " + language.Key);
     Check(about.Title == AppText.Get(Language.AboutTitle), "Existing About updates its title " + language.Key);
@@ -202,7 +211,7 @@ Check(updates.IsBusy && !updates.UpdateCommand.CanExecute(null), "Busy controls 
 updates.Cancel(); Complete(pending); Check(updates.State == UpdateState.Canceled, "Cancellation restores a usable state");
 var closing = new UpdateViewModel(fake, _ => { }, () => { }); pending = closing.CheckAsync(); closing.Dispose(); Complete(pending);
 Check(!closing.UpdateCommand.CanExecute(null), "Closed update model cancels and disables commands");
-about.Close(); window.Close();
+about.Close(); settings.Close(); window.Close();
 File.WriteAllLines(Path.Combine(output, "assertions.txt"), assertions);
 Console.WriteLine($"HomeLedger verification passed: {assertions.Count} assertions; NativeAOT={!RuntimeFeature.IsDynamicCodeSupported}; {output}");
 
@@ -350,10 +359,11 @@ void VerifyControlCulture(Window owner, string[] cultures, Action<string> select
     var menu = editor.ContextFlyout as MenuFlyout ?? throw new InvalidOperationException("Semi editor menu is missing.");
     var semiTheme = Application.Current!.Styles.OfType<Semi.Avalonia.SemiTheme>().Single();
     var ursaTheme = Application.Current.Styles.OfType<Ursa.Themes.Semi.UrsaSemiTheme>().Single();
-    foreach (var direct in new[] { false, true })
+    foreach (var source in new[] { "title selector", "direct manager", "background manager" })
     foreach (var culture in cultures)
     {
-        if (direct) I18nManager.Instance.Culture = System.Globalization.CultureInfo.GetCultureInfo(culture);
+        if (source == "background manager") SetBackgroundCulture(culture);
+        else if (source == "direct manager") I18nManager.Instance.Culture = System.Globalization.CultureInfo.GetCultureInfo(culture);
         else selectTitleBar(culture);
         Pump();
         ResourceDictionary semiText = culture switch
@@ -373,11 +383,11 @@ void VerifyControlCulture(Window owner, string[] cultures, Action<string> select
         Check(((MenuItem)menu.Items[1]!).Header?.ToString() == semiText["STRING_MENU_COPY"]?.ToString() &&
               ((MenuItem)menu.Items[2]!).Header?.ToString() == semiText["STRING_MENU_PASTE"]?.ToString() &&
               editor.Text == "Locale 中文 😀" && semiTheme.Locale?.Name == (culture == "zh-Hant" ? "zh-TW" : culture),
-            "Existing Semi editor copy/paste follows " + (direct ? "direct manager" : "title selector") + ": " + culture);
+            "Existing Semi editor copy/paste follows " + source + ": " + culture);
         menu.Hide();
         Check(ursaTheme.Resources["STRING_MENU_DIALOG_CANCEL"]?.ToString() == ursaText["STRING_MENU_DIALOG_CANCEL"]?.ToString() &&
               ursaTheme.Locale?.Name == (culture == "zh-Hant" ? "zh-CN" : culture == "ja-JP" ? "en-US" : culture),
-            "Actual Ursa locale follows " + (direct ? "direct manager" : "title selector") + ": " + culture);
+            "Actual Ursa locale follows " + source + ": " + culture);
     }
     Application.Current.Resources["STRING_MENU_COPY"] = "宿主复制";
     Application.Current.Resources["STRING_MENU_DIALOG_CANCEL"] = "宿主取消";
@@ -391,6 +401,12 @@ void VerifyControlCulture(Window owner, string[] cultures, Action<string> select
     Application.Current.Resources.Remove("STRING_MENU_DIALOG_CANCEL");
     I18nManager.Instance.Culture = originalCulture; Pump();
     host.Close();
+}
+void SetBackgroundCulture(string culture)
+{
+    Task.Run(() => I18nManager.Instance.Culture = System.Globalization.CultureInfo.GetCultureInfo(culture)).GetAwaiter().GetResult();
+    Pump();
+    Check(I18nManager.Instance.Culture.Name == culture, "Background language change completes with live views: " + culture);
 }
 void Pump()
 {

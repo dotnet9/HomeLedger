@@ -6,8 +6,8 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="CodeWF.Toolkit.Core" Version="1.0.0.19" />
-    <PackageVersion Include="CodeWF.Avalonia.Controls" Version="12.1.4.22" />
-    <PackageVersion Include="CodeWF.Avalonia.Lang" Version="12.1.4.22" />
+    <PackageVersion Include="CodeWF.Avalonia.Controls" Version="12.1.4.24" />
+    <PackageVersion Include="CodeWF.Avalonia.Lang" Version="12.1.4.24" />
     <PackageVersion Include="Irihi.Ursa" Version="2.2.0" />
     <PackageVersion Include="Irihi.Ursa.Themes.Semi" Version="2.2.0" />
     <PackageVersion Include="Avalonia.Headless" Version="12.1.4" />
