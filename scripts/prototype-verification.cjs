@@ -77,6 +77,35 @@ const {pathToFileURL}=require('node:url');
   await frame().locator('.login-card .input').first().fill('member');
   await frame().locator('.login-card .btn.primary').click();
   await frame().waitForFunction(()=>document.documentElement?.dataset.page==='member-ledger.html');
+  for(const width of [960,980,1280]){
+    await page.setViewportSize({width,height:840});
+    await page.locator('iframe').evaluate((element,width)=>element.style.width=width+'px',width);
+    for(const language of ['zh-CN','en-US']){
+      await frame().locator('#title-language summary').click();await frame().locator('[data-title-language="'+language+'"]').click();
+      const fits=await frame().locator('.quick').evaluate(element=>{
+        const area=element.getBoundingClientRect();
+        return [...element.children,...element.querySelectorAll('input,button')].every(field=>{
+          const bounds=field.getBoundingClientRect();
+          return bounds.width>0 && bounds.height>0 && bounds.left>=area.left-1 && bounds.right<=area.right+1 && bounds.top>=area.top-1 && bounds.bottom<=area.bottom+1;
+        });
+      });
+      if(!fits)throw Error('Quick-entry inputs or submit are clipped: '+width+' '+language);
+      if(width===1280 && !await frame().locator('.quick').evaluate(element=>{
+        const fields=[...element.children].map(field=>field.getBoundingClientRect());
+        return fields.every(field=>Math.abs(field.bottom-fields[0].bottom)<1);
+      }))throw Error('Wide quick-entry should remain on one row: '+language);
+      const count=await frame().locator('.records tbody tr').count();
+      await frame().locator('.quick .input.big').fill('1.23');
+      await frame().locator('.quick .field:nth-child(5) .input').fill('Narrow entry '+width+' '+language);
+      await frame().locator('.quick .btn.primary').click();
+      if(await frame().locator('.records tbody tr').count()!==count+1)throw Error('Narrow quick-entry submit failed: '+width+' '+language);
+      await frame().locator('.records tbody tr').first().locator('.btn').last().click();
+      await page.screenshot({path:path.join(output,'quick-entry-'+width+'-'+language+'.png')});
+      results.push('Standalone quick-entry fields and submit fit and work: '+width+' '+language);
+    }
+  }
+  await page.setViewportSize({width:1280,height:840});
+  await page.locator('iframe').evaluate(element=>element.style.width='1280px');
   const recordCount=await frame().locator('.records tbody tr').count();
   await frame().locator('.quick .input.big').fill('65.25');
   await frame().locator('.quick .field:nth-child(5) .input').fill('Offline interaction');

@@ -9,11 +9,11 @@
         <TextBlock Text="{codewf:I18n {x:Static l:Language.QuickEntryDescription}}" FontSize="13" Foreground="{DynamicResource StudioMuted}" Margin="0,-8,0,0"/>
 
         <!-- 快速记账 -->
-        <Border Background="{DynamicResource StudioSurface}" BorderBrush="{DynamicResource StudioBorder}" BorderThickness="1" CornerRadius="16" Padding="18"
+        <Border x:Name="QuickEntryForm" Background="{DynamicResource StudioSurface}" BorderBrush="{DynamicResource StudioBorder}" BorderThickness="1" CornerRadius="16" Padding="18"
                 KeyDown="OnQuickFormKeyDown">
             <StackPanel Spacing="10">
-                <Grid ColumnDefinitions="170,160,150,160,*,120" ColumnSpacing="12">
-                    <StackPanel Spacing="6">
+                <WrapPanel x:Name="QuickEntryFields" Margin="0,0,-12,-10">
+                    <StackPanel Width="170" Spacing="6" Margin="0,0,12,10">
                         <TextBlock Text="{codewf:I18n {x:Static l:Language.Amount}}" FontSize="12" Foreground="{DynamicResource StudioText}"/>
                         <TextBox x:Name="QuickAmountBox"
                                  Text="{Binding QuickAmountText, UpdateSourceTrigger=PropertyChanged}"
@@ -25,7 +25,7 @@
                                  CornerRadius="12"/>
                     </StackPanel>
 
-                    <StackPanel Grid.Column="1" Spacing="6">
+                    <StackPanel Width="160" Spacing="6" Margin="0,0,12,10">
                         <TextBlock Text="{codewf:I18n {x:Static l:Language.Type}}" FontSize="12" Foreground="{DynamicResource StudioText}"/>
                         <Border Height="36" Background="{DynamicResource StudioRaised}" CornerRadius="11" Padding="3">
                             <Border.Styles>
@@ -49,7 +49,7 @@
                         </Border>
                     </StackPanel>
 
-                    <StackPanel Grid.Column="2" Spacing="6">
+                    <StackPanel Width="150" Spacing="6" Margin="0,0,12,10">
                         <TextBlock Text="{codewf:I18n {x:Static l:Language.Category}}" FontSize="12" Foreground="{DynamicResource StudioText}"/>
                         <ComboBox ItemsSource="{Binding QuickCategories}" SelectedIndex="{Binding QuickCategoryIndex}" Height="36" HorizontalAlignment="Stretch">
                             <ComboBox.ItemTemplate>
@@ -60,22 +60,22 @@
                         </ComboBox>
                     </StackPanel>
 
-                    <StackPanel Grid.Column="3" Spacing="6">
+                    <StackPanel Width="160" Spacing="6" Margin="0,0,12,10">
                         <TextBlock Text="{codewf:I18n {x:Static l:Language.Date}}" FontSize="12" Foreground="{DynamicResource StudioText}"/>
                         <CalendarDatePicker SelectedDate="{Binding QuickDate, Converter={StaticResource DateValueConverter}}" Height="36"/>
                     </StackPanel>
 
-                    <StackPanel Grid.Column="4" Spacing="6">
+                    <StackPanel Width="160" Spacing="6" Margin="0,0,12,10">
                         <TextBlock Text="{codewf:I18n {x:Static l:Language.Note}}" FontSize="12" Foreground="{DynamicResource StudioText}"/>
-                        <TextBox Text="{Binding QuickNote, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="{codewf:I18n {x:Static l:Language.Optional}}" Height="36" CornerRadius="10"/>
+                        <TextBox x:Name="QuickNoteBox" Text="{Binding QuickNote, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="{codewf:I18n {x:Static l:Language.Optional}}" Height="36" CornerRadius="10"/>
                     </StackPanel>
 
-                    <StackPanel Grid.Column="5" Spacing="6">
+                    <StackPanel Width="120" Spacing="6" Margin="0,0,12,10">
                         <TextBlock Text=" " FontSize="12"/>
-                        <Button Content="{codewf:I18n {x:Static l:Language.NewTransaction}}" Command="{Binding SaveQuickCommand}" Height="36"
-                                Background="{DynamicResource StudioAccent}" Foreground="White" CornerRadius="10" FontWeight="SemiBold"/>
+                        <Button x:Name="QuickSaveButton" Content="{codewf:I18n {x:Static l:Language.NewTransaction}}" Command="{Binding SaveQuickCommand}" Height="36"
+                                Background="{DynamicResource StudioAccent}" Foreground="White" CornerRadius="10" FontWeight="SemiBold" HorizontalAlignment="Stretch"/>
                     </StackPanel>
-                </Grid>
+                </WrapPanel>
 
                 <TextBlock Text="{Binding QuickMessage}"
                            Foreground="{Binding QuickMessageBrush}"

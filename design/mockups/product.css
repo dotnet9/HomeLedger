@@ -14,7 +14,12 @@ body { margin:0; border-radius:0; box-shadow:none; background:var(--bg); border:
 .input,.select,.btn,.seg,.tag.gray,.pager .pg { background:var(--raised); border-color:var(--border); color:var(--text); }
 .input,.select { min-width:0; }
 .seg .on { background:var(--card); color:var(--jade); }
-.quick { grid-template-columns:170px 160px 150px 160px minmax(80px,1fr) 120px; gap:12px; }
+.quick { display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end; }
+.quick > .field { flex:0 0 160px; }
+.quick > .field:first-child { flex-basis:170px; }
+.quick > .field:nth-child(3) { flex-basis:150px; }
+.quick > .field:nth-child(5) { flex:1 0 130px; }
+.quick > .field:last-child { flex-basis:120px; }
 .toolbar { flex-wrap:wrap; gap:10px; }
 .user { margin-top:auto; }
 .user .role { white-space:normal; }

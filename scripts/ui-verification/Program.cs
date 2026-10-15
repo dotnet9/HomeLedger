@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Headless;
+using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
@@ -56,6 +57,7 @@ VerifyControlCulture(window, ["zh-CN", "en-US"], culture =>
 var model = (MainWindowViewModel)window.DataContext!;
 var ledger = (MemberLedgerPageViewModel)model.CurrentPage!.DataContext!;
 VerifyKindFilterLocalization(model.CurrentPage!, "member");
+VerifyQuickEntryLayout(window, model.CurrentPage!, ledger);
 ledger.QuickAmountText = "123.45";
 ledger.QuickNote = "Headless quick entry";
 ledger.SaveQuickCommand.Execute(null); Pump();
@@ -285,6 +287,39 @@ void VerifyCaptionCapabilities(Window target)
     Check(target.WindowState == WindowState.Normal, "Disabled caption guards programmatic maximization");
     target.CanMinimize = canMinimize; target.CanMaximize = canMaximize; target.WindowState = originalState; Pump();
     Check(minimize.IsEnabled == canMinimize && maximize.IsEnabled == (target.CanResize && canMaximize), "Caption capabilities restore without recreating the host window");
+}
+void VerifyQuickEntryLayout(MainWindow target, Control page, MemberLedgerPageViewModel ledgerModel)
+{
+    var originalWidth = target.Width;
+    var originalLanguage = appearance.SelectedLanguage;
+    var form = page.FindControl<Border>("QuickEntryForm")!;
+    var fields = page.FindControl<WrapPanel>("QuickEntryFields")!;
+    var amount = page.FindControl<TextBox>("QuickAmountBox")!;
+    var note = page.FindControl<TextBox>("QuickNoteBox")!;
+    var save = page.FindControl<Button>("QuickSaveButton")!;
+    foreach (var width in new[] { 960, 980, 1280 })
+    foreach (var language in appearance.Languages)
+    {
+        target.Width = width; appearance.SelectedLanguage = language; Pump();
+        Check(fields.Children.Concat(new Control[] { amount, note, save }).All(field =>
+        {
+            var point = field.TranslatePoint(default, form)!.Value;
+            return point.X >= form.Padding.Left && point.Y >= form.Padding.Top &&
+                   point.X + field.Bounds.Width <= form.Bounds.Width - form.Padding.Right &&
+                   point.Y + field.Bounds.Height <= form.Bounds.Height - form.Padding.Bottom;
+        }), "All quick-entry inputs and submit fit the card: " + width + " " + language.Key);
+        var entryNote = "Narrow entry " + width + " " + language.Key;
+        amount.Text = "1.23"; note.Text = entryNote; Pump();
+        var submitPoint = save.TranslatePoint(new Point(save.Bounds.Width / 2, save.Bounds.Height / 2), target)!.Value;
+        target.MouseDown(submitPoint, MouseButton.Left); target.MouseUp(submitPoint, MouseButton.Left); Pump();
+        Check(ledgerModel.Transactions.Any(row => row.Note == entryNote),
+            "Visible quick-entry button saves the typed amount and note: " + width + " " + language.Key);
+        ledgerModel.Keyword = entryNote; ledgerModel.FilterCommand.Execute();
+        ledgerModel.Transactions.Single().DeleteCommand.Execute(null);
+        ledgerModel.Keyword = null; ledgerModel.FilterCommand.Execute();
+        Capture(target, "quick-entry-" + width + "-" + language.Key + ".png");
+    }
+    target.Width = originalWidth; appearance.SelectedLanguage = originalLanguage; Pump();
 }
 void VerifyKindFilterLocalization(Control page, string role)
 {

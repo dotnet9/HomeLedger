@@ -3,7 +3,7 @@
 验证器启动真实 App 和 Avalonia Headless + Skia，在独立目录创建 SQLite fixture。不会打开普通桌面应用、浏览器或真实安装器。更新服务、浏览器与退出动作均注入替身。
 
 ```powershell
-dotnet test tests/HomeLedger.Core.Tests/HomeLedger.Core.Tests.csproj -c Release
+dotnet test --project tests/HomeLedger.Core.Tests/HomeLedger.Core.Tests.csproj -c Release
 dotnet run --project scripts/ui-verification/UiVerification.csproj -c Release -- E:/github/temp/homeledger/managed
 dotnet publish scripts/ui-verification/UiVerification.csproj -c Release -r win-x64 -p:PublishAot=true -p:IlcGenerateCompleteTypeMetadata=true -p:IlcTrimMetadata=false -p:IlcSingleThreaded=true -p:CompressSymbols=false -o E:/github/temp/homeledger/native
 E:/github/temp/homeledger/native/UiVerification.exe E:/github/temp/homeledger/native-run
@@ -13,7 +13,7 @@ node scripts/prototype-verification.cjs E:/github/temp/homeledger/prototype
 
 原型验证需要可解析的 Playwright 与已安装的 Chromium，只使用 headless 模式。首先将 design/index.html 复制到仅包含该文件的目录，再验证十页导航、语言/主题保留、更新取消、记录增删改和所选存款结算，检查外部请求及脚本异常。
 
-UI 验证器输出 assertions.txt 和 PNG：七个业务页面的双语截图、登录、关于、外观，以及八套配色的浅色/深色快照。185 项断言覆盖真实记账、过滤、软删除、分页、数据隔离、所选存款结算及支取、成员搜索、偏好、版本、作者、图表语言与更新状态；新增真实 Ursa 三态按钮点击、Studio 配色保留、八色直接选择、语言列表及模式提示动态切语、980/1280 标题栏边界。
+UI 验证器输出 assertions.txt 和 PNG：七个业务页面的双语截图、登录、关于、外观，以及八套配色的浅色/深色快照。219 项断言覆盖真实记账、过滤、软删除、分页、数据隔离、所选存款结算及支取、成员搜索、偏好、版本、作者、图表语言与更新状态；包含真实 Ursa 三态按钮点击、Studio 配色保留、八色直接选择、语言列表及模式提示动态切语、980/1280 标题栏边界、实际第三方主题与现有文本框菜单、已选交易类型翻译及管理员成员筛选保持。快速记账另覆盖简体中文和英语下 960/980/1280 宽度的全部字段边界与真实输入、点击保存。
 
 发布程序另有显式 `--verify-runtime <独立临时目录>` 参数，只验证原生代码与 I18n、登录、金额/日期、筛选、结算和支取。运行成功写入 runtime-verification.txt；托管程序拒绝该参数。五个平台工作流均在打包前执行此入口。
 
@@ -21,6 +21,8 @@ UI 验证器输出 assertions.txt 和 PNG：七个业务页面的双语截图、
 
 真实关于窗口增加动态 CanMinimize / CanMaximize 能力、按钮禁用、程序化点击守卫与原状态恢复断言。
 
-2026-10-15 最终验证使用 CodeWF.Avalonia 12.1.4.22、CodeWF.Toolkit 1.0.0.19：托管与 NativeAOT UI 验证均通过 185 项断言；正式产品 0.1.9.0 的 `--verify-runtime` 实际运行通过，覆盖独立 SQLite 数据库的登录、金额、日期、筛选、结算和支取。
+2026-10-16 的 0.1.11 验证使用官方 NuGet 独立缓存中的 CodeWF.Avalonia 12.1.4.22、CodeWF.Toolkit 1.0.0.19：托管与 NativeAOT UI 验证均通过 219 项断言；Core 26 项、离线原型 33 场景与 16 主题及正式产品 `--verify-runtime` 通过。Windows 安装器仅编译并校验 SHA-256，未执行安装器。
+
+历史记录（0.1.9，2026-10-15）：托管与 NativeAOT UI 验证均通过 185 项断言；正式产品 0.1.9.0 的 `--verify-runtime` 实际运行通过，覆盖独立 SQLite 数据库的登录、金额、日期、筛选、结算和支取。
 
 同一正式产品目录通过 Inno Setup 编译生成 `HomeLedger-v0.1.9-win-x64-setup.exe`，58,476,723 字节，SHA256 为 `6337def98098acad5d15df8d76e07f6c0fc5dd5a6e60240e0dfd39126812ffc2`。仅编译并检查安装器，未执行安装；其他系统发布结果以对应 CI 为准。
