@@ -49,3 +49,12 @@ body { margin:0; border-radius:0; box-shadow:none; background:var(--bg); border:
 input { accent-color:var(--jade); }
 th,td { border-color:var(--border); }
 tr:hover td { background:var(--raised); }
+
+/* 单独复制的每一页都保留可见桌面外框。 */
+html{background:#d6d9e0}
+body{width:calc(100vw - 24px);height:calc(100vh - 24px);margin:12px;border-radius:9px;box-shadow:0 10px 30px #0003;position:relative}
+body.maximized{width:100vw;height:100vh;margin:0;border-radius:0}
+.titlebar{padding-right:0;border-bottom:1px solid var(--border);gap:0;flex:none}
+.titlebar .logo{margin-left:2px}.titlebar .wbtn{width:42px;height:31px;border:none;border-radius:0;padding:0;background:transparent;font:13px Segoe UI;color:var(--text-2);cursor:pointer}
+.titlebar .wbtn:focus-visible{outline:2px solid var(--jade);outline-offset:-2px}
+.titlebar>.btn{margin-right:10px}
