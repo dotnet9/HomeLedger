@@ -49,6 +49,7 @@ Session.Current = member;
 var login = new LoginWindow();
 login.Show(); Capture(login, "login-zh-CN.png"); login.Close();
 var window = new MainWindow(); window.Show();
+VerifyTitleBar(window);
 var model = (MainWindowViewModel)window.DataContext!;
 var ledger = (MemberLedgerPageViewModel)model.CurrentPage!.DataContext!;
 ledger.QuickAmountText = "123.45";
@@ -198,6 +199,58 @@ void Check(bool condition, string description)
 {
     if (!condition) throw new InvalidOperationException(description);
     assertions.Add(description); Console.WriteLine("PASS " + description);
+}
+void VerifyTitleBar(MainWindow target)
+{
+    Pump(); target.UpdateLayout();
+    var controls = target.GetVisualDescendants().OfType<TitleBarAppearance>().Single();
+    var toggle = controls.FindControl<Ursa.Controls.ThemeToggleButton>("TitleBarThemeToggle")!;
+    var palettes = controls.FindControl<ListBox>("TitleBarPalettes")!;
+    var languages = controls.FindControl<ComboBox>("TitleBarLanguageSelector")!;
+    var button = toggle.GetVisualDescendants().OfType<Button>().Single(item => item.Name == "PART_ThemeButton");
+    Check(toggle.IsThreeState && palettes.Items.Count == 8, "Title bar has one Ursa three-state control and eight flat palette choices");
+    foreach (var palette in appearance.Palettes)
+    {
+        palettes.SelectedItem = palette; appearance.ThemeMode = StudioThemeMode.System;
+        foreach (var expected in new[] { StudioThemeMode.Light, StudioThemeMode.Dark, StudioThemeMode.System })
+        {
+            Dispatcher.UIThread.RunJobs(); target.UpdateLayout();
+            button.RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
+            Dispatcher.UIThread.RunJobs(); target.UpdateLayout();
+            var stored = AppearanceService.Read(Path.Combine(AppServices.DataDirectory, "appearance.json"));
+            Check(appearance.ThemeMode == expected && stored.Mode == expected && stored.Palette.ToString() == palette.Key,
+                "Actual Ursa click persists mode and preserves palette: " + palette.Key + " " + expected);
+            var dark = expected == StudioThemeMode.Dark || expected == StudioThemeMode.System && Application.Current!.PlatformSettings?.GetColorValues().ThemeVariant == Avalonia.Platform.PlatformThemeVariant.Dark;
+            Check(Application.Current!.RequestedThemeVariant == StudioTheme.GetVariant(Enum.Parse<StudioPalette>(palette.Key), dark),
+                "Ursa scope preserves custom application variant: " + palette.Key + " " + expected);
+        }
+    }
+    foreach (var width in new[] { 980, 1280 })
+    {
+        target.Width = width; Pump(); target.UpdateLayout();
+        languages.IsDropDownOpen = true; Pump();
+        Check(languages.IsDropDownOpen && languages.Items.Count == appearance.Languages.Count, "Language icon opens the complete real list at " + width);
+        foreach (var language in appearance.Languages)
+        {
+            languages.SelectedItem = language; Pump();
+            Check(I18nManager.Instance.Culture.Name == language.Key, "Title language selection activates global culture: " + language.Key);
+            var scope = controls.FindControl<ThemeVariantScope>("TitleBarThemeScope")!;
+            Check(((TextBlock)scope.Resources["STRING_THEME_TOGGLE_SYSTEM"]!).Text == AppText.Get(Language.AppearanceSystem) &&
+                  ((TextBlock)scope.Resources["STRING_THEME_TOGGLE_LIGHT"]!).Text == AppText.Get(Language.AppearanceLight) &&
+                  ((TextBlock)scope.Resources["STRING_THEME_TOGGLE_DARK"]!).Text == AppText.Get(Language.AppearanceDark), "Ursa internal mode tooltips follow selected language: " + language.Key);
+        }
+        languages.IsDropDownOpen = false;
+        Check(toggle.Bounds.Width == 30 && languages.Bounds.Height == 30 && palettes.GetVisualDescendants().OfType<ListBoxItem>().Count() == 8,
+            "All eight color dots keep compact title dimensions at " + width);
+        var left = (Control)target.LeftContent!;
+        var caption = target.GetVisualDescendants().OfType<Button>().Single(item => item.Name == "PART_MinimizeButton");
+        Check(controls.TranslatePoint(default, target)!.Value.X >= left.TranslatePoint(new Point(left.Bounds.Width, 0), target)!.Value.X &&
+              controls.TranslatePoint(new Point(controls.Bounds.Width, 0), target)!.Value.X <= caption.TranslatePoint(default, target)!.Value.X,
+            "Title controls fit between title and caption buttons at " + width);
+        Capture(target, "titlebar-" + width + ".png");
+    }
+    Check(!controls.GetVisualDescendants().OfType<ComboBox>().Any(item => ReferenceEquals(item.ItemsSource, appearance.Palettes)), "Palette dots have no duplicate dropdown");
+    appearance.SelectedLanguage = appearance.Languages[0]; appearance.SelectedPalette = appearance.Palettes[0]; appearance.ThemeMode = StudioThemeMode.Light;
 }
 void Pump()
 {

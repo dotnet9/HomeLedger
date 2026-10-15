@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Media;
 using Avalonia.Threading;
 using CodeWF.Avalonia.Controls.Themes;
 using CodeWF.Toolkit.Lang;
@@ -28,7 +29,7 @@ public sealed class AppearanceService : BindableBase
         var settings = Read(_path);
         AppText.Initialize(settings.CultureName);
         _controller = new StudioThemeController(app) { Palette = settings.Palette, Mode = settings.Mode };
-        _controller.PropertyChanged += (_, _) => { RaisePropertyChanged(nameof(SelectedMode)); RaisePropertyChanged(nameof(SelectedPalette)); Save(); };
+        _controller.PropertyChanged += (_, _) => { RaisePropertyChanged(nameof(SelectedMode)); RaisePropertyChanged(nameof(SelectedPalette)); RaisePropertyChanged(nameof(ThemeMode)); Save(); };
         I18nManager.Instance.CultureChanged += (_, _) =>
         {
             foreach (var option in Modes.Concat(Palettes).Concat(Languages)) option.Refresh();
@@ -55,6 +56,7 @@ public sealed class AppearanceService : BindableBase
     public AppearanceOption SelectedLanguage { get => Languages.Single(x => x.Key == AppText.Culture.Name); set { if (value != null) I18nManager.Instance.Culture = CultureInfo.GetCultureInfo(value.Key); } }
     public string? Error { get => _error; private set => SetProperty(ref _error, value); }
     public StudioThemeController Controller => _controller;
+    public StudioThemeMode ThemeMode { get => _controller.Mode; set => _controller.Mode = value; }
 
     public static AppearanceSettings Read(string path)
     {
@@ -97,6 +99,7 @@ public sealed class AppearanceOption(string key, string resourceKey) : BindableB
 {
     public string Key { get; } = key;
     public string DisplayName => AppText.Get(resourceKey);
+    public IBrush Swatch => Application.Current is { } app && app.TryFindResource("StudioSwatch" + Key, out var value) && value is IBrush brush ? brush : Brushes.Transparent;
     internal void Refresh() => RaisePropertyChanged(nameof(DisplayName));
 }
 public sealed record AppearanceSettings(StudioThemeMode Mode = StudioThemeMode.System, StudioPalette Palette = StudioPalette.DotNet, string CultureName = "zh-CN");

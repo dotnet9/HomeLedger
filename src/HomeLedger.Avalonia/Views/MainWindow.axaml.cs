@@ -13,7 +13,7 @@ public partial class MainWindow : CodeWFWindow
     public MainWindow()
     {
         InitializeComponent();
-        WindowChrome.Apply(this, Language.AppTitle);
+        WindowChrome.Apply(this, Language.AppTitle, themeControls: true);
         var user = Session.Current ?? throw new InvalidOperationException(AppText.Get(Language.NotSignedIn));
         DataContext = new MainWindowViewModel(user);
     }
