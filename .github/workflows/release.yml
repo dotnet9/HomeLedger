@@ -1,6 +1,6 @@
 ﻿name: release
 
-# 推送 v* 标签发布 HomeLedger 全平台安装包（net10.0 单目标，四平台自包含单文件）：
+# 推送 v* 标签发布 HomeLedger 五平台 NativeAOT 安装包：
 # win-x64 用 Inno Setup 生成 setup.exe，linux-x64 生成 deb，macOS 生成 dmg。
 # 首次启动自动建库（ledger.db 位于系统应用数据目录，不入仓库）。
 on:
@@ -46,7 +46,7 @@ jobs:
           - rid: linux-arm64
             os: ubuntu-24.04-arm
           - rid: osx-x64
-            os: macos-14
+            os: macos-15-intel
           - rid: osx-arm64
             os: macos-14
     runs-on: ${{ matrix.os }}
@@ -76,11 +76,11 @@ jobs:
           "version=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
           Write-Host "版本：$version"
 
-      # 与 publish_win-x64.bat 同款参数（自包含单文件，原生库打入），带版本元数据
+      # 与本地发布脚本一致，版本元数据来自标签。
       - name: 发布
         shell: pwsh
         run: |
-          # 全平台 NativeAOT：完整反射元数据保全（Prism/DryIoc），单线程 ILC 更稳
+          # 保留 XAML 绑定元数据，数据库访问由 Dapper.AOT 在编译期生成。
           dotnet publish src/HomeLedger.Desktop/HomeLedger.Desktop.csproj `
             -c Release `
             -f net10.0 `
@@ -92,11 +92,20 @@ jobs:
             -p:IlcGenerateCompleteTypeMetadata=true `
             -p:IlcTrimMetadata=false `
             -p:IlcSingleThreaded=true `
+            -p:CompressSymbols=false `
             -p:DebugType=none `
             -p:DebugSymbols=false `
             -p:Version=$env:APP_VERSION `
             -o "publish/${{ matrix.rid }}"
           if ($LASTEXITCODE -ne 0) { throw "publish failed for ${{ matrix.rid }}" }
+
+      - name: 运行原生程序验证（隔离数据库，无桌面窗口）
+        shell: pwsh
+        run: |
+          $executable = if ('${{ runner.os }}' -eq 'Windows') { 'HomeLedger.Desktop.exe' } else { 'HomeLedger.Desktop' }
+          $path = Join-Path "publish/${{ matrix.rid }}" $executable
+          & $path --verify-runtime (Join-Path $env:RUNNER_TEMP 'homeledger-native-verification')
+          if ($LASTEXITCODE -ne 0) { throw "native runtime verification failed for ${{ matrix.rid }}" }
 
       - name: 清理 pdb/xml
         shell: pwsh
@@ -150,6 +159,10 @@ jobs:
         run: |
           New-Item -ItemType Directory -Path artifacts/release -Force | Out-Null
           Copy-Item -Path "artifacts/macos/*.dmg" -Destination artifacts/release/ -Force
+          Get-ChildItem artifacts/release -Filter *.dmg | ForEach-Object {
+            $sha = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+            "$sha  $($_.Name)" | Set-Content -LiteralPath "$($_.FullName).sha256" -Encoding ASCII
+          }
           Get-ChildItem artifacts/release | ForEach-Object { Write-Host $_.Name }
 
       - name: 上传构建产物
@@ -194,7 +207,7 @@ jobs:
           VERSION: ${{ steps.version.outputs.version }}
           TAG_NAME: ${{ steps.version.outputs.tag_name }}
         run: |
-          # 优先使用手工维护的版本说明，否则退回简单的版本标题
+          # 优先使用精选说明，其次使用附注标签；两者均缺少时终止发布。
           $curated = ".github/release-notes/v$env:VERSION.md"
           $bodyPath = "artifacts/release-body.md"
           New-Item -ItemType Directory -Path (Split-Path -Parent $bodyPath) -Force | Out-Null
@@ -202,17 +215,14 @@ jobs:
             Copy-Item -LiteralPath $curated -Destination $bodyPath -Force
             Write-Host "使用发布说明：$curated"
           }
-                    # 附注 tag 的说明就是发布说明（Release 页直接可读，不点开 tag 也能看到）
-                    git fetch --quiet --tags origin 2>$null
-                    $tagMessage = git tag -l "$env:TAG_NAME" --format='%(contents)'
-                    if (-not [string]::IsNullOrWhiteSpace($tagMessage)) {
-                      $tagMessage | Set-Content -LiteralPath $bodyPath -Encoding utf8
-                      Write-Host "使用附注 tag 说明作为发布说明。"
-                    }
-                    else {
-        
-            "HomeLedger v$env:VERSION" | Set-Content -LiteralPath $bodyPath -Encoding utf8
-            Write-Host "未找到 $curated，将只使用自动生成的变更说明。"
+          else {
+            git fetch --quiet --tags origin 2>$null
+            $tagMessage = git tag -l "$env:TAG_NAME" --format='%(contents)'
+            if (-not [string]::IsNullOrWhiteSpace($tagMessage)) {
+              $tagMessage | Set-Content -LiteralPath $bodyPath -Encoding utf8
+              Write-Host "使用附注 tag 说明作为发布说明。"
+            }
+            else { throw "缺少发布说明：$curated 或附注标签 $env:TAG_NAME" }
           }
 
       - name: 创建 GitHub Release

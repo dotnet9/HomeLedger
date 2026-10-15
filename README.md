@@ -2,6 +2,8 @@
 
 Avalonia 桌面家庭记账工具。多家庭成员独立账户、管理员全局汇总；自定义年利率的家庭存款计息（复利结转）；收支记账与图形化报表导出。个人自用，数据本地 SQLite 存储。
 
+当前版本：**0.1.7**。
+
 ## 功能
 
 - **账号体系**：管理员（只管理不记账）+ 家庭成员每人一账号；成员只能看到自己的账；PBKDF2 密码哈希；首次登录强制改密。
@@ -10,6 +12,8 @@ Avalonia 桌面家庭记账工具。多家庭成员独立账户、管理员全�
 - **全家总览（管理员）**：成员收支对比、月度趋势、分类占比、成员汇总明细（含存款本息）。
 - **报表导出**：CSV / PNG（图表）/ PDF / Word 四格式，成员导出自己的、管理员导出全家（含存款利息）。
 - **数据备份**：一键复制带时间戳的数据库副本。
+- **外观与语言**：共享 StudioThemeController 的系统/浅色/深色模式，八套配色，简体中文/English；偏好自动保存。
+- **关于与更新**：真实版本、构建时间、运行平台、作者、版权与仓库；复用 Toolkit 检查、下载、SHA-256 校验、安装与重试，缺少适配包时打开发布页。
 
 ## 使用
 
@@ -27,7 +31,7 @@ dotnet run --project src/HomeLedger.Desktop/HomeLedger.Desktop.csproj -f net10.0
 publish_win-x64.bat
 ```
 
-产出单文件 `publish/win-x64/HomeLedger.Desktop.exe`。
+产出 NativeAOT 程序 `publish/win-x64/HomeLedger.Desktop.exe` 及其原生依赖、`I18n` 业务资源。分发使用安装包，不能只复制 exe。
 
 ## 利息规则
 
@@ -37,7 +41,7 @@ publish_win-x64.bat
 
 ## 技术栈
 
-.NET 10 · Avalonia 12 · Semi.Avalonia · Prism.Avalonia · SQLite + Dapper · QuestPDF · OpenXML · SkiaSharp
+.NET 10 · Avalonia 12 · Semi.Avalonia · Ursa · CodeWF.Avalonia 12.1.4.20 · Toolkit 1.0.0.19 · Prism.Core · SQLite + Dapper.AOT · QuestPDF · OpenXML · SkiaSharp
 
 ## 测试
 
@@ -47,11 +51,13 @@ dotnet test
 
 覆盖利息计算、结转复利、部分支取、账号与数据隔离、报表组装、CSV 导出。
 
+无桌面界面验证见 [验证说明](scripts/ui-verification/README.md)。发布后的原生程序可显式执行 `HomeLedger.Desktop --verify-runtime <独立临时目录>`；该入口只使用指定目录创建测试数据库，不打开应用窗口。
+
 ## 文档
 
 - [需求文档](docs/HomeLedger家庭记账工具需求.md)
 - [设计文档](docs/HomeLedger家庭记账工具设计.md)
-- [UI 原型](design/README.md)（玉账风格）
+- [单文件离线交互原型](design/index.html)与[界面对照审计](design/FIDELITY.md)
 
 ## CI/CD：自动发布安装包
 

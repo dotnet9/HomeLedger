@@ -4,7 +4,10 @@
 [CmdletBinding()]
 param(
     [string] $RuntimeIdentifier = "win-x64",
-    [string] $Version = ""
+    [string] $Version = "",
+    [string] $OutputDirectory = "",
+    [string] $ArtifactsPath = "",
+    [string] $NuGetConfig = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -20,5 +23,11 @@ if ([string]::IsNullOrWhiteSpace($Version)) {
 }
 Write-Host "发布 $RuntimeIdentifier (Version=$Version)"
 
-dotnet publish (Join-Path $repositoryRoot "src/HomeLedger.Desktop/HomeLedger.Desktop.csproj") -c Release -f net10.0 -r $RuntimeIdentifier --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=none -p:DebugSymbols=false -p:Version=$Version -o (Join-Path $repositoryRoot "artifacts/publish/$RuntimeIdentifier/HomeLedger.Desktop")
+if ([string]::IsNullOrWhiteSpace($OutputDirectory)) { $OutputDirectory = Join-Path $repositoryRoot "publish/$RuntimeIdentifier" }
+$publishArgs = @("publish", (Join-Path $repositoryRoot "src/HomeLedger.Desktop/HomeLedger.Desktop.csproj"), "-c", "Release", "-f", "net10.0", "-r", $RuntimeIdentifier,
+    "--self-contained", "true", "-p:PublishAot=true", "-p:PublishTrimmed=true", "-p:PublishSingleFile=false", "-p:IlcGenerateCompleteTypeMetadata=true",
+    "-p:IlcTrimMetadata=false", "-p:IlcSingleThreaded=true", "-p:CompressSymbols=false", "-p:DebugType=none", "-p:DebugSymbols=false", "-p:Version=$Version", "-o", $OutputDirectory)
+if ($ArtifactsPath) { $publishArgs += @("--artifacts-path", $ArtifactsPath) }
+if ($NuGetConfig) { $publishArgs += @("--configfile", $NuGetConfig) }
+& dotnet @publishArgs
 if ($LASTEXITCODE -ne 0) { throw "publish failed for $RuntimeIdentifier" }

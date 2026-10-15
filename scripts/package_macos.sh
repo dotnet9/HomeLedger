@@ -40,7 +40,7 @@ die() {
 
 resolve_version() {
   local version
-  version="$(sed -n 's:.*<Version>\(.*\)</Version>.*:\1:p' "$ROOT_DIR/Directory.Build.props" | head -n 1)"
+  version="${APP_VERSION:-$(sed -n 's:.*<Version>\(.*\)</Version>.*:\1:p' "$ROOT_DIR/Directory.Build.props" | head -n 1)}"
   [[ -n "$version" ]] || die "Unable to resolve project version from Directory.Build.props."
   echo "$version"
 }
@@ -139,6 +139,8 @@ create_app_bundle() {
   ditto "$publish_dir" "$macos_dir"
   find "$macos_dir" -mindepth 1 -maxdepth 1 ! -name "$EXECUTABLE_NAME" ! -name "*.dylib" -exec mv {} "$resources_dir/" \;
   chmod +x "$macos_dir/$EXECUTABLE_NAME"
+  # 验证迁移后的 bundle 仍能加载 Contents/Resources/I18n，不创建窗口。
+  "$macos_dir/$EXECUTABLE_NAME" --verify-runtime "${RUNNER_TEMP:-$WORK_ROOT}/homeledger-bundle-runtime-$rid" >&2
   create_icon "$resources_dir/$APP_NAME.icns" "$iconset_dir"
   write_info_plist "$contents_dir/Info.plist" "$macos_version"
 
@@ -169,14 +171,14 @@ create_dmg() {
   local app_dir="$3"
 
   local dmg_stage="$WORK_ROOT/dmg-$rid"
-  local dmg_path="$ARTIFACTS_ROOT/$APP_NAME-$version-$rid.dmg"
+  local dmg_path="$ARTIFACTS_ROOT/$APP_NAME-v$version-$rid.dmg"
 
   rm -rf "$dmg_stage" "$dmg_path"
   mkdir -p "$dmg_stage"
   ditto "$app_dir" "$dmg_stage/$APP_NAME.app"
   ln -s /Applications "$dmg_stage/Applications"
 
-  echo "Creating DMG $dmg_path ..."
+  echo "Creating DMG $dmg_path ..." >&2
   hdiutil create \
     -volname "$APP_NAME" \
     -srcfolder "$dmg_stage" \
