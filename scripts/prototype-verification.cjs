@@ -37,8 +37,17 @@ const {pathToFileURL}=require('node:url');
   for(let i=0;i<3;i++)await frame().locator('#title-mode').click();
   await frame().locator('[data-title-palette=Aurora]').click();
   if(await frame().locator('[data-title-palette=Aurora]').getAttribute('aria-pressed')!=='true')throw Error('Title palette did not apply');
-  await frame().locator('#title-language summary').click();await frame().locator('[data-title-language=en-US]').click();
-  if(await frame().locator('html').getAttribute('lang')!=='en-US')throw Error('Title language menu did not apply');
+  for(const language of ['zh-CN','en-US']){
+    await frame().locator('#title-language summary').click();await frame().locator('[data-title-language="'+language+'"]').click();
+    const label=await frame().evaluate(()=>homeLedgerResources[document.documentElement.lang]['HomeLedger.AppearanceLanguage']);
+    if(await frame().locator('html').getAttribute('lang')!==language||await frame().locator('#title-language summary').getAttribute('title')!==label||await frame().locator('#title-language summary').getAttribute('aria-label')!==label)throw Error('Localized language icon failed: '+language);
+    if(await frame().locator('#title-language').evaluate(el=>el.open)||await frame().locator('[data-title-language="'+language+'"]').getAttribute('aria-checked')!=='true')throw Error('Language selection state failed');
+    if((await frame().locator('[data-title-language]').allTextContents()).join('|')!=='简体中文|English')throw Error('Actual language list changed');
+    if(await frame().locator('[data-window=minimize]').getAttribute('aria-label')!==(language==='zh-CN'?'最小化':'Minimize'))throw Error('Caption language did not update');
+  }
+  await frame().locator('#title-language summary').click();await frame().locator('#title-language summary').press('Escape');
+  if(await frame().locator('#title-language').evaluate(el=>el.open))throw Error('Escape did not close language menu');
+  results.push('Language menu uses actual names, localized title/aria, checked selection and Escape closing');
   await page.selectOption('#prototype-page','settings.html');
   await page.frameLocator('iframe').locator('#appearance-language').selectOption('en-US');
   await page.frameLocator('iframe').locator('#appearance-palette').selectOption('Ember');

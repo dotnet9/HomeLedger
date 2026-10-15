@@ -10,9 +10,9 @@
   const extra = {'报表':'MyReports','设置':'AppearanceTitle','图表总览':'ChartsOverview','报表导出':'OpenReports','默认年利率':'DefaultRate','确认':'Save','初始密码':'Password','首次登录请修改密码':'PasswordChangeRequired'};
   for (const [value,key] of Object.entries(extra)) dictionary.set(value, 'HomeLedger.' + key);
 
-  document.querySelectorAll('.titlebar .wbtn').forEach((old,index)=>{const button=document.createElement('button');button.className=old.className;button.textContent=old.textContent;button.type='button';button.dataset.window=['minimize','maximize','close'][index];button.setAttribute('aria-label',['Minimize','Maximize / restore','Close'][index]);button.onclick=()=>{if(index===1)document.body.classList.toggle('maximized');else toast(state.language==='zh-CN'?'原型窗口操作演示':'Prototype window action');};old.replaceWith(button);});
+  document.querySelectorAll('.titlebar .wbtn').forEach((old,index)=>{const button=document.createElement('button');button.className=old.className;button.textContent=old.textContent;button.type='button';button.dataset.window=['minimize','maximize','close'][index];button.onclick=()=>{if(index===1)document.body.classList.toggle('maximized');else toast(state.language==='zh-CN'?'原型窗口操作演示':'Prototype window action');};old.replaceWith(button);});
   const titleControls=document.createElement('div');titleControls.className='studio-title-controls';
-  titleControls.innerHTML='<button id="title-mode" aria-label="Theme mode">◐</button><div class="title-palettes">'+paletteNames.map(key=>'<button data-title-palette="'+key+'"><i></i></button>').join('')+'</div><details id="title-language"><summary aria-label="Language">文ᴬ</summary><div role="menu"></div></details>';
+  titleControls.innerHTML='<button id="title-mode">◐</button><div class="title-palettes">'+paletteNames.map(key=>'<button data-title-palette="'+key+'"><i></i></button>').join('')+'</div><details id="title-language"><summary>文ᴬ</summary><div role="menu"></div></details>';
   document.querySelector('.titlebar .wbtn')?.before(titleControls);
   titleControls.querySelector('#title-mode').onclick=()=>{state.mode=({System:'Light',Light:'Dark',Dark:'System'})[state.mode];apply();};
   titleControls.querySelectorAll('[data-title-palette]').forEach(button=>button.onclick=()=>{state.palette=button.dataset.titlePalette;apply();});
@@ -160,6 +160,9 @@
     document.querySelector('#appearance-palette').value=state.palette;
     document.querySelector('#appearance-language').value=state.language;
     const toggle=document.querySelector('#title-mode');toggle.dataset.mode=state.mode;toggle.textContent=({System:'◐',Light:'☀',Dark:'☾'})[state.mode];toggle.title=text('Appearance'+state.mode);toggle.setAttribute('aria-label',toggle.title);
+    const languageSummary=document.querySelector('#title-language summary');languageSummary.title=text('AppearanceLanguage');languageSummary.setAttribute('aria-label',languageSummary.title);
+    document.querySelector('#title-language [role=menu]').setAttribute('aria-label',languageSummary.title);
+    document.querySelectorAll('[data-window]').forEach(button=>{button.title=({minimize:state.language==='zh-CN'?'最小化':'Minimize',maximize:state.language==='zh-CN'?'最大化 / 还原':'Maximize / restore',close:text('AboutClose')})[button.dataset.window];button.setAttribute('aria-label',button.title);});
     document.querySelectorAll('[data-title-palette]').forEach(button=>{const key=button.dataset.titlePalette;button.title=text('Appearance'+key);button.setAttribute('aria-label',button.title);button.setAttribute('aria-pressed',String(key===state.palette));button.querySelector('i').style.background=window.homeLedgerPalettes[key+'Light']['--jade'];});
     const languages=document.querySelector('#title-language>div');languages.replaceChildren();for(const [code,resource]of Object.entries(resources)){const button=document.createElement('button');button.textContent=resource.language;button.dataset.titleLanguage=code;button.setAttribute('role','menuitemradio');button.setAttribute('aria-checked',String(state.language===code));button.onclick=()=>{state.language=code;apply();document.querySelector('#title-language').open=false;};languages.append(button);}
     updateView();
