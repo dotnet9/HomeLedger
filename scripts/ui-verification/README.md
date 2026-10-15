@@ -20,3 +20,7 @@ UI 验证器输出 assertions.txt 和 PNG：七个业务页面的双语截图、
 全部测试均不能替代真实系统安装体验；当前验证不执行安装器，不测试 macOS 公证与 Linux 桌面环境。
 
 真实关于窗口增加动态 CanMinimize / CanMaximize 能力、按钮禁用、程序化点击守卫与原状态恢复断言。
+
+2026-10-15 最终验证使用 CodeWF.Avalonia 12.1.4.22、CodeWF.Toolkit 1.0.0.19：托管与 NativeAOT UI 验证均通过 185 项断言；正式产品 0.1.9.0 的 `--verify-runtime` 实际运行通过，覆盖独立 SQLite 数据库的登录、金额、日期、筛选、结算和支取。
+
+同一正式产品目录通过 Inno Setup 编译生成 `HomeLedger-v0.1.9-win-x64-setup.exe`，58,476,723 字节，SHA256 为 `6337def98098acad5d15df8d76e07f6c0fc5dd5a6e60240e0dfd39126812ffc2`。仅编译并检查安装器，未执行安装；其他系统发布结果以对应 CI 为准。
