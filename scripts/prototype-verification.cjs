@@ -34,6 +34,15 @@ const {pathToFileURL}=require('node:url');
     results.push('Standalone '+file+': inline resources and route');
   }
   if(!await frame().locator('.studio-title-controls').evaluate(el=>el.getBoundingClientRect().right<=document.querySelector('.titlebar .wbtn').getBoundingClientRect().left))throw Error('Title controls overlap caption buttons');
+  const swatches=async target=>target.locator('[data-title-palette]').evaluateAll(items=>items.map(button=>({key:button.dataset.titlePalette,color:getComputedStyle(button.querySelector('i')).backgroundColor,image:getComputedStyle(button.querySelector('i')).backgroundImage})));
+  const expectedKeys=['DotNet','Aurora','Ember','Default','Aquatic','Desert','Dusk','NightSky'],expectedColors=['rgb(81, 43, 212)',null,'rgb(189, 103, 77)','rgb(0, 100, 250)','rgb(0, 141, 158)','rgb(181, 117, 50)','rgb(122, 92, 196)','rgb(43, 108, 176)'];
+  const fixedSwatches=await swatches(frame());
+  if(JSON.stringify(fixedSwatches.map(item=>item.key))!==JSON.stringify(expectedKeys)||fixedSwatches.some((item,index)=>index===1?!item.image.includes('rgb(137, 104, 255), rgb(38, 212, 204)'):item.color!==expectedColors[index]))throw Error('StudioSwatch .21 fixed colors/order mismatch');
+  const normalWidth=await frame().locator('body').evaluate(el=>el.getBoundingClientRect().width);
+  await frame().locator('[data-window=maximize]').click();if(await frame().locator('body').evaluate(el=>el.getBoundingClientRect().width)<=normalWidth)throw Error('Maximize did not change layout');
+  await frame().locator('[data-window=maximize]').click();if(await frame().locator('body').evaluate(el=>el.getBoundingClientRect().width)!==normalWidth)throw Error('Restore did not recover layout');
+  for(const action of ['minimize','close']){await frame().locator('[data-window='+action+']').click();if(await frame().locator('.titlebar').isVisible()||!await frame().locator('#restore-window').isVisible())throw Error('Window did not hide: '+action);await frame().locator('#restore-window').click();if(!await frame().locator('.titlebar').isVisible())throw Error('Window did not restore/reopen: '+action);}
+  results.push('Actual maximize/restore, minimize/restore and close/reopen preserve the workspace');
   for(let i=0;i<3;i++)await frame().locator('#title-mode').click();
   await frame().locator('[data-title-palette=Aurora]').click();
   if(await frame().locator('[data-title-palette=Aurora]').getAttribute('aria-pressed')!=='true')throw Error('Title palette did not apply');
@@ -103,6 +112,7 @@ const {pathToFileURL}=require('node:url');
     await page.selectOption('#appearance-palette',palette);
     for(const mode of ['Light','Dark']){
       await page.selectOption('#appearance-mode',mode);await page.screenshot({path:path.join(output,`appearance-${palette}-${mode}.png`)});
+      if(JSON.stringify(await swatches(page))!==JSON.stringify(fixedSwatches))throw Error('Palette swatches changed with theme');
     }
   }
   await page.selectOption('#appearance-language','en-US');

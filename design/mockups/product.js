@@ -2,6 +2,8 @@
 (() => {
   const resources = window.homeLedgerResources;
   const paletteNames = ['DotNet','Aurora','Ember','Default','Aquatic','Desert','Dusk','NightSky'];
+  // CodeWF.Avalonia 12.1.4.21 StudioSwatch 固定色卡，不随当前主题 Accent 改变。
+  const paletteSwatches = {DotNet:'#512BD4',Aurora:'linear-gradient(135deg, #8968FF, #26D4CC)',Ember:'#BD674D',Default:'#0064FA',Aquatic:'#008D9E',Desert:'#B57532',Dusk:'#7A5CC4',NightSky:'#2B6CB0'};
   const query = new URLSearchParams(location.search);
   let state = { palette: query.get('palette') || 'DotNet', mode: query.get('mode') || 'Light', language: query.get('language') || query.get('lang') || 'zh-CN' };
   const text = key => resources[state.language]['HomeLedger.' + key] || key;
@@ -10,7 +12,10 @@
   const extra = {'报表':'MyReports','设置':'AppearanceTitle','图表总览':'ChartsOverview','报表导出':'OpenReports','默认年利率':'DefaultRate','确认':'Save','初始密码':'Password','首次登录请修改密码':'PasswordChangeRequired'};
   for (const [value,key] of Object.entries(extra)) dictionary.set(value, 'HomeLedger.' + key);
 
-  document.querySelectorAll('.titlebar .wbtn').forEach((old,index)=>{const button=document.createElement('button');button.className=old.className;button.textContent=old.textContent;button.type='button';button.dataset.window=['minimize','maximize','close'][index];button.onclick=()=>{if(index===1)document.body.classList.toggle('maximized');else toast(state.language==='zh-CN'?'原型窗口操作演示':'Prototype window action');};old.replaceWith(button);});
+  const windowPanel=document.createElement('section');windowPanel.id='prototype-window-state';windowPanel.hidden=true;windowPanel.innerHTML='<p></p><button type="button" id="restore-window"></button>';document.body.append(windowPanel);
+  function renderWindowState(){const closed=document.body.dataset.windowState==='close';windowPanel.querySelector('p').textContent=state.language==='zh-CN'?'HomeLedger '+(closed?'已关闭':'已最小化'):'HomeLedger '+(closed?'is closed':'is minimized');windowPanel.querySelector('button').textContent=state.language==='zh-CN'?(closed?'重新打开':'还原窗口'):(closed?'Reopen':'Restore window');}
+  windowPanel.querySelector('button').onclick=()=>{delete document.body.dataset.windowState;windowPanel.hidden=true;document.querySelector('[data-window=minimize]').focus();};
+  document.querySelectorAll('.titlebar .wbtn').forEach((old,index)=>{const button=document.createElement('button');button.className=old.className;button.textContent=old.textContent;button.type='button';button.dataset.window=['minimize','maximize','close'][index];button.onclick=()=>{if(index===1)document.body.classList.toggle('maximized');else{document.body.dataset.windowState=button.dataset.window;renderWindowState();windowPanel.hidden=false;windowPanel.querySelector('button').focus();}};old.replaceWith(button);});
   const titleControls=document.createElement('div');titleControls.className='studio-title-controls';
   titleControls.innerHTML='<button id="title-mode">◐</button><div class="title-palettes">'+paletteNames.map(key=>'<button data-title-palette="'+key+'"><i></i></button>').join('')+'</div><details id="title-language"><summary>文ᴬ</summary><div role="menu"></div></details>';
   document.querySelector('.titlebar .wbtn')?.before(titleControls);
@@ -163,7 +168,8 @@
     const languageSummary=document.querySelector('#title-language summary');languageSummary.title=text('AppearanceLanguage');languageSummary.setAttribute('aria-label',languageSummary.title);
     document.querySelector('#title-language [role=menu]').setAttribute('aria-label',languageSummary.title);
     document.querySelectorAll('[data-window]').forEach(button=>{button.title=({minimize:state.language==='zh-CN'?'最小化':'Minimize',maximize:state.language==='zh-CN'?'最大化 / 还原':'Maximize / restore',close:text('AboutClose')})[button.dataset.window];button.setAttribute('aria-label',button.title);});
-    document.querySelectorAll('[data-title-palette]').forEach(button=>{const key=button.dataset.titlePalette;button.title=text('Appearance'+key);button.setAttribute('aria-label',button.title);button.setAttribute('aria-pressed',String(key===state.palette));button.querySelector('i').style.background=window.homeLedgerPalettes[key+'Light']['--jade'];});
+    document.querySelectorAll('[data-title-palette]').forEach(button=>{const key=button.dataset.titlePalette;button.title=text('Appearance'+key);button.setAttribute('aria-label',button.title);button.setAttribute('aria-pressed',String(key===state.palette));button.querySelector('i').style.background=paletteSwatches[key];});
+    renderWindowState();
     const languages=document.querySelector('#title-language>div');languages.replaceChildren();for(const [code,resource]of Object.entries(resources)){const button=document.createElement('button');button.textContent=resource.language;button.dataset.titleLanguage=code;button.setAttribute('role','menuitemradio');button.setAttribute('aria-checked',String(state.language===code));button.onclick=()=>{state.language=code;apply();document.querySelector('#title-language').open=false;};languages.append(button);}
     updateView();
   }

@@ -54,6 +54,11 @@ tr:hover td { background:var(--raised); }
 html{background:#d6d9e0}
 body{width:calc(100vw - 24px);height:calc(100vh - 24px);margin:12px;border-radius:9px;box-shadow:0 10px 30px #0003;position:relative}
 body.maximized{width:100vw;height:100vh;margin:0;border-radius:0}
+body[data-window-state]>:not(#prototype-window-state){display:none!important}
+body[data-window-state]{border:0;box-shadow:none}
+#prototype-window-state{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:var(--bg);color:var(--text)}
+#prototype-window-state[hidden]{display:none}
+#restore-window{padding:8px 18px;border:1px solid var(--border);border-radius:6px;background:var(--raised);color:var(--text);cursor:pointer}
 .titlebar{padding-right:0;border-bottom:1px solid var(--border);gap:0;flex:none}
 .titlebar .logo{margin-left:2px}.titlebar .wbtn{width:42px;height:31px;border:none;border-radius:0;padding:0;background:transparent;font:13px Segoe UI;color:var(--text-2);cursor:pointer}
 .titlebar .wbtn:focus-visible{outline:2px solid var(--jade);outline-offset:-2px}
