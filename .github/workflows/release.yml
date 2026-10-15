@@ -103,9 +103,15 @@ jobs:
         shell: pwsh
         run: |
           $executable = if ('${{ runner.os }}' -eq 'Windows') { 'HomeLedger.Desktop.exe' } else { 'HomeLedger.Desktop' }
-          $path = Join-Path "publish/${{ matrix.rid }}" $executable
-          & $path --verify-runtime (Join-Path $env:RUNNER_TEMP 'homeledger-native-verification')
-          if ($LASTEXITCODE -ne 0) { throw "native runtime verification failed for ${{ matrix.rid }}" }
+          $path = (Resolve-Path (Join-Path "publish/${{ matrix.rid }}" $executable)).Path
+          $processInfo = [Diagnostics.ProcessStartInfo]::new($path)
+          $processInfo.UseShellExecute = $false
+          $processInfo.CreateNoWindow = $true
+          $processInfo.ArgumentList.Add('--verify-runtime')
+          $processInfo.ArgumentList.Add((Join-Path $env:RUNNER_TEMP 'homeledger-native-verification'))
+          $process = [Diagnostics.Process]::Start($processInfo)
+          $process.WaitForExit()
+          if ($process.ExitCode -ne 0) { throw "native runtime verification failed: $($process.ExitCode)" }
 
       - name: 清理 pdb/xml
         shell: pwsh
