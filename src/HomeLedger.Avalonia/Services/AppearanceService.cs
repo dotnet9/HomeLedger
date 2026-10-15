@@ -89,9 +89,8 @@ public sealed class AppearanceService : BindableBase
     {
         if (!Dispatcher.UIThread.CheckAccess()) { Dispatcher.UIThread.Post(ApplyControlCulture); return; }
         if (Application.Current is not { } app) return;
-        ResourceDictionary semi = AppText.Culture.Name == "en-US" ? new Semi.Avalonia.Locale.en_us() : new Semi.Avalonia.Locale.zh_cn();
-        ResourceDictionary ursa = AppText.Culture.Name == "en-US" ? new Ursa.Themes.Semi.Locale.en_us() : new Ursa.Themes.Semi.Locale.zh_cn();
-        foreach (var item in semi.Concat(ursa)) app.Resources[item.Key] = item.Value;
+        foreach (var theme in app.Styles.OfType<Semi.Avalonia.SemiTheme>()) theme.Locale = AppText.Culture;
+        foreach (var theme in app.Styles.OfType<Ursa.Themes.Semi.UrsaSemiTheme>()) theme.Locale = AppText.Culture;
     }
 }
 

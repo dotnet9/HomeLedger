@@ -50,8 +50,12 @@ var login = new LoginWindow();
 login.Show(); Capture(login, "login-zh-CN.png"); login.Close();
 var window = new MainWindow(); window.Show();
 VerifyTitleBar(window);
+VerifyControlCulture(window, ["zh-CN", "en-US"], culture =>
+    window.GetVisualDescendants().OfType<TitleBarAppearance>().Single().FindControl<ComboBox>("TitleBarLanguageSelector")!.SelectedItem =
+        appearance.Languages.Single(item => item.Key == culture));
 var model = (MainWindowViewModel)window.DataContext!;
 var ledger = (MemberLedgerPageViewModel)model.CurrentPage!.DataContext!;
+VerifyKindFilterLocalization(model.CurrentPage!, "member");
 ledger.QuickAmountText = "123.45";
 ledger.QuickNote = "Headless quick entry";
 ledger.SaveQuickCommand.Execute(null); Pump();
@@ -129,6 +133,11 @@ window.Close();
 Session.Current = admin;
 window = new MainWindow(); window.Show(); model = (MainWindowViewModel)window.DataContext!;
 appearance.SelectedPalette = appearance.Palettes[0]; appearance.SelectedMode = appearance.Modes[1];
+model.SelectedPageIndex = 1;
+var details = (AdminDetailsPageViewModel)model.CurrentPage!.DataContext!;
+details.MemberFilterIndex = details.Members.ToList().FindIndex(item => item.Id == other.Id);
+VerifyKindFilterLocalization(model.CurrentPage!, "admin");
+Check(details.Members[details.MemberFilterIndex].Id == other.Id, "Language changes preserve the selected admin member filter");
 foreach (var language in appearance.Languages)
 {
     appearance.SelectedLanguage = language;
@@ -276,6 +285,77 @@ void VerifyCaptionCapabilities(Window target)
     Check(target.WindowState == WindowState.Normal, "Disabled caption guards programmatic maximization");
     target.CanMinimize = canMinimize; target.CanMaximize = canMaximize; target.WindowState = originalState; Pump();
     Check(minimize.IsEnabled == canMinimize && maximize.IsEnabled == (target.CanResize && canMaximize), "Caption capabilities restore without recreating the host window");
+}
+void VerifyKindFilterLocalization(Control page, string role)
+{
+    var selector = page.FindControl<ComboBox>("TransactionKindFilter")!;
+    var originalIndex = selector.SelectedIndex;
+    var originalLanguage = appearance.SelectedLanguage;
+    var keys = new[] { Language.AllTypes, Language.Income, Language.Expense };
+    foreach (var index in Enumerable.Range(0, keys.Length))
+    {
+        selector.SelectedIndex = index;
+        foreach (var language in appearance.Languages.Reverse())
+        {
+            appearance.SelectedLanguage = language; Pump();
+            Check(selector.SelectedIndex == index && selector.GetVisualDescendants().OfType<TextBlock>()
+                    .Any(text => text.Text == AppText.Get(keys[index])),
+                "Selected " + role + " transaction filter updates without reselection: " + index + " " + language.Key);
+        }
+    }
+    selector.SelectedIndex = originalIndex;
+    appearance.SelectedLanguage = originalLanguage; Pump();
+}
+void VerifyControlCulture(Window owner, string[] cultures, Action<string> selectTitleBar)
+{
+    var originalCulture = I18nManager.Instance.Culture;
+    var editor = new TextBox { Text = "Locale 中文 😀" };
+    var host = new Window { Content = editor, Width = 340, Height = 110 };
+    host.Show(owner); Pump();
+    var menu = editor.ContextFlyout as MenuFlyout ?? throw new InvalidOperationException("Semi editor menu is missing.");
+    var semiTheme = Application.Current!.Styles.OfType<Semi.Avalonia.SemiTheme>().Single();
+    var ursaTheme = Application.Current.Styles.OfType<Ursa.Themes.Semi.UrsaSemiTheme>().Single();
+    foreach (var direct in new[] { false, true })
+    foreach (var culture in cultures)
+    {
+        if (direct) I18nManager.Instance.Culture = System.Globalization.CultureInfo.GetCultureInfo(culture);
+        else selectTitleBar(culture);
+        Pump();
+        ResourceDictionary semiText = culture switch
+        {
+            "en-US" => new Semi.Avalonia.Locale.en_us(),
+            "zh-Hant" => new Semi.Avalonia.Locale.zh_tw(),
+            "ja-JP" => new Semi.Avalonia.Locale.ja_jp(),
+            _ => new Semi.Avalonia.Locale.zh_cn()
+        };
+        ResourceDictionary ursaText = culture switch
+        {
+            "en-US" => new Ursa.Themes.Semi.Locale.en_us(),
+            "ja-JP" => new Ursa.Themes.Semi.Locale.en_us(),
+            _ => new Ursa.Themes.Semi.Locale.zh_cn()
+        };
+        menu.ShowAt(editor); Pump();
+        Check(((MenuItem)menu.Items[1]!).Header?.ToString() == semiText["STRING_MENU_COPY"]?.ToString() &&
+              ((MenuItem)menu.Items[2]!).Header?.ToString() == semiText["STRING_MENU_PASTE"]?.ToString() &&
+              editor.Text == "Locale 中文 😀" && semiTheme.Locale?.Name == (culture == "zh-Hant" ? "zh-TW" : culture),
+            "Existing Semi editor copy/paste follows " + (direct ? "direct manager" : "title selector") + ": " + culture);
+        menu.Hide();
+        Check(ursaTheme.Resources["STRING_MENU_DIALOG_CANCEL"]?.ToString() == ursaText["STRING_MENU_DIALOG_CANCEL"]?.ToString() &&
+              ursaTheme.Locale?.Name == (culture == "zh-Hant" ? "zh-CN" : culture == "ja-JP" ? "en-US" : culture),
+            "Actual Ursa locale follows " + (direct ? "direct manager" : "title selector") + ": " + culture);
+    }
+    Application.Current.Resources["STRING_MENU_COPY"] = "宿主复制";
+    Application.Current.Resources["STRING_MENU_DIALOG_CANCEL"] = "宿主取消";
+    I18nManager.Instance.Culture = System.Globalization.CultureInfo.GetCultureInfo("zh-CN"); Pump();
+    menu.ShowAt(editor); Pump();
+    Check(((MenuItem)menu.Items[1]!).Header?.ToString() == "宿主复制" &&
+          Application.Current.Resources["STRING_MENU_DIALOG_CANCEL"]?.ToString() == "宿主取消",
+        "Third-party locale changes preserve host resource overrides");
+    menu.Hide();
+    Application.Current.Resources.Remove("STRING_MENU_COPY");
+    Application.Current.Resources.Remove("STRING_MENU_DIALOG_CANCEL");
+    I18nManager.Instance.Culture = originalCulture; Pump();
+    host.Close();
 }
 void Pump()
 {

@@ -119,10 +119,10 @@
                     <CalendarDatePicker SelectedDate="{Binding FromDate, Converter={StaticResource DateValueConverter}}" Width="150" Margin="0,0,10,8"/>
                     <TextBlock Text="~" VerticalAlignment="Center" Foreground="{DynamicResource StudioMuted}"/>
                     <CalendarDatePicker SelectedDate="{Binding ToDate, Converter={StaticResource DateValueConverter}}" Width="150" Margin="0,0,10,8"/>
-                    <ComboBox SelectedIndex="{Binding KindFilterIndex}" MinWidth="120" Margin="0,0,10,8">
-                        <ComboBoxItem Content="{codewf:I18n {x:Static l:Language.AllTypes}}" IsSelected="True"/>
-                        <ComboBoxItem Content="{codewf:I18n {x:Static l:Language.Income}}"/>
-                        <ComboBoxItem Content="{codewf:I18n {x:Static l:Language.Expense}}"/>
+                    <ComboBox x:Name="TransactionKindFilter" ItemsSource="{Binding KindFilterKeys}" SelectedIndex="{Binding KindFilterIndex}" MinWidth="120" Margin="0,0,10,8">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate><TextBlock Text="{codewf:I18n {Binding}}"/></DataTemplate>
+                        </ComboBox.ItemTemplate>
                     </ComboBox>
                     <ComboBox ItemsSource="{Binding FilterCategories}" SelectedIndex="{Binding FilterCategoryIndex}" MinWidth="120">
                         <ComboBox.ItemTemplate>

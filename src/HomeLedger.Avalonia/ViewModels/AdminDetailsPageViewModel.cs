@@ -90,6 +90,8 @@ public sealed class AdminDetailsPageViewModel : BindableBase
 
     public ObservableCollection<UserOptionViewModel> Members { get; } = [];
 
+    public IReadOnlyList<string> KindFilterKeys { get; } = [Language.AllTypes, Language.Income, Language.Expense];
+
     public ObservableCollection<CategoryOptionViewModel> Categories { get; } = [];
 
     public ObservableCollection<AdminTransactionRowViewModel> Transactions { get; } = [];
@@ -223,11 +225,15 @@ public sealed class AdminDetailsPageViewModel : BindableBase
 
     private void LoadMembers()
     {
+        var selectedId = MemberFilterIndex >= 0 && MemberFilterIndex < Members.Count
+            ? Members[MemberFilterIndex].Id
+            : null;
         Members.Clear();
         Members.Add(new UserOptionViewModel(null, AppText.Get(Language.AllMembers)));
         foreach (var user in _auth.ListUsers().Where(u => u.Role == Role.Member).OrderBy(u => u.Id))
             Members.Add(new UserOptionViewModel(user.Id, user.DisplayName));
-        MemberFilterIndex = 0;
+        var selectedIndex = selectedId is null ? 0 : Members.ToList().FindIndex(member => member.Id == selectedId);
+        MemberFilterIndex = selectedIndex >= 0 ? selectedIndex : 0;
     }
 
     private void LoadCategories()

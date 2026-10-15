@@ -121,6 +121,8 @@ public sealed class MemberLedgerPageViewModel : BindableBase
 
     public ObservableCollection<CategoryOptionViewModel> FilterCategories { get; } = [];
 
+    public IReadOnlyList<string> KindFilterKeys { get; } = [Language.AllTypes, Language.Income, Language.Expense];
+
     public ICommand AddCommand { get; }
 
     public ICommand SaveQuickCommand { get; }
