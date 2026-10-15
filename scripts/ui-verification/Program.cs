@@ -154,7 +154,7 @@ var fake = new FakeUpdates();
 var opened = new List<string>(); var exits = 0;
 using var updates = new UpdateViewModel(fake, opened.Add, () => exits++);
 var metadata = new AboutViewModel(updates);
-var about = new AboutWindow(metadata); about.Show(window);
+var about = new AboutWindow(metadata); about.Show(window); VerifyCaptionCapabilities(about);
 foreach (var language in appearance.Languages)
 {
     appearance.SelectedLanguage = language;
@@ -251,6 +251,31 @@ void VerifyTitleBar(MainWindow target)
     }
     Check(!controls.GetVisualDescendants().OfType<ComboBox>().Any(item => ReferenceEquals(item.ItemsSource, appearance.Palettes)), "Palette dots have no duplicate dropdown");
     appearance.SelectedLanguage = appearance.Languages[0]; appearance.SelectedPalette = appearance.Palettes[0]; appearance.ThemeMode = StudioThemeMode.Light;
+}
+void VerifyCaptionCapabilities(Window target)
+{
+    Pump();
+    var minimize = target.GetVisualDescendants().OfType<Button>().Single(button => button.Name == "PART_MinimizeButton");
+    var maximize = target.GetVisualDescendants().OfType<Button>().Single(button => button.Name == "PART_MaximizeRestoreButton");
+    var canMinimize = target.CanMinimize;
+    var canMaximize = target.CanMaximize;
+    var originalState = target.WindowState;
+    target.WindowState = WindowState.Normal;
+    target.CanMinimize = false; Pump();
+    Check(!minimize.IsEnabled, "Actual caption disables minimization when the host forbids it");
+    minimize.RaiseEvent(new global::Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
+    Check(target.WindowState == WindowState.Normal, "Disabled caption also guards programmatic minimization");
+    target.CanMinimize = true; Pump();
+    Check(minimize.IsEnabled, "Runtime minimization capability updates the same caption button");
+    minimize.RaiseEvent(new global::Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
+    Check(target.WindowState == WindowState.Minimized, "Enabled caption minimizes the actual host window");
+    target.WindowState = WindowState.Normal;
+    target.CanMaximize = false; Pump();
+    Check(!maximize.IsEnabled, "Actual caption disables forbidden maximization");
+    maximize.RaiseEvent(new global::Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
+    Check(target.WindowState == WindowState.Normal, "Disabled caption guards programmatic maximization");
+    target.CanMinimize = canMinimize; target.CanMaximize = canMaximize; target.WindowState = originalState; Pump();
+    Check(minimize.IsEnabled == canMinimize && maximize.IsEnabled == (target.CanResize && canMaximize), "Caption capabilities restore without recreating the host window");
 }
 void Pump()
 {
