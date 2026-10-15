@@ -101,6 +101,7 @@ model.SelectedPageIndex = 0;
 foreach (var language in appearance.Languages)
 {
     appearance.SelectedLanguage = language; Pump();
+    Check(I18nManager.Instance.Culture.Name == language.Key, "Requested culture remains active: " + language.Key);
     for (var page = 0; page < model.Pages.Count; page++)
     {
         model.SelectedPageIndex = page;
@@ -157,6 +158,7 @@ foreach (var language in appearance.Languages)
 {
     appearance.SelectedLanguage = language;
     Capture(about, "about-" + language.Key + ".png");
+    Check(I18nManager.Instance.Culture.Name == language.Key && (language.Key != "en-US" || about.Title == "About HomeLedger"), "About stays in requested language: " + language.Key);
     Check(about.Title == AppText.Get(Language.AboutTitle), "Existing About updates its title " + language.Key);
     CheckLocalized(about);
 }
