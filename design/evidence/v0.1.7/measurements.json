@@ -1,0 +1,65 @@
+[
+  {
+    "page": "member-ledger",
+    "viewport": [
+      1280,
+      840
+    ],
+    "mean_absolute_channel_error_0_to_255": 7.482,
+    "limitation": "Different demo data, browser/native controls and window chrome; not a fidelity percentage."
+  },
+  {
+    "page": "member-deposits",
+    "viewport": [
+      1280,
+      840
+    ],
+    "mean_absolute_channel_error_0_to_255": 8.46,
+    "limitation": "Different demo data, browser/native controls and window chrome; not a fidelity percentage."
+  },
+  {
+    "page": "member-report",
+    "viewport": [
+      1280,
+      840
+    ],
+    "mean_absolute_channel_error_0_to_255": 16.746,
+    "limitation": "Different demo data, browser/native controls and window chrome; not a fidelity percentage."
+  },
+  {
+    "page": "admin-overview",
+    "viewport": [
+      1280,
+      840
+    ],
+    "mean_absolute_channel_error_0_to_255": 18.727,
+    "limitation": "Different demo data, browser/native controls and window chrome; not a fidelity percentage."
+  },
+  {
+    "page": "admin-details",
+    "viewport": [
+      1280,
+      840
+    ],
+    "mean_absolute_channel_error_0_to_255": 6.926,
+    "limitation": "Different demo data, browser/native controls and window chrome; not a fidelity percentage."
+  },
+  {
+    "page": "admin-members",
+    "viewport": [
+      1280,
+      840
+    ],
+    "mean_absolute_channel_error_0_to_255": 5.273,
+    "limitation": "Different demo data, browser/native controls and window chrome; not a fidelity percentage."
+  },
+  {
+    "page": "admin-backup",
+    "viewport": [
+      1280,
+      840
+    ],
+    "mean_absolute_channel_error_0_to_255": 4.001,
+    "limitation": "Different demo data, browser/native controls and window chrome; not a fidelity percentage."
+  }
+]

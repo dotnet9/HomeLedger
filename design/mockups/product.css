@@ -1,0 +1,51 @@
+/* 产品原型与共享 Studio 八色三态对齐，保留原卡片和表格结构。 */
+body { margin:0; border-radius:0; box-shadow:none; background:var(--bg); border:1px solid var(--border); }
+.titlebar { height:32px; min-height:32px; background:var(--bg); }
+.titlebar .logo { color:var(--text); font-size:14px; }
+.sidebar { width:210px; min-width:210px; margin:0 0 12px 12px; background:var(--card); padding:12px 10px; }
+.main { padding:16px; }
+.card { background:var(--card); border-color:var(--border); box-shadow:none; }
+.page-title { font-size:21px; }
+.page-title::after { background:var(--jade); }
+.page-sub { margin-bottom:16px; }
+.nav-item.active,.btn.primary { background:var(--jade); box-shadow:none; }
+.nav-item:hover { background:var(--raised); }
+.nav-item { text-decoration:none; }
+.input,.select,.btn,.seg,.tag.gray,.pager .pg { background:var(--raised); border-color:var(--border); color:var(--text); }
+.input,.select { min-width:0; }
+.seg .on { background:var(--card); color:var(--jade); }
+.quick { grid-template-columns:170px 160px 150px 160px minmax(80px,1fr) 120px; gap:12px; }
+.toolbar { flex-wrap:wrap; gap:10px; }
+.user { margin-top:auto; }
+.user .role { white-space:normal; }
+.product-actions { margin-top:auto; display:flex; flex-direction:column; gap:8px; padding-top:20px; }
+.product-actions .btn { border:none; background:transparent; color:var(--jade); text-align:center; justify-content:center; }
+.overlay { display:none; position:absolute; inset:32px 0 0; z-index:20; background:rgba(10,10,20,.38); align-items:center; justify-content:center; }
+.overlay.open { display:flex; }
+.modal { width:620px; max-height:760px; overflow:auto; background:var(--bg); color:var(--text); border:1px solid var(--border); border-radius:12px; box-shadow:0 20px 70px #0004; }
+.modal .m-head,.modal .m-foot { background:var(--bg); border-color:var(--border); }
+.modal .m-body { padding:24px; }
+.m-head .x { cursor:pointer; }
+.about-heading { display:flex; align-items:center; gap:14px; margin-bottom:20px; }
+.about-heading img { width:44px; height:44px; }
+.about-heading h2 { font-size:22px; margin-bottom:5px; }
+.about-info { display:grid; grid-template-columns:100px 1fr; gap:12px 20px; font-size:13px; }
+.about-info dt { color:var(--text-3); }
+.about-info dd { margin:0; overflow-wrap:anywhere; }
+.update-row { display:flex; align-items:center; gap:16px; justify-content:space-between; }
+.update-row p { font-size:12px; color:var(--text-3); margin-top:5px; }
+.update-status { margin-top:12px; font-size:13px; }
+.update-progress { width:100%; accent-color:var(--jade); margin-top:10px; }
+.settings-grid { display:grid; grid-template-columns:120px 1fr; align-items:center; gap:16px; }
+.settings-grid select { padding:10px; color:var(--text); background:var(--raised); border:1px solid var(--border); border-radius:8px; }
+.btn { cursor:pointer; }
+.input[contenteditable] { cursor:text; }
+.input[data-placeholder]:empty::before { content:attr(data-placeholder);color:var(--text-3);pointer-events:none; }
+.prototype-field { display:flex;flex-direction:column;gap:6px;margin-bottom:16px;font-size:13px; }
+.prototype-field input { width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;background:var(--raised);color:var(--text); }
+.prototype-toast { position:absolute; bottom:20px; right:20px; padding:12px 18px; background:var(--card); border:1px solid var(--border); border-radius:10px; font-size:13px; z-index:50; }
+.login-wrap { background:var(--bg) !important; }
+.login-card { background:var(--card) !important; border-color:var(--border) !important; }
+input { accent-color:var(--jade); }
+th,td { border-color:var(--border); }
+tr:hover td { background:var(--raised); }

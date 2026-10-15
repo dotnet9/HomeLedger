@@ -27,8 +27,8 @@ HomeLedger/
 |----|------|------|
 | 运行时 | .NET 10 | 与 Zitie 一致 |
 | UI | Avalonia 12 + Semi.Avalonia | 中文友好、明暗主题 |
-| MVVM | Prism.Avalonia / Prism.DryIoc.Avalonia | 与 Zitie 一致，`BindableBase` + `DelegateCommand` + Prism 应用入口 |
-| 数据库 | SQLite + Microsoft.Data.Sqlite + Dapper | 单文件、零运维 |
+| MVVM | Prism.Core | `BindableBase` + `DelegateCommand`，由标准 Avalonia `Application` 启动 |
+| 数据库 | SQLite + Microsoft.Data.Sqlite + Dapper.AOT | 单文件、零运维；编译期生成查询映射，支持 NativeAOT |
 | 图表 | LiveCharts2 (LiveChartsCore.SkiaSharpView.Avalonia) | UI 展示与 PNG 导出复用 |
 | PDF | QuestPDF | 图文报表排版（非商用免费） |
 | Word | DocumentFormat.OpenXml | 生成 .docx |
@@ -118,7 +118,7 @@ Users 1──* InterestSettlements
 | TotalInterest | TEXT | 利息总额（decimal 字符串） |
 | CreatedBy | INTEGER FK | 操作人（成员自己或管理员代操作） |
 
-金额一律 `TEXT` 存储 decimal（SQLite 无原生 decimal），读写经 Dapper type handler 转换。
+金额一律 `TEXT` 存储 decimal（SQLite 无原生 decimal），由 Microsoft.Data.Sqlite 按固定区域格式读写；日期使用 ISO `yyyy-MM-dd` 文本。Dapper.AOT 在编译期生成参数与结果映射，不依赖运行时注册类型处理器。
 
 ### 2.3 事务与删除
 
