@@ -4,18 +4,19 @@
   <assembly fullname="HomeLedger.Avalonia" preserve="all" />
   <assembly fullname="HomeLedger.Core" preserve="all" />
 
-  <!-- MVVM / DI（Prism/DryIoc 反射敏感） -->
+  <!-- 保留现有 MVVM 命令与绑定模型元数据。 -->
   <assembly fullname="Prism" preserve="all" />
-  <assembly fullname="Prism.Avalonia" preserve="all" />
-  <assembly fullname="Prism.DryIoc.Avalonia" preserve="all" />
-  <assembly fullname="DryIoc" preserve="all" />
 
   <!-- CodeWF 库（XAML 反射绑定） -->
   <assembly fullname="CodeWF.Avalonia.Controls" preserve="all" />
   <assembly fullname="CodeWF.Toolkit.Core" preserve="all" />
+  <assembly fullname="CodeWF.Toolkit.Lang" preserve="all" />
+  <assembly fullname="CodeWF.Avalonia.Lang" preserve="all" />
 
   <!-- 主题库 -->
   <assembly fullname="Semi.Avalonia" preserve="all" />
+  <assembly fullname="Ursa" preserve="all" />
+  <assembly fullname="Ursa.Themes.Semi" preserve="all" />
 
   <!-- Avalonia 渲染与标记 -->
   <assembly fullname="Avalonia" preserve="all" />

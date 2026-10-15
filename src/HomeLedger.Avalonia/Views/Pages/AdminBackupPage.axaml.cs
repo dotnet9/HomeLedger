@@ -21,42 +21,42 @@ public partial class AdminBackupPage : UserControl
         var storage = TopLevelHost.TryGetStorageProvider(this);
         if (storage is null)
         {
-            ShowResult("无法打开目录选择窗口，请稍后重试", false);
+            ShowResult(AppText.Get(Language.FolderPickerUnavailable), false);
             return;
         }
 
         IReadOnlyList<IStorageFolder> folder;
         try
         {
-            folder = await storage.OpenFolderPickerAsync(new FolderPickerOpenOptions { Title = "选择备份目录" });
+            folder = await storage.OpenFolderPickerAsync(new FolderPickerOpenOptions { Title = AppText.Get(Language.ChooseBackupFolder) });
         }
         catch (Exception ex)
         {
-            ShowResult("打开目录选择窗口失败：" + ex.Message, false);
+            ShowResult(AppText.Get(Language.FolderPickerFailed) + ex.Message, false);
             return;
         }
         if (folder.Count == 0) return;
         var target = folder[0].TryGetLocalPath();
         if (target is null)
         {
-            ShowResult("请选择本机磁盘目录后再备份", false);
+            ShowResult(AppText.Get(Language.LocalBackupRequired), false);
             return;
         }
         try
         {
             var file = BackupService.Backup(AppServices.DbPath, target);
-            ShowResult("备份成功：" + file, true);
+            ShowResult(AppText.Get(Language.BackupSucceeded) + file, true);
         }
         catch (Exception ex)
         {
-            ShowResult("备份失败：" + ex.Message, false);
+            ShowResult(AppText.Get(Language.BackupFailed) + ex.Message, false);
         }
     }
 
     private void ShowResult(string message, bool success)
     {
         ResultText.Text = message;
-        ResultText.Foreground = global::Avalonia.Media.Brush.Parse(success ? "#2f9e6e" : "#c4553d");
+        ResultText.Foreground = global::Avalonia.Media.Brush.Parse(success ? "FinanceIncome" : "FinanceExpense");
         ResultText.IsVisible = true;
     }
 }

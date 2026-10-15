@@ -9,15 +9,24 @@ using Prism.Mvvm;
 
 namespace HomeLedger.Avalonia.ViewModels;
 
-public sealed class DepositRowViewModel
+public sealed class DepositRowViewModel : BindableBase
 {
-    public DepositRowViewModel(DepositChainView chain, Func<DepositChainView, Task> withdraw)
+    private bool _isSelected;
+    private readonly Action _selectionChanged;
+    public DepositRowViewModel(DepositChainView chain, Func<DepositChainView, Task> withdraw, Action selectionChanged)
     {
         Chain = chain;
+        _selectionChanged = selectionChanged;
+        _isSelected = chain.IsActive;
         WithdrawCommand = new AsyncDelegateCommand(() => withdraw(Chain));
     }
 
     public DepositChainView Chain { get; }
+    public bool IsSelected
+    {
+        get => _isSelected;
+        set { if (SetProperty(ref _isSelected, value)) _selectionChanged(); }
+    }
 
     public string Principal => Chain.Principal.ToString("0.00");
 
@@ -27,15 +36,15 @@ public sealed class DepositRowViewModel
 
     public string Accrued => Chain.IsActive ? "+" + Chain.AccruedInterest.ToString("0.00") : "—";
 
-    public string Total => Chain.IsActive ? Chain.Total.ToString("0.00") : Chain.ClosedAt is { } d ? $"已结清（{d:yyyy-MM-dd}）" : "已结清";
+    public string Total => Chain.IsActive ? Chain.Total.ToString("0.00") : Chain.ClosedAt is { } d ? AppText.Format(Language.ClosedOn, d) : AppText.Get(Language.Closed);
 
     public string ChainText => Chain.ChainText;
 
-    public string Status => Chain.IsActive ? "计息中" : "已结清";
+    public string Status => Chain.IsActive ? AppText.Get(Language.Accruing) : AppText.Get(Language.Closed);
 
-    public IBrush StatusBg => Chain.IsActive ? SolidColorBrush.Parse("#e3f2ec") : SolidColorBrush.Parse("#f0eee8");
+    public IBrush StatusBg => Chain.IsActive ? HomeLedger.Avalonia.Services.ThemeBrush.Get("FinancePositiveSurface") : HomeLedger.Avalonia.Services.ThemeBrush.Get("StudioRaised");
 
-    public IBrush StatusFg => Chain.IsActive ? SolidColorBrush.Parse("#2f9e6e") : SolidColorBrush.Parse("#99a096");
+    public IBrush StatusFg => Chain.IsActive ? HomeLedger.Avalonia.Services.ThemeBrush.Get("FinanceIncome") : HomeLedger.Avalonia.Services.ThemeBrush.Get("StudioMuted");
 
     public bool CanOperate => Chain.IsActive;
 
@@ -47,14 +56,14 @@ public sealed class SettlementRowViewModel
     public SettlementRowViewModel(Settlement item, string createdByName)
     {
         Item = item;
-        By = "操作人：" + createdByName;
+        By = AppText.Get(Language.CreatedByPrefix) + createdByName;
     }
 
     public Settlement Item { get; }
 
     public string Date => Item.SettledAt.ToString("yyyy-MM-dd");
 
-    public string Count => Item.DepositCount + " 笔";
+    public string Count => Item.DepositCount + AppText.Get(Language.RecordsSuffix);
 
     public string Total => "+" + Item.TotalInterest.ToString("0.00");
 
@@ -80,7 +89,7 @@ public sealed class MemberDepositsPageViewModel : BindableBase
         _auth = auth;
 
         DepositCommand = new AsyncDelegateCommand(DepositAsync);
-        WithdrawFirstCommand = new AsyncDelegateCommand(WithdrawFirstAsync, () => DepositRows.Any(r => r.CanOperate));
+        WithdrawFirstCommand = new AsyncDelegateCommand(WithdrawFirstAsync, () => DepositRows.Any(r => r.CanOperate && r.IsSelected));
         SettleCommand = new AsyncDelegateCommand(SettleAsync, () => CanSettle);
         Refresh();
     }
@@ -138,7 +147,7 @@ public sealed class MemberDepositsPageViewModel : BindableBase
 
         DepositRows.Clear();
         foreach (var chain in _chains)
-            DepositRows.Add(new DepositRowViewModel(chain, WithdrawAsync));
+            DepositRows.Add(new DepositRowViewModel(chain, WithdrawAsync, UpdateSelection));
 
         var active = _chains.Where(c => c.IsActive).ToList();
         var principal = active.Sum(c => c.Principal);
@@ -147,7 +156,7 @@ public sealed class MemberDepositsPageViewModel : BindableBase
         AccruedText = "+" + accrued.ToString("0.00");
         TotalText = (principal + accrued).ToString("0.00");
         ActiveCountText = active.Count.ToString();
-        CanSettle = active.Any(c => c.AccruedInterest > 0);
+        UpdateSelection();
         SettleCommand.RaiseCanExecuteChanged();
         WithdrawFirstCommand.RaiseCanExecuteChanged();
 
@@ -168,7 +177,7 @@ public sealed class MemberDepositsPageViewModel : BindableBase
 
     private async Task WithdrawFirstAsync()
     {
-        var active = _chains.FirstOrDefault(c => c.IsActive);
+        var active = DepositRows.FirstOrDefault(row => row.CanOperate && row.IsSelected)?.Chain;
         if (active is null) return;
         await WithdrawAsync(active);
     }
@@ -182,8 +191,20 @@ public sealed class MemberDepositsPageViewModel : BindableBase
     private async Task SettleAsync()
     {
         if (ShowSettleDialogAsync is null) return;
-        var active = _chains.Where(c => c.IsActive && c.AccruedInterest > 0).ToList();
+        var active = DepositRows.Where(row => row.CanOperate && row.IsSelected && row.Chain.AccruedInterest > 0).Select(row => row.Chain).ToList();
         if (active.Count == 0) return;
         if (await ShowSettleDialogAsync(active)) Refresh();
+    }
+
+    public string DefaultRateText => AppText.Get(Language.DefaultRateValue);
+    public void SelectAll(bool selected)
+    {
+        foreach (var row in DepositRows.Where(row => row.CanOperate)) row.IsSelected = selected;
+    }
+    private void UpdateSelection()
+    {
+        CanSettle = DepositRows.Any(row => row.CanOperate && row.IsSelected && row.Chain.AccruedInterest > 0);
+        SettleCommand.RaiseCanExecuteChanged();
+        WithdrawFirstCommand.RaiseCanExecuteChanged();
     }
 }

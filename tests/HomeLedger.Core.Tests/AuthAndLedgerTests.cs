@@ -37,6 +37,37 @@ public class AuthAndLedgerTests : IDisposable
     }
 
     [Fact]
+    public void AOT映射保持金额日期格式及组合筛选语义()
+    {
+        var previous = System.Globalization.CultureInfo.CurrentCulture;
+        try
+        {
+            System.Globalization.CultureInfo.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("fr-FR");
+            var member = _auth.Login("baba", "123456")!;
+            var category = _ledger.AddCategory(member.Id, "AOT category", TxKind.Expense);
+            var date = new DateOnly(2026, 8, 21);
+            _ledger.AddTransaction(member.Id, TxKind.Expense, 1234.56m, date, category, "mapping keyword");
+            var filter = new TransactionFilter { UserId = member.Id, From = date, To = date,
+                CategoryId = category, Kind = TxKind.Expense, Keyword = "keyword", Limit = 1 };
+            var row = Assert.Single(_ledger.ListTransactions(filter));
+            Assert.Equal(1234.56m, row.Amount);
+            Assert.Equal(date, row.Date);
+            using var connection = _factory.Create();
+            connection.Open();
+            using var command = connection.CreateCommand();
+            command.CommandText = "SELECT Amount, Date FROM Transactions WHERE Id = $id";
+            command.Parameters.AddWithValue("$id", row.Id);
+            using var reader = command.ExecuteReader();
+            Assert.True(reader.Read());
+            Assert.Equal("1234.56", reader.GetString(0));
+            Assert.Equal("2026-08-21", reader.GetString(1));
+            filter.Kind = TxKind.Income;
+            Assert.Empty(_ledger.ListTransactions(filter));
+        }
+        finally { System.Globalization.CultureInfo.CurrentCulture = previous; }
+    }
+
+    [Fact]
     public void 错误密码登录失败()
     {
         Assert.Null(_auth.Login("admin", "wrong"));

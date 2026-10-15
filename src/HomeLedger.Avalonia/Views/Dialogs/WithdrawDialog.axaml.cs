@@ -23,14 +23,13 @@ public partial class WithdrawDialog : CodeWFWindow
     public WithdrawDialog(long userId, DepositChainView chain)
     {
         InitializeComponent();
-        LeftContent = new TextBlock { Text = "支取存款", FontSize = 13, FontWeight = FontWeight.SemiBold,
-            Foreground = Brush.Parse("#2b2f2c"), Margin = new Thickness(14, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center };
+        HomeLedger.Avalonia.Services.WindowChrome.Apply(this, Language.WithdrawDeposit);
         _userId = userId;
         _chain = chain;
         DatePicker.SelectedDate = DateTimeOffset.Now;
-        InfoText.Text = $"存款 {chain.Principal:0.00}（{chain.AnnualRate:0.##}%，起息 {chain.StartDate:yyyy-MM-dd}），"
-            + $"应计利息 {chain.AccruedInterest:0.00}，本息合计 {chain.Total:0.00}";
-        MaxText.Text = $"最多可支取：{chain.Total:0.00}";
+        InfoText.Text = AppText.Format(Language.WithdrawalDetails, chain.Principal, chain.AnnualRate, chain.StartDate)
+            + AppText.Format(Language.WithdrawalTotals, chain.AccruedInterest, chain.Total);
+        MaxText.Text = AppText.Format(Language.WithdrawalMaximum, chain.Total);
         AmountBox.Text = chain.Total.ToString("0.##");
         Dispatcher.UIThread.Post(() =>
         {
@@ -52,7 +51,7 @@ public partial class WithdrawDialog : CodeWFWindow
     {
         if (!decimal.TryParse(AmountBox.Text?.Trim(), out var amount) || amount <= 0)
         {
-            ShowError("请输入正确的支取金额");
+            ShowError(AppText.Get(Language.WithdrawalInvalid));
             AmountBox.Focus();
             AmountBox.SelectAll();
             return;

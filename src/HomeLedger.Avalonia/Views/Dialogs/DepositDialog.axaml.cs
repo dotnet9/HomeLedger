@@ -21,8 +21,7 @@ public partial class DepositDialog : CodeWFWindow
     public DepositDialog(long userId)
     {
         InitializeComponent();
-        LeftContent = new TextBlock { Text = "存入存款", FontSize = 13, FontWeight = FontWeight.SemiBold,
-            Foreground = Brush.Parse("#2b2f2c"), Margin = new Thickness(14, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center };
+        HomeLedger.Avalonia.Services.WindowChrome.Apply(this, Language.AddDeposit);
         _userId = userId;
         DatePicker.SelectedDate = DateTimeOffset.Now;
         RateBox.Text = "10";
@@ -46,14 +45,14 @@ public partial class DepositDialog : CodeWFWindow
     {
         if (!decimal.TryParse(AmountBox.Text?.Trim(), out var amount) || amount <= 0)
         {
-            ShowError("请输入正确的金额");
+            ShowError(AppText.Get(Language.AmountInvalid));
             AmountBox.Focus();
             AmountBox.SelectAll();
             return;
         }
         if (!decimal.TryParse(RateBox.Text?.Trim(), out var rate) || rate is < 0 or > 100)
         {
-            ShowError("年利率需在 0 ~ 100 之间（百分数，如 10 表示 10%）");
+            ShowError(AppText.Get(Language.RateInvalid));
             RateBox.Focus();
             RateBox.SelectAll();
             return;

@@ -27,7 +27,7 @@ public partial class AdminOverviewPage : UserControl
     private void OnYearChanged(object? sender, SelectionChangedEventArgs e) => Refresh();
 
 
-    private void Refresh()
+    public void Refresh()
     {
         if (YearBox.SelectedItem is null) return;
         var (from, to) = Range();
@@ -37,18 +37,27 @@ public partial class AdminOverviewPage : UserControl
         BalanceText.Text = summary.Balance.ToString("0.00");
 
         var monthly = AppServices.Ledger.MonthlySummary(null, from, to);
-        BarChart.Items = monthly.Select(m => new Controls.BarItem(m.Month[5..] + "月", (double)m.Income, (double)m.Expense)).ToList();
+        BarChart.Items = monthly.Select(m => new Controls.BarItem(DateTime.ParseExact(m.Month, "yyyy-MM", System.Globalization.CultureInfo.InvariantCulture).ToString("MMM", AppText.Culture), (double)m.Income, (double)m.Expense)).ToList();
 
         var categories = AppServices.Ledger.CategorySummary(null, from, to, Core.Models.TxKind.Expense);
         Donut.Items = categories.Select((c, i) => new Controls.DonutItem(c.Category, (double)c.Amount, Palette[i % Palette.Length])).ToList();
         CategoryList.ItemsSource = categories.Select((c, i) => new
         {
             Color = global::Avalonia.Media.Brush.Parse(Palette[i % Palette.Length]),
-            Label = c.Category,
+            Label = AppText.Category(c.Category),
             Value = c.Amount.ToString("0.00"),
         }).ToList();
 
         var today = DateOnly.FromDateTime(DateTime.Today);
+        var comparison = AppServices.Ledger.MemberSummary(new(today.Year, today.Month, 1), today).ToList();
+        var maximum = comparison.Count == 0 ? 1m : Math.Max(1m, comparison.Max(item => Math.Max(item.Income, item.Expense)));
+        MemberComparison.ItemsSource = comparison.Select(item => new
+        {
+            Name = item.DisplayName,
+            IncomeValue = (double)(item.Income / maximum * 100m),
+            ExpenseValue = (double)(item.Expense / maximum * 100m),
+            TotalText = item.Income.ToString("0.00") + " / " + item.Expense.ToString("0.00")
+        }).ToList();
         var rows = AppServices.Ledger.MemberSummary(from, to).Select(m =>
         {
             var (p, a) = AppServices.Deposits.Totals(m.UserId, today);
@@ -69,12 +78,17 @@ public partial class AdminOverviewPage : UserControl
         DepositTotalText.Text = (tp + ta).ToString("0.00");
     }
 
+    private void OnOpenDetails(object? sender, RoutedEventArgs args)
+    {
+        if (TopLevelHost.GetOwnerWindow(this).DataContext is HomeLedger.Avalonia.ViewModels.MainWindowViewModel model) model.SelectedPageIndex = 1;
+    }
+
     private async Task<string?> PickFile(string ext)
     {
         var storage = TopLevelHost.TryGetStorageProvider(this);
         if (storage is null)
         {
-            ShowStatus("无法打开文件保存窗口，请稍后重试", "#c4553d");
+            ShowStatus(AppText.Get(Language.SavePickerUnavailable), "FinanceExpense");
             return null;
         }
 
@@ -84,30 +98,30 @@ public partial class AdminOverviewPage : UserControl
         {
             file = await storage.SaveFilePickerAsync(new FilePickerSaveOptions
             {
-                SuggestedFileName = $"HomeLedger-全家-{SelectedYear}",
+                SuggestedFileName = AppText.Format(Language.FamilyFileName, SelectedYear),
                 FileTypeChoices = [fileType],
             });
         }
         catch (Exception ex)
         {
-            ShowStatus("打开保存窗口失败：" + ex.Message, "#c4553d");
+            ShowStatus(AppText.Get(Language.SavePickerFailed) + ex.Message, "FinanceExpense");
             return null;
         }
         if (file is null) return null;
 
         var path = file.TryGetLocalPath();
         if (path is null)
-            ShowStatus("请选择本机磁盘路径后再导出", "#c4553d");
+            ShowStatus(AppText.Get(Language.LocalExportRequired), "FinanceExpense");
         return path;
     }
 
     private async Task ExportAsync(string ext, Action<ReportModel, string> writer)
     {
         var (from, to) = Range();
-        var model = AppServices.Reports.Build(null, from, to, "全家");
+        var model = AppServices.Reports.Build(null, from, to, AppText.Get(Language.WholeFamily));
         if (!HasReportData(model))
         {
-            ShowStatus($"{SelectedYear} 年没有可导出的财务数据", "#a97822");
+            ShowStatus(AppText.Format(Language.NoFinancialData, SelectedYear), "#a97822");
             return;
         }
 
@@ -118,11 +132,11 @@ public partial class AdminOverviewPage : UserControl
         {
             var final = Path.ChangeExtension(path, ext);
             writer(model, final);
-            ShowStatus("已导出：" + final, "#2f9e6e");
+            ShowStatus(AppText.Get(Language.ExportSucceeded) + final, "FinanceIncome");
         }
         catch (Exception ex)
         {
-            ShowStatus("导出失败：" + ex.Message, "#c4553d");
+            ShowStatus(AppText.Get(Language.ExportFailed) + ex.Message, "FinanceExpense");
         }
     }
 
@@ -154,7 +168,7 @@ public partial class AdminOverviewPage : UserControl
     private void ShowStatus(string message, string color)
     {
         StatusText.Text = message;
-        StatusText.Foreground = Brush.Parse(color);
+        StatusText.Foreground = HomeLedger.Avalonia.Services.ThemeBrush.Get(color);
         StatusText.IsVisible = true;
     }
 }

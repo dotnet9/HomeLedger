@@ -15,7 +15,7 @@ public sealed class UserOptionViewModel
     public UserOptionViewModel(long? id, string name)
     {
         Id = id;
-        Name = name;
+        Name = AppText.Category(name);
     }
 
     public long? Id { get; }
@@ -37,13 +37,13 @@ public sealed class AdminTransactionRowViewModel
 
     public string DateText => Item.Date.ToString("yyyy-MM-dd");
 
-    public string KindText => Item.Kind == TxKind.Income ? "收入" : "支出";
+    public string KindText => Item.Kind == TxKind.Income ? AppText.Get(Language.Income) : AppText.Get(Language.Expense);
 
-    public IBrush KindBg => Item.Kind == TxKind.Income ? SolidColorBrush.Parse("#e3f2ec") : SolidColorBrush.Parse("#f9e9e4");
+    public IBrush KindBg => Item.Kind == TxKind.Income ? HomeLedger.Avalonia.Services.ThemeBrush.Get("FinancePositiveSurface") : HomeLedger.Avalonia.Services.ThemeBrush.Get("FinanceNegativeSurface");
 
-    public IBrush KindFg => Item.Kind == TxKind.Income ? SolidColorBrush.Parse("#2f9e6e") : SolidColorBrush.Parse("#c4553d");
+    public IBrush KindFg => Item.Kind == TxKind.Income ? HomeLedger.Avalonia.Services.ThemeBrush.Get("FinanceIncome") : HomeLedger.Avalonia.Services.ThemeBrush.Get("FinanceExpense");
 
-    public string CategoryName => string.IsNullOrWhiteSpace(Item.CategoryName) ? "未分类" : Item.CategoryName;
+    public string CategoryName => string.IsNullOrWhiteSpace(Item.CategoryName) ? AppText.Get(Language.Uncategorized) : AppText.Category(Item.CategoryName);
 
     public string AmountText => (Item.Kind == TxKind.Income ? "+" : "-") + Item.Amount.ToString("0.00");
 
@@ -157,7 +157,14 @@ public sealed class AdminDetailsPageViewModel : BindableBase
 
     public bool HasStatusMessage => !string.IsNullOrWhiteSpace(StatusMessage);
 
-    public IBrush StatusBrush => _isStatusError ? SolidColorBrush.Parse("#c4553d") : SolidColorBrush.Parse("#2f9e6e");
+    public IBrush StatusBrush => _isStatusError ? HomeLedger.Avalonia.Services.ThemeBrush.Get("FinanceExpense") : HomeLedger.Avalonia.Services.ThemeBrush.Get("FinanceIncome");
+
+    public void RefreshLocalization()
+    {
+        LoadMembers();
+        LoadCategories();
+        Refresh();
+    }
 
     public void Refresh()
     {
@@ -181,13 +188,13 @@ public sealed class AdminDetailsPageViewModel : BindableBase
         Transactions.Clear();
         foreach (var item in items)
         {
-            var memberName = _memberNames.GetValueOrDefault(item.UserId, $"成员 {item.UserId}");
+            var memberName = _memberNames.GetValueOrDefault(item.UserId, AppText.Format(Language.MemberNumber, item.UserId));
             Transactions.Add(new AdminTransactionRowViewModel(item, memberName));
         }
 
         var income = items.Where(i => i.Kind == TxKind.Income).Sum(i => i.Amount);
         var expense = items.Where(i => i.Kind == TxKind.Expense).Sum(i => i.Amount);
-        SummaryText = $"共 {items.Count} 条 · 收入 {income:0.00} · 支出 {expense:0.00} · 结余 {income - expense:0.00}";
+        SummaryText = AppText.Format(Language.DetailsSummary, items.Count, income, expense, income - expense);
         ExportCsvCommand.RaiseCanExecuteChanged();
     }
 
@@ -200,24 +207,24 @@ public sealed class AdminDetailsPageViewModel : BindableBase
         try
         {
             var sb = new StringBuilder();
-            sb.AppendLine("成员,日期,类型,分类,金额,备注");
+            sb.AppendLine(AppText.Get(Language.DetailsCsvHeader));
             foreach (var row in Transactions)
             {
                 sb.AppendLine($"{Escape(row.MemberName)},{row.DateText},{row.KindText},{Escape(row.CategoryName)},{row.Item.Amount:0.00},{Escape(row.Note)}");
             }
             File.WriteAllText(path, sb.ToString(), new UTF8Encoding(true));
-            ShowStatus("已导出当前明细", false);
+            ShowStatus(AppText.Get(Language.DetailsExported), false);
         }
         catch (Exception ex)
         {
-            ShowStatus("导出失败：" + ex.Message, true);
+            ShowStatus(AppText.Get(Language.ExportFailed) + ex.Message, true);
         }
     }
 
     private void LoadMembers()
     {
         Members.Clear();
-        Members.Add(new UserOptionViewModel(null, "全部成员"));
+        Members.Add(new UserOptionViewModel(null, AppText.Get(Language.AllMembers)));
         foreach (var user in _auth.ListUsers().Where(u => u.Role == Role.Member).OrderBy(u => u.Id))
             Members.Add(new UserOptionViewModel(user.Id, user.DisplayName));
         MemberFilterIndex = 0;
@@ -231,7 +238,7 @@ public sealed class AdminDetailsPageViewModel : BindableBase
         var kind = KindFilterIndex switch { 1 => TxKind.Income, 2 => TxKind.Expense, _ => (TxKind?)null };
 
         Categories.Clear();
-        Categories.Add(new CategoryOptionViewModel(null, "全部分类"));
+        Categories.Add(new CategoryOptionViewModel(null, AppText.Get(Language.AllCategories)));
         foreach (var category in _ledger.ListAllCategories(kind).GroupBy(c => new { c.Id, c.Name }).Select(g => g.First()))
             Categories.Add(new CategoryOptionViewModel(category.Id, category.Name));
 

@@ -1,16 +1,16 @@
 <codewf:CodeWFWindow xmlns="https://github.com/avaloniaui" xmlns:codewf="https://codewf.com"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:l="using:HomeLedger.Core.I18n" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="HomeLedger.Avalonia.Views.LoginWindow"
-        Title="HomeLedger 家庭记账" Width="1280" Height="840" MinWidth="960" MinHeight="640"
+        Title="{codewf:I18n {x:Static l:Language.AppTitle}}" Width="1280" Height="840" MinWidth="960" MinHeight="640"
         Icon="avares://HomeLedger.Avalonia/Assets/logo.ico"
         WindowStartupLocation="CenterScreen" CanResize="True"
-        Background="#f7f5f0">
+        Background="{DynamicResource StudioBackground}">
     <Grid>
         <Grid.Background>
             <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-                <GradientStop Color="#eef2ea" Offset="0" />
-                <GradientStop Color="#f7f5f0" Offset="0.42" />
-                <GradientStop Color="#f3efe6" Offset="1" />
+                <GradientStop Color="{DynamicResource StudioBackgroundColor}" Offset="0" />
+                <GradientStop Color="{DynamicResource StudioBackgroundColor}" Offset="0.42" />
+                <GradientStop Color="{DynamicResource StudioBackgroundColor}" Offset="1" />
             </LinearGradientBrush>
         </Grid.Background>
 
@@ -21,11 +21,11 @@
             <Ellipse Canvas.Left="1100" Canvas.Top="588" Width="90" Height="90" Stroke="#1fd9a441" StrokeThickness="10" />
         </Canvas>
 
-        <Border Width="384"
+        <Border Width="440"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
-                Background="White"
-                BorderBrush="#e9e5dc"
+                Background="{DynamicResource StudioSurface}"
+                BorderBrush="{DynamicResource StudioBorder}"
                 BorderThickness="1"
                 CornerRadius="20"
                 Padding="36,38,36,28"
@@ -35,45 +35,45 @@
                     <Border Width="44" Height="44" CornerRadius="10">
                         <Border.Background>
                             <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-                                <GradientStop Color="#147d64" Offset="0"/>
-                                <GradientStop Color="#3aa08a" Offset="1"/>
+                                <GradientStop Color="{DynamicResource StudioAccentColor}" Offset="0"/>
+                                <GradientStop Color="{DynamicResource StudioAccentColor}" Offset="1"/>
                             </LinearGradientBrush>
                         </Border.Background>
                         <TextBlock Text="¥" FontSize="22" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
-                    <TextBlock Text="家庭记账" FontSize="20" FontWeight="Bold" VerticalAlignment="Center"/>
+                    <TextBlock Text="{codewf:I18n {x:Static l:Language.FamilyLedger}}" FontSize="20" FontWeight="Bold" VerticalAlignment="Center"/>
                 </StackPanel>
-                <TextBlock Text="HomeLedger · 记录一家人的收入与支出" FontSize="13" Foreground="#99a096" Margin="56,0,0,26"/>
+                <TextBlock Text="{codewf:I18n {x:Static l:Language.Tagline}}" FontSize="13" Foreground="{DynamicResource StudioMuted}" Margin="0,0,0,26" TextWrapping="Wrap"/>
 
-                <Border Background="#fff7e8" BorderBrush="#ffe1ba" BorderThickness="1" CornerRadius="10" Padding="10,9" Margin="0,0,0,16">
-                    <TextBlock Text="首次登录或被重置密码后，需先设置新密码。" FontSize="12" Foreground="#a97822" TextWrapping="Wrap"/>
+                <Border Background="{DynamicResource StudioRaised}" BorderBrush="{DynamicResource StudioBorder}" BorderThickness="1" CornerRadius="10" Padding="10,9" Margin="0,0,0,16">
+                    <TextBlock Text="{codewf:I18n {x:Static l:Language.FirstLoginHint}}" FontSize="12" Foreground="{DynamicResource StudioAccent}" TextWrapping="Wrap"/>
                 </Border>
 
-                <TextBlock Text="用户名" FontSize="12" Foreground="#5a6058" Margin="0,0,0,6"/>
-                <TextBox x:Name="UsernameBox" PlaceholderText="用户名" Height="40" Margin="0,0,0,16" CornerRadius="10"
+                <TextBlock Text="{codewf:I18n {x:Static l:Language.Username}}" FontSize="12" Foreground="{DynamicResource StudioText}" Margin="0,0,0,6"/>
+                <TextBox x:Name="UsernameBox" PlaceholderText="{codewf:I18n {x:Static l:Language.Username}}" Height="40" Margin="0,0,0,16" CornerRadius="10"
                          TextChanged="OnLoginInputChanged"
                          KeyDown="OnUsernameKeyDown"/>
 
-                <TextBlock Text="密码" FontSize="12" Foreground="#5a6058" Margin="0,0,0,6"/>
-                <TextBox x:Name="PasswordBox" PlaceholderText="密码" Height="40" Margin="0,0,0,6" CornerRadius="10" PasswordChar="●"
+                <TextBlock Text="{codewf:I18n {x:Static l:Language.Password}}" FontSize="12" Foreground="{DynamicResource StudioText}" Margin="0,0,0,6"/>
+                <TextBox x:Name="PasswordBox" PlaceholderText="{codewf:I18n {x:Static l:Language.Password}}" Height="40" Margin="0,0,0,6" CornerRadius="10" PasswordChar="●"
                          TextChanged="OnLoginInputChanged"/>
 
-                <Button x:Name="LoginButton" Content="登 录" Click="OnLogin" Height="40" Margin="0,6,0,0"
+                <Button x:Name="LoginButton" Content="{codewf:I18n {x:Static l:Language.Login}}" Click="OnLogin" Height="40" Margin="0,6,0,0"
                         HorizontalAlignment="Stretch" Foreground="White" CornerRadius="10" FontWeight="Bold" FontSize="14"
                         IsDefault="True" IsEnabled="False">
                     <Button.Background>
                         <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-                            <GradientStop Color="#147d64" Offset="0"/>
-                            <GradientStop Color="#1d9379" Offset="1"/>
+                            <GradientStop Color="{DynamicResource StudioAccentColor}" Offset="0"/>
+                            <GradientStop Color="{DynamicResource StudioAccentColor}" Offset="1"/>
                         </LinearGradientBrush>
                     </Button.Background>
                 </Button>
 
-                <TextBlock x:Name="HintText" TextWrapping="Wrap" FontSize="12" Foreground="#c4553d"
+                <TextBlock x:Name="HintText" TextWrapping="Wrap" FontSize="12" Foreground="{DynamicResource FinanceExpense}"
                            IsVisible="False" Margin="0,12,0,0"/>
 
-                <TextBlock Text="数据保存在本机 · 家庭内部使用"
-                           FontSize="11" Foreground="#99a096" HorizontalAlignment="Center" Margin="0,22,0,0"/>
+                <TextBlock Text="{codewf:I18n {x:Static l:Language.LocalDataHint}}"
+                           FontSize="12" Foreground="{DynamicResource StudioMuted}" HorizontalAlignment="Center" Margin="0,22,0,0"/>
             </StackPanel>
         </Border>
     </Grid>

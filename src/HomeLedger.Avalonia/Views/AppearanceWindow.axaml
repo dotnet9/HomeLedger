@@ -1,0 +1,25 @@
+<codewf:CodeWFWindow xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:codewf="https://codewf.com" xmlns:l="using:HomeLedger.Core.I18n"
+    x:Class="HomeLedger.Avalonia.Views.AppearanceWindow" Width="460" Height="370" MinWidth="420"
+    Title="{codewf:I18n {x:Static l:Language.AppearanceTitle}}" WindowStartupLocation="CenterOwner"
+    Background="{DynamicResource StudioBackground}">
+    <StackPanel Margin="26" Spacing="16">
+        <TextBlock FontSize="22" FontWeight="SemiBold" Text="{codewf:I18n {x:Static l:Language.AppearanceTitle}}" />
+        <Grid ColumnDefinitions="120,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="12" RowSpacing="16">
+            <TextBlock VerticalAlignment="Center" Text="{codewf:I18n {x:Static l:Language.AppearanceMode}}" />
+            <ComboBox Grid.Column="1" HorizontalAlignment="Stretch" ItemsSource="{Binding Modes}" SelectedItem="{Binding SelectedMode}">
+                <ComboBox.ItemTemplate><DataTemplate><TextBlock Text="{Binding DisplayName}" /></DataTemplate></ComboBox.ItemTemplate>
+            </ComboBox>
+            <TextBlock Grid.Row="1" VerticalAlignment="Center" Text="{codewf:I18n {x:Static l:Language.AppearancePalette}}" />
+            <ComboBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" ItemsSource="{Binding Palettes}" SelectedItem="{Binding SelectedPalette}">
+                <ComboBox.ItemTemplate><DataTemplate><TextBlock Text="{Binding DisplayName}" /></DataTemplate></ComboBox.ItemTemplate>
+            </ComboBox>
+            <TextBlock Grid.Row="2" VerticalAlignment="Center" Text="{codewf:I18n {x:Static l:Language.AppearanceLanguage}}" />
+            <ComboBox Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch" ItemsSource="{Binding Languages}" SelectedItem="{Binding SelectedLanguage}">
+                <ComboBox.ItemTemplate><DataTemplate><TextBlock Text="{Binding DisplayName}" /></DataTemplate></ComboBox.ItemTemplate>
+            </ComboBox>
+        </Grid>
+        <TextBlock Text="{Binding Error}" Foreground="{DynamicResource FinanceExpense}" />
+        <Button HorizontalAlignment="Right" Click="OnClose" Content="{codewf:I18n {x:Static l:Language.AboutClose}}" />
+    </StackPanel>
+</codewf:CodeWFWindow>

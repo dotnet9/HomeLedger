@@ -27,11 +27,11 @@ public partial class MemberReportPage : UserControl
 
     private (DateOnly From, DateOnly To) Range() => (new(SelectedYear, 1, 1), new(SelectedYear, 12, 31));
 
-    private void Refresh()
+    public void Refresh()
     {
         var (from, to) = Range();
         var monthly = AppServices.Ledger.MonthlySummary(Session.Current!.Id, from, to);
-        BarChart.Items = monthly.Select(m => new Controls.BarItem(m.Month[5..] + "月", (double)m.Income, (double)m.Expense)).ToList();
+        BarChart.Items = monthly.Select(m => new Controls.BarItem(DateTime.ParseExact(m.Month, "yyyy-MM", System.Globalization.CultureInfo.InvariantCulture).ToString("MMM", AppText.Culture), (double)m.Income, (double)m.Expense)).ToList();
 
         var categories = AppServices.Ledger.CategorySummary(Session.Current!.Id, from, to, Core.Models.TxKind.Expense);
         Donut.Items = categories.Select((c, i) => new Controls.DonutItem(c.Category, (double)c.Amount, Palette[i % Palette.Length])).ToList();
@@ -40,7 +40,7 @@ public partial class MemberReportPage : UserControl
             Color = global::Avalonia.Media.Brush.Parse(Palette[i % Palette.Length]),
             c.Category,
             Value = c.Amount.ToString("0.00"),
-            Label = c.Category,
+            Label = AppText.Category(c.Category),
         }).ToList();
 
         MonthlyList.ItemsSource = monthly.Select(m => new
@@ -54,9 +54,9 @@ public partial class MemberReportPage : UserControl
         var (principal, accrued) = AppServices.Deposits.Totals(Session.Current!.Id, DateOnly.FromDateTime(DateTime.Today));
         DepositList.ItemsSource = new (string Label, string Value)[]
         {
-            ("存款本金合计", principal.ToString("0.00")),
-            ("当前应计利息（未结算）", "+" + accrued.ToString("0.00")),
-            ("本息合计", (principal + accrued).ToString("0.00")),
+            (AppText.Get(Language.TotalDepositPrincipal), principal.ToString("0.00")),
+            (AppText.Get(Language.UnsettledInterest), "+" + accrued.ToString("0.00")),
+            (AppText.Get(Language.PrincipalAndInterest), (principal + accrued).ToString("0.00")),
         }.Select(x => new { x.Label, x.Value });
     }
 
@@ -65,7 +65,7 @@ public partial class MemberReportPage : UserControl
         var storage = TopLevelHost.TryGetStorageProvider(this);
         if (storage is null)
         {
-            ShowStatus("无法打开文件保存窗口，请稍后重试", "#c4553d");
+            ShowStatus(AppText.Get(Language.SavePickerUnavailable), "FinanceExpense");
             return null;
         }
 
@@ -82,14 +82,14 @@ public partial class MemberReportPage : UserControl
         }
         catch (Exception ex)
         {
-            ShowStatus("打开保存窗口失败：" + ex.Message, "#c4553d");
+            ShowStatus(AppText.Get(Language.SavePickerFailed) + ex.Message, "FinanceExpense");
             return null;
         }
         if (file is null) return null;
 
         var path = file.TryGetLocalPath();
         if (path is null)
-            ShowStatus("请选择本机磁盘路径后再导出", "#c4553d");
+            ShowStatus(AppText.Get(Language.LocalExportRequired), "FinanceExpense");
         return path;
     }
 
@@ -103,7 +103,7 @@ public partial class MemberReportPage : UserControl
         var model = BuildReport();
         if (!HasChartData(model))
         {
-            ShowStatus($"{SelectedYear} 年没有可导出的图表数据", "#a97822");
+            ShowStatus(AppText.Format(Language.NoChartData, SelectedYear), "#a97822");
             return;
         }
 
@@ -131,7 +131,7 @@ public partial class MemberReportPage : UserControl
         model ??= BuildReport();
         if (!HasReportData(model))
         {
-            ShowStatus($"{SelectedYear} 年没有可导出的财务数据", "#a97822");
+            ShowStatus(AppText.Format(Language.NoFinancialData, SelectedYear), "#a97822");
             return;
         }
 
@@ -142,11 +142,11 @@ public partial class MemberReportPage : UserControl
         {
             var final = Path.ChangeExtension(path, ext);
             writer(model, final);
-            ShowStatus("已导出：" + final, "#2f9e6e");
+            ShowStatus(AppText.Get(Language.ExportSucceeded) + final, "FinanceIncome");
         }
         catch (Exception ex)
         {
-            ShowStatus("导出失败：" + ex.Message, "#c4553d");
+            ShowStatus(AppText.Get(Language.ExportFailed) + ex.Message, "FinanceExpense");
         }
     }
 
@@ -184,7 +184,7 @@ public partial class MemberReportPage : UserControl
     private void ShowStatus(string message, string color)
     {
         StatusText.Text = message;
-        StatusText.Foreground = Brush.Parse(color);
+        StatusText.Foreground = HomeLedger.Avalonia.Services.ThemeBrush.Get(color);
         StatusText.IsVisible = true;
     }
 }

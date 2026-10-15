@@ -8,7 +8,15 @@ namespace HomeLedger.Desktop;
 internal static class Program
 {
     [STAThread]
-    public static void Main(string[] args) => BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+    public static void Main(string[] args)
+    {
+        if (args is ["--verify-runtime", var directory])
+        {
+            RuntimeVerification.Run(directory);
+            return;
+        }
+        BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+    }
 
     public static AppBuilder BuildAvaloniaApp()
         => AppBuilder.Configure<App>()

@@ -8,7 +8,7 @@ internal static class TopLevelHost
     public static Window GetOwnerWindow(Control control)
     {
         return TopLevel.GetTopLevel(control) as Window
-               ?? throw new InvalidOperationException("当前页面尚未附加到主窗口，无法打开对话框。");
+               ?? throw new InvalidOperationException(AppText.Get(Language.DialogHostUnavailable));
     }
 
     public static IStorageProvider? TryGetStorageProvider(Control control)

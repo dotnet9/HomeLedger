@@ -13,7 +13,7 @@ public class DepositService(IDbConnectionFactory db)
 {
     public long AddDeposit(long userId, decimal amount, DateOnly date, decimal annualRatePercent, string note)
     {
-        if (amount <= 0) throw new InvalidOperationException("存款金额必须大于 0");
+        if (amount <= 0) throw new InvalidOperationException(AppText.Get(Language.DepositPositiveRequired));
         using var conn = db.Create();
         return conn.ExecuteScalar<long>("""
             INSERT INTO Deposits(UserId, Kind, Amount, Date, AnnualRate, Note)
@@ -32,17 +32,17 @@ public class DepositService(IDbConnectionFactory db)
             var head = GetActiveHead(conn, tx, userId, headId);
             var interest = InterestCalculator.Accrued(head.Amount, head.AnnualRate, head.Date, date);
             var proceed = head.Amount + interest;
-            if (amount <= 0 || amount > proceed) throw new InvalidOperationException($"支取金额需在 0 ~ {proceed} 之间");
+            if (amount <= 0 || amount > proceed) throw new InvalidOperationException(AppText.Format(Language.WithdrawalRange, proceed));
 
             conn.Execute(
                 "INSERT INTO Deposits(UserId, Kind, Amount, Date, AnnualRate, SourceDepositId, Note) VALUES(@uid, 1, @a, @d, @r, @src, @n)",
-                new { uid = userId, a = amount, d = date, r = head.AnnualRate, src = headId, n = string.IsNullOrEmpty(note) ? "支取" : note }, tx);
+                new { uid = userId, a = amount, d = date, r = head.AnnualRate, src = headId, n = string.IsNullOrEmpty(note) ? AppText.Get(Language.Withdraw) : note }, tx);
 
             var remaining = proceed - amount;
             if (remaining > 0)
                 conn.Execute(
                     "INSERT INTO Deposits(UserId, Kind, Amount, Date, AnnualRate, Note) VALUES(@uid, 0, @a, @d, @r, @n)",
-                    new { uid = userId, a = Math.Round(remaining, 2), d = date, r = head.AnnualRate, n = "支取后剩余本息续存" }, tx);
+                    new { uid = userId, a = Math.Round(remaining, 2), d = date, r = head.AnnualRate, n = AppText.Get(Language.WithdrawalRemainder) }, tx);
 
             tx.Commit();
         }
@@ -70,16 +70,16 @@ public class DepositService(IDbConnectionFactory db)
                 var newPrincipal = Math.Round(head.Amount + interest, 2);
                 var interestId = conn.ExecuteScalar<long>(
                     "INSERT INTO Deposits(UserId, Kind, Amount, Date, AnnualRate, SourceDepositId, Note) VALUES(@uid, 2, @a, @d, @r, @src, @n); SELECT last_insert_rowid()",
-                    new { uid = userId, a = newPrincipal, d = settleDate, r = head.AnnualRate, src = headId, n = $"利息 {interest:0.00} 结转本金" }, tx);
+                    new { uid = userId, a = newPrincipal, d = settleDate, r = head.AnnualRate, src = headId, n = AppText.Format(Language.InterestReinvested, interest) }, tx);
                 interestIds.Add(interestId);
             }
 
             var settlementId = conn.ExecuteScalar<long>(
                 "INSERT INTO InterestSettlements(UserId, SettledAt, DepositCount, TotalInterest, CreatedBy) VALUES(@uid, @d, @c, @t, @by); SELECT last_insert_rowid()",
                 new { uid = userId, d = settleDate, c = count, t = Math.Round(total, 2), by = createdBy }, tx);
-            if (interestIds.Count > 0)
-                conn.Execute("UPDATE Deposits SET SettlementId = @s WHERE Id IN @ids",
-                    new { s = settlementId, ids = interestIds }, tx);
+            foreach (var interestId in interestIds)
+                conn.Execute("UPDATE Deposits SET SettlementId = @s WHERE Id = @id",
+                    new { s = settlementId, id = interestId }, tx);
 
             tx.Commit();
             return new Settlement { Id = settlementId, UserId = userId, SettledAt = settleDate, DepositCount = count, TotalInterest = Math.Round(total, 2), CreatedBy = createdBy };
@@ -135,19 +135,19 @@ public class DepositService(IDbConnectionFactory db)
         foreach (var row in rows.Where(r => r is { Kind: not DepositKind.Withdrawal, SourceDepositId: null }))
         {
             var current = row;
-            var parts = new List<string> { $"存入 {row.Amount:0.##}" };
+            var parts = new List<string> { AppText.Format(Language.ChainDeposit, row.Amount) };
             DateOnly? closedAt = null;
             while (children.TryGetValue(current.Id, out var child))
             {
                 if (child.Kind == DepositKind.Withdrawal)
                 {
-                    parts.Add($"支取 {child.Amount:0.##}（{child.Date:MM-dd}）");
+                    parts.Add(AppText.Format(Language.ChainWithdrawal, child.Amount, child.Date));
                     closedAt = child.Date;
                     break;
                 }
 
                 var interest = Math.Max(0, child.Amount - current.Amount);
-                parts.Add($"结转利息 {interest:0.##}（{child.Date:MM-dd}）");
+                parts.Add(AppText.Format(Language.ChainInterest, interest, child.Date));
                 current = child;
             }
 
@@ -172,10 +172,10 @@ public class DepositService(IDbConnectionFactory db)
     {
         var head = conn.QuerySingleOrDefault<DepositItem>(
             "SELECT * FROM Deposits WHERE Id = @id AND UserId = @uid AND Kind != 1", new { id = headId, uid = userId }, tx)
-            ?? throw new InvalidOperationException("存款记录不存在");
+            ?? throw new InvalidOperationException(AppText.Get(Language.DepositMissing));
         var hasChild = conn.ExecuteScalar<long>(
             "SELECT COUNT(*) FROM Deposits WHERE SourceDepositId = @id", new { id = headId }, tx) > 0;
-        if (hasChild) throw new InvalidOperationException("该存款已结转或支取，不能重复操作");
+        if (hasChild) throw new InvalidOperationException(AppText.Get(Language.DepositAlreadyClosed));
         return head;
     }
 

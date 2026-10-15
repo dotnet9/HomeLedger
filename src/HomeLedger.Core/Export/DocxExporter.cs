@@ -80,33 +80,33 @@ public static class DocxExporter
         }
 
         H(m.Title);
-        T($"{m.OwnerName} · {m.From:yyyy-MM-dd} ~ {m.To:yyyy-MM-dd} · 生成于 {DateTime.Now:yyyy-MM-dd HH:mm}");
+        T(AppText.Format(Language.ReportGenerated, m.OwnerName, m.From, m.To, DateTime.Now));
 
-        H("收支汇总", 13);
-        Table(["项", "金额"], [["收入", m.Income.ToString("0.00")], ["支出", m.Expense.ToString("0.00")], ["结余", m.Balance.ToString("0.00")]]);
+        H(AppText.Get(Language.IncomeExpenseSummary), 13);
+        Table([AppText.Get(Language.Item), AppText.Get(Language.Amount)], [[AppText.Get(Language.Income), m.Income.ToString("0.00")], [AppText.Get(Language.Expense), m.Expense.ToString("0.00")], [AppText.Get(Language.Balance), m.Balance.ToString("0.00")]]);
 
         if (m.Deposit is { } d)
         {
-            H("存款利息", 13);
-            Table(["项", "金额"], [["存款本金合计", d.Principal.ToString("0.00")], ["当前应计利息", d.Accrued.ToString("0.00")], ["本息合计", d.Total.ToString("0.00")]]);
+            H(AppText.Get(Language.DepositInterest), 13);
+            Table([AppText.Get(Language.Item), AppText.Get(Language.Amount)], [[AppText.Get(Language.TotalDepositPrincipal), d.Principal.ToString("0.00")], [AppText.Get(Language.CurrentAccruedInterest), d.Accrued.ToString("0.00")], [AppText.Get(Language.PrincipalAndInterest), d.Total.ToString("0.00")]]);
         }
 
-        H("月度收支趋势", 13);
+        H(AppText.Get(Language.MonthlyTrend), 13);
         Image(barPng, 5400000);
 
-        H("支出分类占比", 13);
+        H(AppText.Get(Language.ExpenseCategoryShare), 13);
         Image(donutPng, 2400000);
 
         if (m.Members.Count > 0)
         {
-            H("成员汇总", 13);
-            Table(["成员", "收入", "支出", "结余", "存款本金", "本息合计"],
+            H(AppText.Get(Language.MemberSummary), 13);
+            Table([AppText.Get(Language.Member), AppText.Get(Language.Income), AppText.Get(Language.Expense), AppText.Get(Language.Balance), AppText.Get(Language.DepositPrincipal), AppText.Get(Language.PrincipalAndInterest)],
                 m.Members.Select(r => new[] { r.DisplayName, r.Income.ToString("0.00"), r.Expense.ToString("0.00"), r.Balance.ToString("0.00"), r.DepositPrincipal.ToString("0.00"), r.DepositTotal.ToString("0.00") }));
         }
 
-        H("明细", 13);
-        Table(["日期", "类型", "分类", "金额", "备注"],
-            m.Transactions.Select(t => new[] { t.Date.ToString("yyyy-MM-dd"), t.Kind == TxKind.Income ? "收入" : "支出", t.CategoryName, t.Amount.ToString("0.00"), t.Note }));
+        H(AppText.Get(Language.Details), 13);
+        Table([AppText.Get(Language.Date), AppText.Get(Language.Type), AppText.Get(Language.Category), AppText.Get(Language.Amount), AppText.Get(Language.Note)],
+            m.Transactions.Select(t => new[] { t.Date.ToString("yyyy-MM-dd"), t.Kind == TxKind.Income ? AppText.Get(Language.Income) : AppText.Get(Language.Expense), t.CategoryName, t.Amount.ToString("0.00"), t.Note }));
 
         body.Append(new SectionProperties(new PageMargin { Top = 720, Bottom = 720, Left = 720, Right = 720 }));
     }

@@ -11,7 +11,7 @@ public record DonutItem(string Label, double Value, string Color);
 internal static class ChartHelpers
 {
     public static FormattedText Fmt(string text, double size, IBrush? foreground = null) =>
-        new(text, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, Typeface.Default, size, foreground ?? SolidColorBrush.Parse("#5a6058"));
+        new(text, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, Typeface.Default, size, foreground ?? HomeLedger.Avalonia.Services.ThemeBrush.Get("StudioText"));
 }
 
 /// <summary>月度收支柱状图（纯 Avalonia 自绘，无第三方图表依赖）。</summary>
@@ -21,9 +21,9 @@ public class BarChartControl : Control
         AvaloniaProperty.Register<BarChartControl, IReadOnlyList<BarItem>?>(nameof(Items));
 
     public static readonly StyledProperty<string> InLabelProperty =
-        AvaloniaProperty.Register<BarChartControl, string>(nameof(InLabel), "收入");
+        AvaloniaProperty.Register<BarChartControl, string>(nameof(InLabel), AppText.Get(Language.Income));
     public static readonly StyledProperty<string> OutLabelProperty =
-        AvaloniaProperty.Register<BarChartControl, string>(nameof(OutLabel), "支出");
+        AvaloniaProperty.Register<BarChartControl, string>(nameof(OutLabel), AppText.Get(Language.Expense));
 
     public IReadOnlyList<BarItem>? Items
     {
@@ -33,7 +33,11 @@ public class BarChartControl : Control
     public string InLabel { get => GetValue(InLabelProperty); set => SetValue(InLabelProperty, value); }
     public string OutLabel { get => GetValue(OutLabelProperty); set => SetValue(OutLabelProperty, value); }
 
-    static BarChartControl() => AffectsMeasure<BarChartControl>(ItemsProperty);
+    static BarChartControl()
+    {
+        AffectsMeasure<BarChartControl>(ItemsProperty);
+        AffectsRender<BarChartControl>(ItemsProperty, InLabelProperty, OutLabelProperty);
+    }
 
     protected override Size MeasureOverride(Size availableSize)
     {
@@ -48,12 +52,12 @@ public class BarChartControl : Control
         var h = Bounds.Height;
         if (w < 40 || h < 40) return;
 
-        var fg = SolidColorBrush.Parse("#99a096");
+        var fg = HomeLedger.Avalonia.Services.ThemeBrush.Get("StudioMuted");
         var plotBottom = h - 20;
 
         if (items is not { Count: > 0 })
         {
-            var empty = ChartHelpers.Fmt("暂无数据", 13);
+            var empty = ChartHelpers.Fmt(AppText.Get(Language.NoData), 13);
             context.DrawText(empty, new Point(w / 2 - empty.Width / 2, h / 2 - empty.Height / 2));
             return;
         }
@@ -89,7 +93,7 @@ public class BarChartControl : Control
             context.DrawText(label, new Point(cx - label.Width / 2, plotBottom + 4));
         }
 
-        var legend = ChartHelpers.Fmt($"● {InLabel}   ● {OutLabel}", 11, SolidColorBrush.Parse("#5a6058"));
+        var legend = ChartHelpers.Fmt($"● {InLabel}   ● {OutLabel}", 11, HomeLedger.Avalonia.Services.ThemeBrush.Get("StudioText"));
         context.DrawText(legend, new Point(w / 2 - legend.Width / 2, 0));
     }
 }
@@ -106,7 +110,11 @@ public class DonutControl : Control
         set => SetValue(ItemsProperty, value);
     }
 
-    static DonutControl() => AffectsMeasure<DonutControl>(ItemsProperty);
+    static DonutControl()
+    {
+        AffectsMeasure<DonutControl>(ItemsProperty);
+        AffectsRender<DonutControl>(ItemsProperty);
+    }
 
     protected override Size MeasureOverride(Size availableSize)
     {
@@ -126,7 +134,7 @@ public class DonutControl : Control
 
         if (items is not { Count: > 0 } || total <= 0)
         {
-            context.DrawEllipse(null, new Pen(SolidColorBrush.Parse("#b9bdb4"), outer - inner), center, (outer + inner) / 2, (outer + inner) / 2);
+            context.DrawEllipse(null, new Pen(HomeLedger.Avalonia.Services.ThemeBrush.Get("StudioMuted"), outer - inner), center, (outer + inner) / 2, (outer + inner) / 2);
             return;
         }
 
@@ -144,9 +152,9 @@ public class DonutControl : Control
                 var p1i = new Point(center.X + inner * Math.Cos(a1), center.Y + inner * Math.Sin(a1));
                 var p0i = new Point(center.X + inner * Math.Cos(a0), center.Y + inner * Math.Sin(a0));
                 ctx.BeginFigure(p0o, true);
-                ctx.ArcTo(p1o, new Size(outer, outer), 0, false, SweepDirection.Clockwise, true);
+                ctx.ArcTo(p1o, new Size(outer, outer), 0, sweep - 1.5 > 180, SweepDirection.Clockwise, true);
                 ctx.LineTo(p1i);
-                ctx.ArcTo(p0i, new Size(inner, inner), 0, false, SweepDirection.CounterClockwise, true);
+                ctx.ArcTo(p0i, new Size(inner, inner), 0, sweep - 1.5 > 180, SweepDirection.CounterClockwise, true);
                 ctx.EndFigure(true);
             }
             context.DrawGeometry(SolidColorBrush.Parse(item.Color), null!, geometry);

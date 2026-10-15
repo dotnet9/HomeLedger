@@ -25,7 +25,7 @@ public partial class AdminDetailsPage : UserControl
         if (storage is null)
         {
             if (DataContext is AdminDetailsPageViewModel viewModel)
-                viewModel.ShowStatus("无法打开文件保存窗口，请稍后重试", true);
+                viewModel.ShowStatus(AppText.Get(Language.SavePickerUnavailable), true);
             return null;
         }
 
@@ -34,21 +34,21 @@ public partial class AdminDetailsPage : UserControl
         {
             file = await storage.SaveFilePickerAsync(new FilePickerSaveOptions
             {
-                SuggestedFileName = $"HomeLedger-明细-{DateTime.Today:yyyyMMdd}",
+                SuggestedFileName = AppText.Format(Language.DetailsFileName, DateTime.Today),
                 FileTypeChoices = [new FilePickerFileType("CSV") { Patterns = ["*.csv"] }],
             });
         }
         catch (Exception ex)
         {
             if (DataContext is AdminDetailsPageViewModel viewModel3)
-                viewModel3.ShowStatus("打开保存窗口失败：" + ex.Message, true);
+                viewModel3.ShowStatus(AppText.Get(Language.SavePickerFailed) + ex.Message, true);
             return null;
         }
         if (file is null) return null;
 
         var path = file.TryGetLocalPath();
         if (path is null && DataContext is AdminDetailsPageViewModel viewModel2)
-            viewModel2.ShowStatus("请选择本机磁盘路径后再导出", true);
+            viewModel2.ShowStatus(AppText.Get(Language.LocalExportRequired), true);
         return path;
     }
 

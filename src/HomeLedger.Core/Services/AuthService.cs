@@ -62,6 +62,7 @@ public class AuthService(IDbConnectionFactory db)
     public List<(long Id, string DisplayName)> ListMembers()
     {
         using var conn = db.Create();
-        return conn.Query<(long, string)>("SELECT Id, DisplayName FROM Users WHERE Role = 1 AND IsActive = 1 ORDER BY Id").ToList();
+        return conn.Query<User>("SELECT Id, DisplayName FROM Users WHERE Role = 1 AND IsActive = 1 ORDER BY Id")
+            .Select(user => (user.Id, user.DisplayName)).ToList();
     }
 }

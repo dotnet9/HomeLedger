@@ -3,12 +3,17 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
+    <InterceptorsNamespaces>$(InterceptorsNamespaces);Dapper.AOT</InterceptorsNamespaces>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" />
     <PackageReference Include="Semi.Avalonia" />
     <PackageReference Include="CodeWF.Avalonia.Controls" />
-    <PackageReference Include="Prism.Avalonia" />
+    <PackageReference Include="CodeWF.Avalonia.Lang" />
+    <PackageReference Include="Irihi.Ursa" />
+    <PackageReference Include="Irihi.Ursa.Themes.Semi" />
+    <PackageReference Include="Prism.Core" />
+    <PackageReference Include="Dapper.AOT" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HomeLedger.Core\HomeLedger.Core.csproj" />

@@ -13,8 +13,7 @@ public partial class ChangePasswordDialog : CodeWFWindow
     public ChangePasswordDialog()
     {
         InitializeComponent();
-        LeftContent = new TextBlock { Text = "修改密码", FontSize = 13, FontWeight = FontWeight.SemiBold,
-            Foreground = Brush.Parse("#2b2f2c"), Margin = new Thickness(14, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center };
+        HomeLedger.Avalonia.Services.WindowChrome.Apply(this, Language.ChangePassword);
         Dispatcher.UIThread.Post(() => NewPasswordBox.Focus());
         UpdateConfirmState();
     }
@@ -32,14 +31,14 @@ public partial class ChangePasswordDialog : CodeWFWindow
         var pwd = NewPasswordBox.Text ?? "";
         if (pwd.Length < 6)
         {
-            ShowError("密码长度至少 6 位");
+            ShowError(AppText.Get(Language.PasswordTooShort));
             NewPasswordBox.Focus();
             NewPasswordBox.SelectAll();
             return;
         }
         if (pwd != ConfirmBox.Text)
         {
-            ShowError("两次输入的密码不一致");
+            ShowError(AppText.Get(Language.PasswordMismatch));
             ConfirmBox.Focus();
             ConfirmBox.SelectAll();
             return;

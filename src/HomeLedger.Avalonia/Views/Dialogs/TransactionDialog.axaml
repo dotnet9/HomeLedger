@@ -1,28 +1,28 @@
 <codewf:CodeWFWindow xmlns="https://github.com/avaloniaui" xmlns:codewf="https://codewf.com"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:l="using:HomeLedger.Core.I18n" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="HomeLedger.Avalonia.Views.Dialogs.TransactionDialog"
-        Title="记一笔" Width="400" SizeToContent="Height" CanResize="False"
-        WindowStartupLocation="CenterOwner" Background="#f7f5f0"
+        Title="{codewf:I18n {x:Static l:Language.AddTransaction}}" Width="400" SizeToContent="Height" CanResize="False"
+        WindowStartupLocation="CenterOwner" Background="{DynamicResource StudioBackground}"
         x:Name="Root">
-    <Border Margin="14" CornerRadius="14" Background="White" BorderBrush="#e9e5dc" BorderThickness="1" Padding="24">
+    <Border Margin="14" CornerRadius="14" Background="{DynamicResource StudioSurface}" BorderBrush="{DynamicResource StudioBorder}" BorderThickness="1" Padding="24">
         <StackPanel Spacing="12">
-            <TextBlock x:Name="HeaderText" Text="记一笔" FontSize="16" FontWeight="Bold" Foreground="#147d64"/>
+            <TextBlock x:Name="HeaderText" Text="{codewf:I18n {x:Static l:Language.AddTransaction}}" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource StudioAccent}"/>
             <StackPanel Orientation="Horizontal" Spacing="10">
-                <RadioButton x:Name="ExpenseRadio" Content="支出" IsChecked="True" CornerRadius="8"/>
-                <RadioButton x:Name="IncomeRadio" Content="收入" CornerRadius="8"/>
+                <RadioButton x:Name="ExpenseRadio" Content="{codewf:I18n {x:Static l:Language.Expense}}" IsChecked="True" CornerRadius="8"/>
+                <RadioButton x:Name="IncomeRadio" Content="{codewf:I18n {x:Static l:Language.Income}}" CornerRadius="8"/>
             </StackPanel>
-            <TextBlock Text="金额" FontSize="12" Foreground="#5a6058"/>
+            <TextBlock Text="{codewf:I18n {x:Static l:Language.Amount}}" FontSize="12" Foreground="{DynamicResource StudioText}"/>
             <TextBox x:Name="AmountBox" PlaceholderText="0.00" Height="40" FontSize="18" FontFamily="Georgia" TextChanged="OnInputChanged"/>
-            <TextBlock Text="日期" FontSize="12" Foreground="#5a6058"/>
+            <TextBlock Text="{codewf:I18n {x:Static l:Language.Date}}" FontSize="12" Foreground="{DynamicResource StudioText}"/>
             <DatePicker x:Name="DatePicker"/>
-            <TextBlock Text="分类" FontSize="12" Foreground="#5a6058"/>
+            <TextBlock Text="{codewf:I18n {x:Static l:Language.Category}}" FontSize="12" Foreground="{DynamicResource StudioText}"/>
             <ComboBox x:Name="CategoryBox" Height="36" HorizontalAlignment="Stretch" SelectionChanged="OnCategoryChanged"/>
-            <TextBlock Text="备注" FontSize="12" Foreground="#5a6058"/>
-            <TextBox x:Name="NoteBox" PlaceholderText="选填…" Height="36"/>
-            <TextBlock x:Name="ErrorText" Foreground="#c4553d" FontSize="12" IsVisible="False" TextWrapping="Wrap"/>
+            <TextBlock Text="{codewf:I18n {x:Static l:Language.Note}}" FontSize="12" Foreground="{DynamicResource StudioText}"/>
+            <TextBox x:Name="NoteBox" PlaceholderText="{codewf:I18n {x:Static l:Language.Optional}}" Height="36"/>
+            <TextBlock x:Name="ErrorText" Foreground="{DynamicResource FinanceExpense}" FontSize="12" IsVisible="False" TextWrapping="Wrap"/>
             <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right" Margin="0,8,0,0">
-                <Button Content="取消" Click="OnCancel" IsCancel="True" CornerRadius="10" MinWidth="72"/>
-                <Button x:Name="ConfirmButton" Content="保存" Click="OnConfirm" IsDefault="True" IsEnabled="False" Background="#147d64" Foreground="White" CornerRadius="10" MinWidth="88"/>
+                <Button Content="{codewf:I18n {x:Static l:Language.Cancel}}" Click="OnCancel" IsCancel="True" CornerRadius="10" MinWidth="72"/>
+                <Button x:Name="ConfirmButton" Content="{codewf:I18n {x:Static l:Language.Save}}" Click="OnConfirm" IsDefault="True" IsEnabled="False" Background="{DynamicResource StudioAccent}" Foreground="White" CornerRadius="10" MinWidth="88"/>
             </StackPanel>
         </StackPanel>
     </Border>

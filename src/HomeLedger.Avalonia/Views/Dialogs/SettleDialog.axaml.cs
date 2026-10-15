@@ -23,14 +23,13 @@ public partial class SettleDialog : CodeWFWindow
     public SettleDialog(long userId, IReadOnlyList<DepositChainView> chains)
     {
         InitializeComponent();
-        LeftContent = new TextBlock { Text = "结算利息", FontSize = 13, FontWeight = FontWeight.SemiBold,
-            Foreground = Brush.Parse("#2b2f2c"), Margin = new Thickness(14, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center };
+        HomeLedger.Avalonia.Services.WindowChrome.Apply(this, Language.SettleInterest);
         _userId = userId;
         _chains = chains;
         DatePicker.SelectedDate = DateTimeOffset.Now;
         DetailText.Text = string.Join("\n", chains.Select(c =>
-            $"存入 {c.Principal:0.00} · {c.AnnualRate:0.##}% · 起息 {c.StartDate:yyyy-MM-dd} → 利息 {c.AccruedInterest:0.00}"));
-        TotalText.Text = $"合计结转利息：{chains.Sum(c => c.AccruedInterest):0.00}";
+            AppText.Format(Language.SettlementItem, c.Principal, c.AnnualRate, c.StartDate, c.AccruedInterest)));
+        TotalText.Text = AppText.Format(Language.SettlementTotal, chains.Sum(c => c.AccruedInterest));
         Dispatcher.UIThread.Post(() => ConfirmButton.Focus());
     }
 

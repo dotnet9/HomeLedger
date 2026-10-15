@@ -1,76 +1,78 @@
 <UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:HomeLedger.Core.I18n" xmlns:codewf="https://codewf.com" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="HomeLedger.Avalonia.Views.Pages.MemberDepositsPage">
     <StackPanel Spacing="14">
         <StackPanel Orientation="Horizontal" Spacing="8">
-            <TextBlock Text="存款利息" FontSize="21" FontWeight="Bold" VerticalAlignment="Center"/>
-            <Border Width="34" Height="4" VerticalAlignment="Center" Margin="10,12,0,0" Background="#d9a441"/>
+            <TextBlock Text="{codewf:I18n {x:Static l:Language.DepositInterest}}" FontSize="21" FontWeight="Bold" VerticalAlignment="Center"/>
+            <Border Width="34" Height="4" VerticalAlignment="Center" Margin="10,12,0,0" Background="{DynamicResource StudioAccent}"/>
         </StackPanel>
-        <TextBlock Text="存在父母处的钱 · 单利按日计息，结算后利息滚入本金（复利）" FontSize="13" Foreground="#99a096" Margin="0,-8,0,0"/>
+        <TextBlock Text="{codewf:I18n {x:Static l:Language.DepositsDescription}}" FontSize="13" Foreground="{DynamicResource StudioMuted}" Margin="0,-8,0,0"/>
 
         <UniformGrid Columns="4">
-            <Border Background="White" BorderBrush="#e9e5dc" BorderThickness="1" CornerRadius="16" Padding="16" Margin="0,0,7,0">
+            <Border Background="{DynamicResource StudioSurface}" BorderBrush="{DynamicResource StudioBorder}" BorderThickness="1" CornerRadius="16" Padding="16" Margin="0,0,7,0">
                 <StackPanel>
-                    <StackPanel Orientation="Horizontal"><Border Width="6" Height="6" Background="#d9a441"/><TextBlock Text=" 存款本金合计" FontSize="12" Foreground="#99a096"/></StackPanel>
+                    <StackPanel Orientation="Horizontal"><Border Width="6" Height="6" Background="{DynamicResource StudioAccent}"/><TextBlock Text="{codewf:I18n {x:Static l:Language.DepositPrincipalLabel}}" FontSize="12" Foreground="{DynamicResource StudioMuted}"/></StackPanel>
                     <TextBlock Text="{Binding PrincipalText}" FontSize="24" FontWeight="Bold" FontFamily="Georgia" Margin="0,7,0,0"/>
                 </StackPanel>
             </Border>
-            <Border Background="White" BorderBrush="#e9e5dc" BorderThickness="1" CornerRadius="16" Padding="16" Margin="0,0,7,0">
+            <Border Background="{DynamicResource StudioSurface}" BorderBrush="{DynamicResource StudioBorder}" BorderThickness="1" CornerRadius="16" Padding="16" Margin="0,0,7,0">
                 <StackPanel>
-                    <StackPanel Orientation="Horizontal"><Border Width="6" Height="6" Background="#d9a441"/><TextBlock Text=" 当前应计利息" FontSize="12" Foreground="#99a096"/></StackPanel>
-                    <TextBlock Text="{Binding AccruedText}" FontSize="24" FontWeight="Bold" FontFamily="Georgia" Foreground="#2f9e6e" Margin="0,7,0,0"/>
+                    <StackPanel Orientation="Horizontal"><Border Width="6" Height="6" Background="{DynamicResource StudioAccent}"/><TextBlock Text="{codewf:I18n {x:Static l:Language.AccruedInterestLabel}}" FontSize="12" Foreground="{DynamicResource StudioMuted}"/></StackPanel>
+                    <TextBlock Text="{Binding AccruedText}" FontSize="24" FontWeight="Bold" FontFamily="Georgia" Foreground="{DynamicResource FinanceIncome}" Margin="0,7,0,0"/>
                 </StackPanel>
             </Border>
-            <Border Background="White" BorderBrush="#e9e5dc" BorderThickness="1" CornerRadius="16" Padding="16" Margin="0,0,7,0">
+            <Border Background="{DynamicResource StudioSurface}" BorderBrush="{DynamicResource StudioBorder}" BorderThickness="1" CornerRadius="16" Padding="16" Margin="0,0,7,0">
                 <StackPanel>
-                    <StackPanel Orientation="Horizontal"><Border Width="6" Height="6" Background="#d9a441"/><TextBlock Text=" 本息合计" FontSize="12" Foreground="#99a096"/></StackPanel>
-                    <TextBlock Text="{Binding TotalText}" FontSize="24" FontWeight="Bold" FontFamily="Georgia" Foreground="#147d64" Margin="0,7,0,0"/>
+                    <StackPanel Orientation="Horizontal"><Border Width="6" Height="6" Background="{DynamicResource StudioAccent}"/><TextBlock Text="{codewf:I18n {x:Static l:Language.PrincipalAndInterestLabel}}" FontSize="12" Foreground="{DynamicResource StudioMuted}"/></StackPanel>
+                    <TextBlock Text="{Binding TotalText}" FontSize="24" FontWeight="Bold" FontFamily="Georgia" Foreground="{DynamicResource StudioAccent}" Margin="0,7,0,0"/>
                 </StackPanel>
             </Border>
-            <Border Background="White" BorderBrush="#e9e5dc" BorderThickness="1" CornerRadius="16" Padding="16" Margin="7,0,0,0">
+            <Border Background="{DynamicResource StudioSurface}" BorderBrush="{DynamicResource StudioBorder}" BorderThickness="1" CornerRadius="16" Padding="16" Margin="7,0,0,0">
                 <StackPanel>
-                    <StackPanel Orientation="Horizontal"><Border Width="6" Height="6" Background="#d9a441"/><TextBlock Text=" 计息笔数" FontSize="12" Foreground="#99a096"/></StackPanel>
+                    <StackPanel Orientation="Horizontal"><Border Width="6" Height="6" Background="{DynamicResource StudioAccent}"/><TextBlock Text="{codewf:I18n {x:Static l:Language.ActiveDepositsLabel}}" FontSize="12" Foreground="{DynamicResource StudioMuted}"/></StackPanel>
                     <TextBlock Text="{Binding ActiveCountText}" FontSize="24" FontWeight="Bold" FontFamily="Georgia" Margin="0,7,0,0"/>
                 </StackPanel>
             </Border>
         </UniformGrid>
 
-        <Border Background="White" BorderBrush="#e9e5dc" BorderThickness="1" CornerRadius="16" Padding="16">
+        <Border Background="{DynamicResource StudioSurface}" BorderBrush="{DynamicResource StudioBorder}" BorderThickness="1" CornerRadius="16" Padding="16">
             <StackPanel Spacing="12">
                 <StackPanel Orientation="Horizontal" Spacing="10">
-                    <TextBlock Text="我的存款" FontSize="14" FontWeight="Bold" VerticalAlignment="Center"/>
+                    <TextBlock Text="{codewf:I18n {x:Static l:Language.MyDeposits}}" FontSize="14" FontWeight="Bold" VerticalAlignment="Center"/>
                     <Panel Width="20"/>
-                    <Button x:Name="DepositButton" Content="＋ 存入" Command="{Binding DepositCommand}" Background="#147d64" Foreground="White" CornerRadius="10"/>
-                    <Button Content="↧ 支取" Command="{Binding WithdrawFirstCommand}" CornerRadius="10"/>
-                    <Button Content="结算利息（结转本金）" Command="{Binding SettleCommand}" Background="#d9a441" Foreground="White" CornerRadius="10"/>
+                    <Button x:Name="DepositButton" Content="{codewf:I18n {x:Static l:Language.NewDeposit}}" Command="{Binding DepositCommand}" Background="{DynamicResource StudioAccent}" Foreground="White" CornerRadius="10"/>
+                    <Button Content="{codewf:I18n {x:Static l:Language.WithdrawAction}}" Command="{Binding WithdrawFirstCommand}" CornerRadius="10"/>
+                    <Button Content="{codewf:I18n {x:Static l:Language.SettleTitle}}" Command="{Binding SettleCommand}" Background="{DynamicResource StudioAccent}" Foreground="White" CornerRadius="10"/>
                 </StackPanel>
 
-                <Grid ColumnDefinitions="1.2*,0.7*,1.1*,1*,1.2*,2.6*,0.9*,0.9*" Margin="8,0">
-                    <TextBlock Text="本金" FontSize="12" Foreground="#99a096"/>
-                    <TextBlock Text="年利率" FontSize="12" Foreground="#99a096" Grid.Column="1"/>
-                    <TextBlock Text="起息日" FontSize="12" Foreground="#99a096" Grid.Column="2"/>
-                    <TextBlock Text="应计利息" FontSize="12" Foreground="#99a096" Grid.Column="3"/>
-                    <TextBlock Text="本息合计" FontSize="12" Foreground="#99a096" Grid.Column="4"/>
-                    <TextBlock Text="利息链" FontSize="12" Foreground="#99a096" Grid.Column="5"/>
-                    <TextBlock Text="状态" FontSize="12" Foreground="#99a096" Grid.Column="6"/>
-                    <TextBlock Text="操作" FontSize="12" Foreground="#99a096" Grid.Column="7" HorizontalAlignment="Right"/>
+                <Grid ColumnDefinitions="1.2*,0.7*,1.1*,1*,1.2*,2.6*,0.9*,0.9*,40" Margin="8,0">
+                    <TextBlock Text="{codewf:I18n {x:Static l:Language.Principal}}" FontSize="12" Foreground="{DynamicResource StudioMuted}"/>
+                    <TextBlock Text="{codewf:I18n {x:Static l:Language.AnnualRate}}" FontSize="12" Foreground="{DynamicResource StudioMuted}" Grid.Column="1"/>
+                    <TextBlock Text="{codewf:I18n {x:Static l:Language.InterestStartDate}}" FontSize="12" Foreground="{DynamicResource StudioMuted}" Grid.Column="2"/>
+                    <TextBlock Text="{codewf:I18n {x:Static l:Language.AccruedInterest}}" FontSize="12" Foreground="{DynamicResource StudioMuted}" Grid.Column="3"/>
+                    <TextBlock Text="{codewf:I18n {x:Static l:Language.PrincipalAndInterest}}" FontSize="12" Foreground="{DynamicResource StudioMuted}" Grid.Column="4"/>
+                    <TextBlock Text="{codewf:I18n {x:Static l:Language.InterestChain}}" FontSize="12" Foreground="{DynamicResource StudioMuted}" Grid.Column="5"/>
+                    <TextBlock Text="{codewf:I18n {x:Static l:Language.Status}}" FontSize="12" Foreground="{DynamicResource StudioMuted}" Grid.Column="6"/>
+                    <TextBlock Text="{codewf:I18n {x:Static l:Language.Actions}}" FontSize="12" Foreground="{DynamicResource StudioMuted}" Grid.Column="7" HorizontalAlignment="Right"/>
                 </Grid>
-                <ScrollViewer Height="300">
+                <WrapPanel Margin="0,0,0,8"><Button Content="{codewf:I18n {x:Static l:Language.SelectAll}}" Click="OnSelectAll" Margin="0,0,8,0"/><Button Content="{codewf:I18n {x:Static l:Language.ClearSelection}}" Click="OnClearSelection"/><TextBlock Text="{codewf:I18n {x:Static l:Language.DefaultRateValue}}" Margin="16,8,0,0" Foreground="{DynamicResource StudioMuted}" /></WrapPanel>
+                <ScrollViewer Height="260">
                     <ItemsControl ItemsSource="{Binding DepositRows}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Grid ColumnDefinitions="1.2*,0.7*,1.1*,1*,1.2*,2.6*,0.9*,0.9*" Margin="8,7" MinHeight="30">
+                                <Grid ColumnDefinitions="1.2*,0.7*,1.1*,1*,1.2*,2.6*,0.9*,0.9*,40" Margin="8,7" MinHeight="30">
+                                    <CheckBox Grid.Column="8" IsChecked="{Binding IsSelected}" IsEnabled="{Binding CanOperate}" ToolTip.Tip="{codewf:I18n {x:Static l:Language.SelectDeposits}}" />
                                     <TextBlock Text="{Binding Principal}" FontSize="13" FontWeight="Bold" VerticalAlignment="Center"/>
                                     <TextBlock Text="{Binding Rate}" FontSize="13" Grid.Column="1" VerticalAlignment="Center"/>
                                     <TextBlock Text="{Binding StartDate}" FontSize="13" Grid.Column="2" VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding Accrued}" FontSize="13" Foreground="#2f9e6e" Grid.Column="3" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Accrued}" FontSize="13" Foreground="{DynamicResource FinanceIncome}" Grid.Column="3" VerticalAlignment="Center"/>
                                     <TextBlock Text="{Binding Total}" FontSize="13" FontWeight="Bold" Grid.Column="4" VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding ChainText}" FontSize="11" Foreground="#99a096" Grid.Column="5" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                    <TextBlock Text="{Binding ChainText}" FontSize="12" Foreground="{DynamicResource StudioMuted}" Grid.Column="5" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
                                     <Border Grid.Column="6" Background="{Binding StatusBg}" CornerRadius="6" Padding="7,2" HorizontalAlignment="Left" VerticalAlignment="Center">
-                                        <TextBlock Text="{Binding Status}" FontSize="11" Foreground="{Binding StatusFg}"/>
+                                        <TextBlock Text="{Binding Status}" FontSize="12" Foreground="{Binding StatusFg}"/>
                                     </Border>
                                     <StackPanel Grid.Column="7" Orientation="Horizontal" HorizontalAlignment="Right" IsVisible="{Binding CanOperate}">
-                                        <Button Content="支取" FontSize="12" CornerRadius="8" Padding="10,4" Command="{Binding WithdrawCommand}"/>
+                                        <Button Content="{codewf:I18n {x:Static l:Language.Withdraw}}" FontSize="12" CornerRadius="8" Padding="10,4" Command="{Binding WithdrawCommand}"/>
                                     </StackPanel>
                                 </Grid>
                             </DataTemplate>
@@ -80,9 +82,9 @@
             </StackPanel>
         </Border>
 
-        <Border Background="White" BorderBrush="#e9e5dc" BorderThickness="1" CornerRadius="16" Padding="16">
+        <Border Background="{DynamicResource StudioSurface}" BorderBrush="{DynamicResource StudioBorder}" BorderThickness="1" CornerRadius="16" Padding="16">
             <StackPanel Spacing="10">
-                <TextBlock Text="结算历史" FontSize="14" FontWeight="Bold"/>
+                <TextBlock Text="{codewf:I18n {x:Static l:Language.SettlementHistory}}" FontSize="14" FontWeight="Bold"/>
                 <ScrollViewer Height="120">
                     <ItemsControl ItemsSource="{Binding SettlementRows}">
                         <ItemsControl.ItemTemplate>
@@ -90,8 +92,8 @@
                                 <Grid ColumnDefinitions="1.2*,1*,1*,2*" Margin="8,6">
                                     <TextBlock Text="{Binding Date}" FontSize="13"/>
                                     <TextBlock Text="{Binding Count}" FontSize="13" Grid.Column="1"/>
-                                    <TextBlock Text="{Binding Total}" FontSize="13" Foreground="#2f9e6e" FontWeight="Bold" Grid.Column="2"/>
-                                    <TextBlock Text="{Binding By}" FontSize="13" Foreground="#99a096" Grid.Column="3"/>
+                                    <TextBlock Text="{Binding Total}" FontSize="13" Foreground="{DynamicResource FinanceIncome}" FontWeight="Bold" Grid.Column="2"/>
+                                    <TextBlock Text="{Binding By}" FontSize="13" Foreground="{DynamicResource StudioMuted}" Grid.Column="3"/>
                                 </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>

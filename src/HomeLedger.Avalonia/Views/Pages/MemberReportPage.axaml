@@ -1,35 +1,36 @@
 <UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:HomeLedger.Core.I18n" xmlns:codewf="https://codewf.com" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:ctl="clr-namespace:HomeLedger.Avalonia.Controls"
              x:Class="HomeLedger.Avalonia.Views.Pages.MemberReportPage">
     <StackPanel Spacing="14">
         <StackPanel Orientation="Horizontal" Spacing="8">
-            <TextBlock Text="我的报表" FontSize="21" FontWeight="Bold" VerticalAlignment="Center"/>
-            <Border Width="34" Height="4" VerticalAlignment="Center" Margin="10,12,0,0" Background="#d9a441"/>
+            <TextBlock Text="{codewf:I18n {x:Static l:Language.MyReports}}" FontSize="21" FontWeight="Bold" VerticalAlignment="Center"/>
+            <Border Width="34" Height="4" VerticalAlignment="Center" Margin="10,12,0,0" Background="{DynamicResource StudioAccent}"/>
         </StackPanel>
 
         <StackPanel Orientation="Horizontal" Spacing="10">
-            <TextBlock Text="年度" FontSize="13" VerticalAlignment="Center" Foreground="#5a6058"/>
+            <TextBlock Text="{codewf:I18n {x:Static l:Language.Year}}" FontSize="13" VerticalAlignment="Center" Foreground="{DynamicResource StudioText}"/>
             <ComboBox x:Name="YearBox" MinWidth="110" SelectionChanged="OnYearChanged"/>
             <Panel Width="10"/>
-            <TextBlock Text="导出：" FontSize="13" VerticalAlignment="Center" Foreground="#99a096"/>
+            <TextBlock Text="{codewf:I18n {x:Static l:Language.Export}}" FontSize="13" VerticalAlignment="Center" Foreground="{DynamicResource StudioMuted}"/>
             <Button Content="📄 CSV" Click="OnExportCsv" CornerRadius="10"/>
-            <Button Content="🖼 PNG（图表）" Click="OnExportPng" CornerRadius="10"/>
+            <Button Content="{codewf:I18n {x:Static l:Language.ExportChartPng}}" Click="OnExportPng" CornerRadius="10"/>
             <Button Content="📑 PDF" Click="OnExportPdf" CornerRadius="10"/>
-            <Button Content="📝 Word" Click="OnExportDocx" Background="#147d64" Foreground="White" CornerRadius="10"/>
+            <Button Content="📝 Word" Click="OnExportDocx" Background="{DynamicResource StudioAccent}" Foreground="White" CornerRadius="10"/>
             <TextBlock x:Name="StatusText" FontSize="12" VerticalAlignment="Center" MaxWidth="420" TextTrimming="CharacterEllipsis" IsVisible="False"/>
         </StackPanel>
 
         <Grid ColumnDefinitions="1.2*,1*" Margin="0,0,0,0">
-            <Border Background="White" BorderBrush="#e9e5dc" BorderThickness="1" CornerRadius="16" Padding="16" Margin="0,0,7,0">
+            <Border Background="{DynamicResource StudioSurface}" BorderBrush="{DynamicResource StudioBorder}" BorderThickness="1" CornerRadius="16" Padding="16" Margin="0,0,7,0">
                 <StackPanel>
-                    <TextBlock Text="月度收支趋势" FontSize="14" FontWeight="Bold"/>
-                    <ctl:BarChartControl x:Name="BarChart" Height="200" Margin="0,10"/>
+                    <TextBlock Text="{codewf:I18n {x:Static l:Language.MonthlyTrend}}" FontSize="14" FontWeight="Bold"/>
+                    <ctl:BarChartControl x:Name="BarChart" Height="200" Margin="0,10"
+                        InLabel="{codewf:I18n {x:Static l:Language.Income}}" OutLabel="{codewf:I18n {x:Static l:Language.Expense}}"/>
                 </StackPanel>
             </Border>
-            <Border Background="White" BorderBrush="#e9e5dc" BorderThickness="1" CornerRadius="16" Padding="16" Margin="7,0,0,0" Grid.Column="1">
+            <Border Background="{DynamicResource StudioSurface}" BorderBrush="{DynamicResource StudioBorder}" BorderThickness="1" CornerRadius="16" Padding="16" Margin="7,0,0,0" Grid.Column="1">
                 <StackPanel>
-                    <TextBlock Text="支出分类占比" FontSize="14" FontWeight="Bold"/>
+                    <TextBlock Text="{codewf:I18n {x:Static l:Language.ExpenseCategoryShare}}" FontSize="14" FontWeight="Bold"/>
                     <Grid ColumnDefinitions="170,1*">
                         <ctl:DonutControl x:Name="Donut" Width="150" Height="150" Margin="0,10" HorizontalAlignment="Center"/>
                         <ItemsControl x:Name="CategoryList" Grid.Column="1" VerticalAlignment="Center">
@@ -37,7 +38,7 @@
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,5">
                                         <Border Width="10" Height="10" Background="{Binding Color}" CornerRadius="3"/>
-                                        <TextBlock Text="{Binding Label}" FontSize="12" Foreground="#5a6058"/>
+                                        <TextBlock Text="{Binding Label}" FontSize="12" Foreground="{DynamicResource StudioText}"/>
                                         <TextBlock Text="{Binding Value}" FontSize="12" FontWeight="Bold" Margin="4,0,0,0"/>
                                     </StackPanel>
                                 </DataTemplate>
@@ -49,16 +50,16 @@
         </Grid>
 
         <Grid ColumnDefinitions="1*,1*">
-            <Border Background="White" BorderBrush="#e9e5dc" BorderThickness="1" CornerRadius="16" Padding="16" Margin="0,0,7,0">
+            <Border Background="{DynamicResource StudioSurface}" BorderBrush="{DynamicResource StudioBorder}" BorderThickness="1" CornerRadius="16" Padding="16" Margin="0,0,7,0">
                 <StackPanel>
-                    <TextBlock Text="收支汇总" FontSize="14" FontWeight="Bold"/>
+                    <TextBlock Text="{codewf:I18n {x:Static l:Language.IncomeExpenseSummary}}" FontSize="14" FontWeight="Bold"/>
                     <ItemsControl x:Name="MonthlyList" Margin="0,8">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Grid ColumnDefinitions="1*,1*,1*,1*" Margin="4,5">
                                     <TextBlock Text="{Binding Month}" FontSize="13"/>
-                                    <TextBlock Text="{Binding Income}" FontSize="13" Foreground="#2f9e6e" Grid.Column="1"/>
-                                    <TextBlock Text="{Binding Expense}" FontSize="13" Foreground="#c4553d" Grid.Column="2"/>
+                                    <TextBlock Text="{Binding Income}" FontSize="13" Foreground="{DynamicResource FinanceIncome}" Grid.Column="1"/>
+                                    <TextBlock Text="{Binding Expense}" FontSize="13" Foreground="{DynamicResource FinanceExpense}" Grid.Column="2"/>
                                     <TextBlock Text="{Binding Balance}" FontSize="13" FontWeight="Bold" Grid.Column="3"/>
                                 </Grid>
                             </DataTemplate>
@@ -66,20 +67,20 @@
                     </ItemsControl>
                 </StackPanel>
             </Border>
-            <Border Background="White" BorderBrush="#e9e5dc" BorderThickness="1" CornerRadius="16" Padding="16" Margin="7,0,0,0" Grid.Column="1">
+            <Border Background="{DynamicResource StudioSurface}" BorderBrush="{DynamicResource StudioBorder}" BorderThickness="1" CornerRadius="16" Padding="16" Margin="7,0,0,0" Grid.Column="1">
                 <StackPanel>
-                    <TextBlock Text="存款利息情况" FontSize="14" FontWeight="Bold"/>
+                    <TextBlock Text="{codewf:I18n {x:Static l:Language.DepositInterestSummary}}" FontSize="14" FontWeight="Bold"/>
                     <ItemsControl x:Name="DepositList" Margin="0,8">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Grid ColumnDefinitions="2*,1*" Margin="4,5">
-                                    <TextBlock Text="{Binding Label}" FontSize="13" Foreground="#5a6058"/>
+                                    <TextBlock Text="{Binding Label}" FontSize="13" Foreground="{DynamicResource StudioText}"/>
                                     <TextBlock Text="{Binding Value}" FontSize="13" FontWeight="Bold" Grid.Column="1"/>
                                 </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
-                    <TextBlock Text="报表导出默认包含存款利息部分" FontSize="11" Foreground="#99a096" Margin="0,8,0,0"/>
+                    <TextBlock Text="{codewf:I18n {x:Static l:Language.ReportIncludesDeposits}}" FontSize="12" Foreground="{DynamicResource StudioMuted}" Margin="0,8,0,0"/>
                 </StackPanel>
             </Border>
         </Grid>

@@ -43,5 +43,8 @@ public partial class MemberDepositsPage : UserControl
         return await dialog.ShowDialog<bool>(Owner());
     }
 
+    private void OnSelectAll(object? sender, global::Avalonia.Interactivity.RoutedEventArgs args) => ((MemberDepositsPageViewModel)DataContext!).SelectAll(true);
+    private void OnClearSelection(object? sender, global::Avalonia.Interactivity.RoutedEventArgs args) => ((MemberDepositsPageViewModel)DataContext!).SelectAll(false);
+
     private Window Owner() => TopLevelHost.GetOwnerWindow(this);
 }

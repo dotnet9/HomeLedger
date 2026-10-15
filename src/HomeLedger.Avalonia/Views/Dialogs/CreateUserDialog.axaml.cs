@@ -13,8 +13,7 @@ public partial class CreateUserDialog : CodeWFWindow
     public CreateUserDialog()
     {
         InitializeComponent();
-        LeftContent = new TextBlock { Text = "新建成员账号", FontSize = 13, FontWeight = FontWeight.SemiBold,
-            Foreground = Brush.Parse("#2b2f2c"), Margin = new Thickness(14, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center };
+        HomeLedger.Avalonia.Services.WindowChrome.Apply(this, Language.CreateMember);
         Dispatcher.UIThread.Post(() => UsernameBox.Focus());
         UpdateConfirmState();
     }
@@ -34,13 +33,13 @@ public partial class CreateUserDialog : CodeWFWindow
         var password = PasswordBox.Text ?? "";
         if (username.Length < 2 || !username.All(char.IsLetterOrDigit))
         {
-            ShowError("用户名至少 2 位，仅限字母数字");
+            ShowError(AppText.Get(Language.UsernameInvalid));
             UsernameBox.Focus();
             UsernameBox.SelectAll();
             return;
         }
-        if (string.IsNullOrEmpty(display)) { ShowError("请输入显示名"); DisplayNameBox.Focus(); return; }
-        if (password.Length < 6) { ShowError("初始密码至少 6 位"); PasswordBox.Focus(); PasswordBox.SelectAll(); return; }
+        if (string.IsNullOrEmpty(display)) { ShowError(AppText.Get(Language.DisplayNameRequired)); DisplayNameBox.Focus(); return; }
+        if (password.Length < 6) { ShowError(AppText.Get(Language.InitialPasswordTooShort)); PasswordBox.Focus(); PasswordBox.SelectAll(); return; }
 
         try
         {
@@ -49,7 +48,7 @@ public partial class CreateUserDialog : CodeWFWindow
         }
         catch (Microsoft.Data.Sqlite.SqliteException)
         {
-            ShowError("用户名已存在");
+            ShowError(AppText.Get(Language.UsernameExists));
         }
     }
 

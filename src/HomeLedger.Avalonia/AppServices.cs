@@ -13,6 +13,8 @@ public static class Session
 /// <summary>简易服务定位器（单机自用，无并发注册需求）。</summary>
 public static class AppServices
 {
+    public static string DataDirectory { get; } = Environment.GetEnvironmentVariable("HOMELEDGER_DATA_DIRECTORY") ?? Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "HomeLedger");
     public static readonly string DbPath = ResolveDbPath();
 
     public static IDbConnectionFactory Db { get; }
@@ -33,14 +35,12 @@ public static class AppServices
 
     private static string ResolveDbPath()
     {
-        var directory = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "HomeLedger");
+        var directory = DataDirectory;
         var dbPath = Path.Combine(directory, "ledger.db");
 
         // 旧版把库放在 exe 旁；首次升级时迁移已有数据到应用数据目录。
         var legacyPath = Path.Combine(AppContext.BaseDirectory, "ledger.db");
-        if (!File.Exists(dbPath) && File.Exists(legacyPath))
+        if (Environment.GetEnvironmentVariable("HOMELEDGER_DATA_DIRECTORY") is null && !File.Exists(dbPath) && File.Exists(legacyPath))
         {
             Directory.CreateDirectory(directory);
             File.Copy(legacyPath, dbPath);

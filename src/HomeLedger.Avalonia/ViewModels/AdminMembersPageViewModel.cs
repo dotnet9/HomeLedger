@@ -31,19 +31,19 @@ public sealed class UserRowViewModel
 
     public bool IsMember => Item.Role == Role.Member;
 
-    public string RoleText => Item.Role == Role.Admin ? "管理员" : "成员";
+    public string RoleText => Item.Role == Role.Admin ? AppText.Get(Language.Administrator) : AppText.Get(Language.Member);
 
-    public IBrush RoleBg => Item.Role == Role.Admin ? SolidColorBrush.Parse("#f9efdb") : SolidColorBrush.Parse("#e3f2ec");
+    public IBrush RoleBg => Item.Role == Role.Admin ? HomeLedger.Avalonia.Services.ThemeBrush.Get("StudioRaised") : HomeLedger.Avalonia.Services.ThemeBrush.Get("FinancePositiveSurface");
 
-    public IBrush RoleFg => Item.Role == Role.Admin ? SolidColorBrush.Parse("#a97822") : SolidColorBrush.Parse("#147d64");
+    public IBrush RoleFg => Item.Role == Role.Admin ? HomeLedger.Avalonia.Services.ThemeBrush.Get("StudioAccent") : HomeLedger.Avalonia.Services.ThemeBrush.Get("StudioAccent");
 
-    public string ActiveText => Item.IsActive ? "启用" : "已停用";
+    public string ActiveText => Item.IsActive ? AppText.Get(Language.Enable) : AppText.Get(Language.Disabled);
 
-    public IBrush ActiveBg => Item.IsActive ? SolidColorBrush.Parse("#e3f2ec") : SolidColorBrush.Parse("#f0eee8");
+    public IBrush ActiveBg => Item.IsActive ? HomeLedger.Avalonia.Services.ThemeBrush.Get("FinancePositiveSurface") : HomeLedger.Avalonia.Services.ThemeBrush.Get("StudioRaised");
 
-    public IBrush ActiveFg => Item.IsActive ? SolidColorBrush.Parse("#2f9e6e") : SolidColorBrush.Parse("#99a096");
+    public IBrush ActiveFg => Item.IsActive ? HomeLedger.Avalonia.Services.ThemeBrush.Get("FinanceIncome") : HomeLedger.Avalonia.Services.ThemeBrush.Get("StudioMuted");
 
-    public string ToggleText => Item.IsActive ? "停用" : "启用";
+    public string ToggleText => Item.IsActive ? AppText.Get(Language.Disable) : AppText.Get(Language.Enable);
 
     public string TxCount => Item.Role == Role.Member ? CountTransactions().ToString() : "—";
 
@@ -76,13 +76,22 @@ public sealed class AdminMembersPageViewModel : BindableBase
     public Func<Task<bool>>? ShowCreateUserDialogAsync { get; set; }
 
     public ObservableCollection<UserRowViewModel> Users { get; } = [];
+    private string? _keyword;
+    public string? Keyword
+    {
+        get => _keyword;
+        set { if (SetProperty(ref _keyword, value)) Refresh(); }
+    }
 
     public ICommand CreateCommand { get; }
 
     public void Refresh()
     {
         Users.Clear();
-        foreach (var user in _auth.ListUsers())
+        var keyword = Keyword?.Trim();
+        foreach (var user in _auth.ListUsers().Where(user => string.IsNullOrEmpty(keyword) ||
+                     user.Username.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                     user.DisplayName.Contains(keyword, StringComparison.OrdinalIgnoreCase)))
             Users.Add(new UserRowViewModel(user, _db, Reset, Toggle));
     }
 

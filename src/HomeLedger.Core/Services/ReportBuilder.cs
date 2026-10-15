@@ -63,7 +63,7 @@ public class ReportBuilder(LedgerService ledger, DepositService deposits)
             From = from,
             To = to,
             OwnerName = ownerName,
-            Title = userId is null ? "全家财务报表" : $"{ownerName} 的财务报表",
+            Title = userId is null ? AppText.Get(Language.FamilyReport) : AppText.Format(Language.MemberReport, ownerName),
         };
 
         var summary = userId is { } uid ? ledger.Summary(uid, from, to) : ledger.SummaryAll(from, to);

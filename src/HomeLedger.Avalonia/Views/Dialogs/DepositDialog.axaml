@@ -1,24 +1,24 @@
 <codewf:CodeWFWindow xmlns="https://github.com/avaloniaui" xmlns:codewf="https://codewf.com"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:l="using:HomeLedger.Core.I18n" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="HomeLedger.Avalonia.Views.Dialogs.DepositDialog"
-        Title="存入存款" Width="400" SizeToContent="Height" CanResize="False"
-        WindowStartupLocation="CenterOwner" Background="#f7f5f0">
-    <Border Margin="14" CornerRadius="14" Background="White" BorderBrush="#e9e5dc" BorderThickness="1" Padding="24">
+        Title="{codewf:I18n {x:Static l:Language.AddDeposit}}" Width="400" SizeToContent="Height" CanResize="False"
+        WindowStartupLocation="CenterOwner" Background="{DynamicResource StudioBackground}">
+    <Border Margin="14" CornerRadius="14" Background="{DynamicResource StudioSurface}" BorderBrush="{DynamicResource StudioBorder}" BorderThickness="1" Padding="24">
         <StackPanel Spacing="12">
-            <TextBlock Text="存入存款" FontSize="16" FontWeight="Bold" Foreground="#147d64"/>
-            <TextBlock Text="存在父母处的钱，单利按日计息" FontSize="12" Foreground="#99a096"/>
-            <TextBlock Text="金额" FontSize="12" Foreground="#5a6058"/>
+            <TextBlock Text="{codewf:I18n {x:Static l:Language.AddDeposit}}" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource StudioAccent}"/>
+            <TextBlock Text="{codewf:I18n {x:Static l:Language.DepositHint}}" FontSize="12" Foreground="{DynamicResource StudioMuted}"/>
+            <TextBlock Text="{codewf:I18n {x:Static l:Language.Amount}}" FontSize="12" Foreground="{DynamicResource StudioText}"/>
             <TextBox x:Name="AmountBox" PlaceholderText="0.00" Height="40" FontSize="18" FontFamily="Georgia" TextChanged="OnInputChanged"/>
-            <TextBlock Text="年利率（百分数，默认 10 表示 10%，每笔可单独设置）" FontSize="12" Foreground="#5a6058"/>
+            <TextBlock Text="{codewf:I18n {x:Static l:Language.AnnualRateHint}}" FontSize="12" Foreground="{DynamicResource StudioText}"/>
             <TextBox x:Name="RateBox" Height="36" TextChanged="OnInputChanged"/>
-            <TextBlock Text="存入日期（起息日）" FontSize="12" Foreground="#5a6058"/>
+            <TextBlock Text="{codewf:I18n {x:Static l:Language.DepositDate}}" FontSize="12" Foreground="{DynamicResource StudioText}"/>
             <DatePicker x:Name="DatePicker"/>
-            <TextBlock Text="备注" FontSize="12" Foreground="#5a6058"/>
-            <TextBox x:Name="NoteBox" PlaceholderText="选填…" Height="36"/>
-            <TextBlock x:Name="ErrorText" Foreground="#c4553d" FontSize="12" IsVisible="False" TextWrapping="Wrap"/>
+            <TextBlock Text="{codewf:I18n {x:Static l:Language.Note}}" FontSize="12" Foreground="{DynamicResource StudioText}"/>
+            <TextBox x:Name="NoteBox" PlaceholderText="{codewf:I18n {x:Static l:Language.Optional}}" Height="36"/>
+            <TextBlock x:Name="ErrorText" Foreground="{DynamicResource FinanceExpense}" FontSize="12" IsVisible="False" TextWrapping="Wrap"/>
             <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right" Margin="0,8,0,0">
-                <Button Content="取消" Click="OnCancel" IsCancel="True" CornerRadius="10" MinWidth="72"/>
-                <Button x:Name="ConfirmButton" Content="存入" Click="OnConfirm" IsDefault="True" IsEnabled="False" Background="#147d64" Foreground="White" CornerRadius="10" MinWidth="88"/>
+                <Button Content="{codewf:I18n {x:Static l:Language.Cancel}}" Click="OnCancel" IsCancel="True" CornerRadius="10" MinWidth="72"/>
+                <Button x:Name="ConfirmButton" Content="{codewf:I18n {x:Static l:Language.Deposit}}" Click="OnConfirm" IsDefault="True" IsEnabled="False" Background="{DynamicResource StudioAccent}" Foreground="White" CornerRadius="10" MinWidth="88"/>
             </StackPanel>
         </StackPanel>
     </Border>

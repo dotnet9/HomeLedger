@@ -24,11 +24,10 @@ public partial class TransactionDialog : CodeWFWindow
     public TransactionDialog(long userId, TransactionItem? editing = null)
     {
         InitializeComponent();
-        LeftContent = new TextBlock { Text = "记一笔", FontSize = 13, FontWeight = FontWeight.SemiBold,
-            Foreground = Brush.Parse("#2b2f2c"), Margin = new Thickness(14, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center };
+        HomeLedger.Avalonia.Services.WindowChrome.Apply(this, Language.AddTransaction);
         _userId = userId;
         _editing = editing;
-        HeaderText.Text = editing is null ? "记一笔" : "编辑记录";
+        HeaderText.Text = editing is null ? AppText.Get(Language.AddTransaction) : AppText.Get(Language.EditTransaction);
         var initDate = editing?.Date ?? DateOnly.FromDateTime(DateTime.Today);
         DatePicker.SelectedDate = new DateTimeOffset(initDate.ToDateTime(TimeOnly.MinValue));
         if (editing is not null)
@@ -84,7 +83,7 @@ public partial class TransactionDialog : CodeWFWindow
     {
         if (!decimal.TryParse(AmountBox.Text?.Trim(), out var amount) || amount <= 0)
         {
-            ShowError("请输入正确的金额");
+            ShowError(AppText.Get(Language.AmountInvalid));
             AmountBox.Focus();
             AmountBox.SelectAll();
             return;
@@ -94,7 +93,7 @@ public partial class TransactionDialog : CodeWFWindow
         var categories = _ledger.ListCategories(_userId, kind);
         if (CategoryBox.SelectedIndex < 0 || CategoryBox.SelectedIndex >= categories.Count)
         {
-            ShowError("请选择分类");
+            ShowError(AppText.Get(Language.CategoryRequired));
             CategoryBox.Focus();
             return;
         }

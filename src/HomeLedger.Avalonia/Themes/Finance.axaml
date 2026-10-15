@@ -1,0 +1,23 @@
+<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Styles.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="FinanceIncome">#237B55</SolidColorBrush>
+                    <SolidColorBrush x:Key="FinanceExpense">#B54732</SolidColorBrush>
+                    <SolidColorBrush x:Key="FinancePositiveSurface">#E3F2EC</SolidColorBrush>
+                    <SolidColorBrush x:Key="FinanceNegativeSurface">#F9E9E4</SolidColorBrush>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="FinanceIncome">#79DDB0</SolidColorBrush>
+                    <SolidColorBrush x:Key="FinanceExpense">#FFA48D</SolidColorBrush>
+                    <SolidColorBrush x:Key="FinancePositiveSurface">#193D31</SolidColorBrush>
+                    <SolidColorBrush x:Key="FinanceNegativeSurface">#482B29</SolidColorBrush>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </Styles.Resources>
+    <Style Selector="TextBlock">
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+</Styles>

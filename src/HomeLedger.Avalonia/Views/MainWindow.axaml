@@ -1,31 +1,31 @@
-﻿<codewf:CodeWFWindow xmlns="https://github.com/avaloniaui" xmlns:codewf="https://codewf.com"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+<codewf:CodeWFWindow xmlns="https://github.com/avaloniaui" xmlns:codewf="https://codewf.com"
+        xmlns:l="using:HomeLedger.Core.I18n" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="HomeLedger.Avalonia.Views.MainWindow"
-        Title="HomeLedger 家庭记账" Width="1280" Height="840" MinWidth="960" MinHeight="640"
+        Title="{codewf:I18n {x:Static l:Language.AppTitle}}" Width="1280" Height="840" MinWidth="960" MinHeight="640"
         Icon="avares://HomeLedger.Avalonia/Assets/logo.ico"
-        WindowStartupLocation="CenterScreen" Background="#f7f5f0">
+        WindowStartupLocation="CenterScreen" Background="{DynamicResource StudioBackground}">
     <DockPanel>
         <!-- 侧边导航：玉账浮层 -->
         <Border DockPanel.Dock="Left" Width="210" Margin="12,0,0,12" Padding="10"
-                Background="White" BorderBrush="#e9e5dc" BorderThickness="1" CornerRadius="16">
+                Background="{DynamicResource StudioSurface}" BorderBrush="{DynamicResource StudioBorder}" BorderThickness="1" CornerRadius="16">
             <DockPanel>
                 <StackPanel DockPanel.Dock="Bottom">
-                    <Button x:Name="ChangePasswordButton" Content="修改密码" Click="OnChangePassword"
+                    <Button Content="{codewf:I18n {x:Static l:Language.AppearanceTitle}}" Click="OnAppearance" Margin="0,0,0,8" HorizontalAlignment="Stretch" CornerRadius="10"/><Button x:Name="ChangePasswordButton" Content="{codewf:I18n {x:Static l:Language.ChangePassword}}" Click="OnChangePassword"
                             Margin="0,0,0,8" HorizontalAlignment="Stretch" CornerRadius="10"/>
-                    <Button x:Name="LogoutButton" Content="切换账号" Click="OnLogout"
-                            ToolTip.Tip="退出当前账号并返回登录页"
+                    <Button x:Name="LogoutButton" Content="{codewf:I18n {x:Static l:Language.SwitchAccount}}" Click="OnLogout"
+                            ToolTip.Tip="{codewf:I18n {x:Static l:Language.LogoutHint}}"
                             Margin="0,0,0,12" HorizontalAlignment="Stretch" CornerRadius="10"/>
-                    <Button x:Name="CheckUpdateButton" Content="检查更新" Click="OnCheckUpdate"
-                            ToolTip.Tip="检查 GitHub Releases 是否有新版本"
+                    <Button x:Name="CheckUpdateButton" Content="{codewf:I18n {x:Static l:Language.AboutTitle}}" Click="OnCheckUpdate"
+                            ToolTip.Tip="{codewf:I18n {x:Static l:Language.AboutUpdateHint}}"
                             Margin="0,0,0,12" HorizontalAlignment="Stretch" CornerRadius="10"/>
                     <StackPanel Orientation="Horizontal" Spacing="10" Margin="4,0,0,6">
-                        <Border Width="36" Height="36" CornerRadius="12" Background="#e3f2ec">
-                            <TextBlock Text="{Binding AvatarText}" Foreground="#0c5a48" FontWeight="Bold"
+                        <Border Width="36" Height="36" CornerRadius="12" Background="{DynamicResource FinancePositiveSurface}">
+                            <TextBlock Text="{Binding AvatarText}" Foreground="{DynamicResource StudioAccent}" FontWeight="Bold"
                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <StackPanel VerticalAlignment="Center">
                             <TextBlock Text="{Binding UserName}" FontSize="13" FontWeight="Bold"/>
-                            <TextBlock Text="{Binding RoleText}" FontSize="11" Foreground="#99a096"/>
+                            <TextBlock Text="{Binding RoleText}" MaxWidth="140" TextWrapping="Wrap" FontSize="12" Foreground="{DynamicResource StudioMuted}"/>
                         </StackPanel>
                     </StackPanel>
                 </StackPanel>
@@ -37,14 +37,14 @@
                             <Setter Property="Margin" Value="0,2"/>
                             <Setter Property="CornerRadius" Value="11"/>
                             <Setter Property="Background" Value="Transparent"/>
-                            <Setter Property="Foreground" Value="#5a6058"/>
+                            <Setter Property="Foreground" Value="{DynamicResource StudioText}"/>
                         </Style>
                         <Style Selector="ListBoxItem:pointerover">
-                            <Setter Property="Background" Value="#f3f1ea"/>
-                            <Setter Property="Foreground" Value="#2b2f2c"/>
+                            <Setter Property="Background" Value="{DynamicResource StudioRaised}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource StudioText}"/>
                         </Style>
                         <Style Selector="ListBoxItem:selected">
-                            <Setter Property="Background" Value="#147d64"/>
+                            <Setter Property="Background" Value="{DynamicResource StudioAccent}"/>
                             <Setter Property="Foreground" Value="White"/>
                             <Setter Property="FontWeight" Value="SemiBold"/>
                         </Style>

@@ -15,7 +15,7 @@ public sealed class CategoryOptionViewModel
     public CategoryOptionViewModel(long? id, string name)
     {
         Id = id;
-        Name = name;
+        Name = AppText.Category(name);
     }
 
     public long? Id { get; }
@@ -36,17 +36,17 @@ public sealed class TransactionRowViewModel
 
     public string DateText => Item.Date.ToString("yyyy-MM-dd");
 
-    public string KindText => Item.Kind == TxKind.Income ? "收入" : "支出";
+    public string KindText => Item.Kind == TxKind.Income ? AppText.Get(Language.Income) : AppText.Get(Language.Expense);
 
-    public IBrush KindBg => Item.Kind == TxKind.Income ? SolidColorBrush.Parse("#e3f2ec") : SolidColorBrush.Parse("#f9e9e4");
+    public IBrush KindBg => Item.Kind == TxKind.Income ? HomeLedger.Avalonia.Services.ThemeBrush.Get("FinancePositiveSurface") : HomeLedger.Avalonia.Services.ThemeBrush.Get("FinanceNegativeSurface");
 
-    public IBrush KindFg => Item.Kind == TxKind.Income ? SolidColorBrush.Parse("#2f9e6e") : SolidColorBrush.Parse("#c4553d");
+    public IBrush KindFg => Item.Kind == TxKind.Income ? HomeLedger.Avalonia.Services.ThemeBrush.Get("FinanceIncome") : HomeLedger.Avalonia.Services.ThemeBrush.Get("FinanceExpense");
 
     public IBrush AmountBrush => KindFg;
 
     public string AmountText => (Item.Kind == TxKind.Income ? "+" : "-") + Item.Amount.ToString("0.00");
 
-    public string CategoryName => Item.CategoryName;
+    public string CategoryName => AppText.Category(Item.CategoryName);
 
     public string Note => Item.Note;
 
@@ -76,6 +76,9 @@ public sealed class MemberLedgerPageViewModel : BindableBase
     private string _monthExpenseText = "0.00";
     private string _monthBalanceText = "0.00";
     private string _totalBalanceText = "0.00";
+    private IReadOnlyList<TransactionItem> _filtered = [];
+    private int _pageIndex;
+    private const int PageSize = 10;
 
     public MemberLedgerPageViewModel(long userId, LedgerService ledger)
     {
@@ -85,6 +88,8 @@ public sealed class MemberLedgerPageViewModel : BindableBase
         AddCommand = new AsyncDelegateCommand(AddAsync);
         SaveQuickCommand = new AsyncDelegateCommand(SaveQuickAsync);
         FilterCommand = new DelegateCommand(Refresh);
+        PreviousPageCommand = new DelegateCommand(() => { _pageIndex--; RenderPage(); }, () => _pageIndex > 0);
+        NextPageCommand = new DelegateCommand(() => { _pageIndex++; RenderPage(); }, () => (_pageIndex + 1) * PageSize < _filtered.Count);
 
         var now = DateOnly.FromDateTime(DateTime.Today);
         _quickDate = new DateTimeOffset(now.ToDateTime(TimeOnly.MinValue));
@@ -98,6 +103,19 @@ public sealed class MemberLedgerPageViewModel : BindableBase
     public Func<TransactionItem?, Task<bool>>? ShowTransactionDialogAsync { get; set; }
 
     public ObservableCollection<TransactionRowViewModel> Transactions { get; } = [];
+    public DelegateCommand PreviousPageCommand { get; }
+    public DelegateCommand NextPageCommand { get; }
+    public string PageText => AppText.Format(Language.PageIndicator, _pageIndex + 1, Math.Max(1, (_filtered.Count + PageSize - 1) / PageSize), _filtered.Count);
+
+    private void RenderPage()
+    {
+        Transactions.Clear();
+        foreach (var item in _filtered.Skip(_pageIndex * PageSize).Take(PageSize))
+            Transactions.Add(new TransactionRowViewModel(item, EditAsync, Delete));
+        RaisePropertyChanged(nameof(PageText));
+        PreviousPageCommand.RaiseCanExecuteChanged();
+        NextPageCommand.RaiseCanExecuteChanged();
+    }
 
     public ObservableCollection<CategoryOptionViewModel> QuickCategories { get; } = [];
 
@@ -179,7 +197,7 @@ public sealed class MemberLedgerPageViewModel : BindableBase
 
     public bool HasQuickMessage => !string.IsNullOrWhiteSpace(QuickMessage);
 
-    public IBrush QuickMessageBrush => _isQuickError ? SolidColorBrush.Parse("#c4553d") : SolidColorBrush.Parse("#2f9e6e");
+    public IBrush QuickMessageBrush => _isQuickError ? HomeLedger.Avalonia.Services.ThemeBrush.Get("FinanceExpense") : HomeLedger.Avalonia.Services.ThemeBrush.Get("FinanceIncome");
 
     public DateTimeOffset? FromDate
     {
@@ -246,6 +264,13 @@ public sealed class MemberLedgerPageViewModel : BindableBase
         private set => SetProperty(ref _totalBalanceText, value);
     }
 
+    public void RefreshLocalization()
+    {
+        LoadQuickCategories();
+        LoadFilterCategories();
+        Refresh();
+    }
+
     public void Refresh()
     {
         var from = FromDate is { } f ? DateOnly.FromDateTime(f.Date) : (DateOnly?)null;
@@ -264,18 +289,18 @@ public sealed class MemberLedgerPageViewModel : BindableBase
             Keyword = string.IsNullOrWhiteSpace(Keyword) ? null : Keyword.Trim(),
         });
 
-        Transactions.Clear();
-        foreach (var item in items)
-            Transactions.Add(new TransactionRowViewModel(item, EditAsync, Delete));
+        _filtered = items;
+        _pageIndex = Math.Min(_pageIndex, Math.Max(0, (items.Count - 1) / PageSize));
+        RenderPage();
 
         if (from is { } f2 && to is { } t2)
         {
             var summary = _ledger.Summary(_userId, f2, t2);
-            SummaryText = $"区间收入 {summary.Income:0.00} · 支出 {summary.Expense:0.00} · 结余 {summary.Balance:0.00}，共 {items.Count} 条";
+            SummaryText = AppText.Format(Language.LedgerRangeSummary, summary.Income, summary.Expense, summary.Balance, items.Count);
         }
         else
         {
-            SummaryText = $"共 {items.Count} 条（选择日期区间可查看汇总）";
+            SummaryText = AppText.Format(Language.LedgerCountSummary, items.Count);
         }
 
         var monthStart = new DateOnly(DateTime.Today.Year, DateTime.Today.Month, 1);
@@ -294,7 +319,7 @@ public sealed class MemberLedgerPageViewModel : BindableBase
 
         if (!TryParseAmount(QuickAmountText, out var amount) || amount <= 0)
         {
-            ShowQuickMessage("请输入大于 0 的金额", true);
+            ShowQuickMessage(AppText.Get(Language.PositiveAmountRequired), true);
             return;
         }
 
@@ -317,7 +342,7 @@ public sealed class MemberLedgerPageViewModel : BindableBase
         QuickAmountText = "";
         QuickNote = "";
         QuickDate = new DateTimeOffset(DateTime.Today);
-        ShowQuickMessage("已保存一笔记录", false);
+        ShowQuickMessage(AppText.Get(Language.TransactionSaved), false);
         Refresh();
     }
 
@@ -362,7 +387,7 @@ public sealed class MemberLedgerPageViewModel : BindableBase
         var kind = KindFilterIndex switch { 1 => TxKind.Income, 2 => TxKind.Expense, _ => (TxKind?)null };
 
         FilterCategories.Clear();
-        FilterCategories.Add(new CategoryOptionViewModel(null, "全部分类"));
+        FilterCategories.Add(new CategoryOptionViewModel(null, AppText.Get(Language.AllCategories)));
         foreach (var category in _ledger.ListCategories(_userId, kind))
             FilterCategories.Add(new CategoryOptionViewModel(category.Id, category.Name));
 

@@ -1,20 +1,20 @@
 <UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:HomeLedger.Core.I18n" xmlns:codewf="https://codewf.com" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="HomeLedger.Avalonia.Views.Pages.MemberLedgerPage">
     <StackPanel Spacing="14">
         <StackPanel Orientation="Horizontal" Spacing="8">
-            <TextBlock Text="记账" FontSize="21" FontWeight="Bold" VerticalAlignment="Center"/>
-            <Border Width="34" Height="4" VerticalAlignment="Center" Margin="10,12,0,0" Background="#d9a441"/>
+            <TextBlock Text="{codewf:I18n {x:Static l:Language.Ledger}}" FontSize="21" FontWeight="Bold" VerticalAlignment="Center"/>
+            <Border Width="34" Height="4" VerticalAlignment="Center" Margin="10,12,0,0" Background="{DynamicResource StudioAccent}"/>
         </StackPanel>
-        <TextBlock Text="快速记一笔自己的收入或支出，回车即保存" FontSize="13" Foreground="#99a096" Margin="0,-8,0,0"/>
+        <TextBlock Text="{codewf:I18n {x:Static l:Language.QuickEntryDescription}}" FontSize="13" Foreground="{DynamicResource StudioMuted}" Margin="0,-8,0,0"/>
 
         <!-- 快速记账 -->
-        <Border Background="White" BorderBrush="#e9e5dc" BorderThickness="1" CornerRadius="16" Padding="18"
+        <Border Background="{DynamicResource StudioSurface}" BorderBrush="{DynamicResource StudioBorder}" BorderThickness="1" CornerRadius="16" Padding="18"
                 KeyDown="OnQuickFormKeyDown">
             <StackPanel Spacing="10">
-                <Grid ColumnDefinitions="200,1.1*,150,170,*,110" ColumnSpacing="12">
+                <Grid ColumnDefinitions="170,160,150,160,*,120" ColumnSpacing="12">
                     <StackPanel Spacing="6">
-                        <TextBlock Text="金额" FontSize="12" Foreground="#5a6058"/>
+                        <TextBlock Text="{codewf:I18n {x:Static l:Language.Amount}}" FontSize="12" Foreground="{DynamicResource StudioText}"/>
                         <TextBox x:Name="QuickAmountBox"
                                  Text="{Binding QuickAmountText, UpdateSourceTrigger=PropertyChanged}"
                                  PlaceholderText="￥ 0.00"
@@ -26,31 +26,31 @@
                     </StackPanel>
 
                     <StackPanel Grid.Column="1" Spacing="6">
-                        <TextBlock Text="类型" FontSize="12" Foreground="#5a6058"/>
-                        <Border Height="36" Background="#efede6" CornerRadius="11" Padding="3">
+                        <TextBlock Text="{codewf:I18n {x:Static l:Language.Type}}" FontSize="12" Foreground="{DynamicResource StudioText}"/>
+                        <Border Height="36" Background="{DynamicResource StudioRaised}" CornerRadius="11" Padding="3">
                             <Border.Styles>
                                 <Style Selector="ToggleButton">
                                     <Setter Property="Background" Value="Transparent"/>
                                     <Setter Property="BorderThickness" Value="0"/>
                                     <Setter Property="CornerRadius" Value="8"/>
                                     <Setter Property="FontSize" Value="13"/>
-                                    <Setter Property="Foreground" Value="#5a6058"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource StudioText}"/>
                                 </Style>
                                 <Style Selector="ToggleButton:checked">
-                                    <Setter Property="Background" Value="White"/>
-                                    <Setter Property="Foreground" Value="#0c5a48"/>
+                                    <Setter Property="Background" Value="{DynamicResource StudioSurface}"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource StudioAccent}"/>
                                     <Setter Property="FontWeight" Value="SemiBold"/>
                                 </Style>
                             </Border.Styles>
                             <UniformGrid Columns="2">
-                                <ToggleButton Content="支出" IsChecked="{Binding IsQuickExpense}"/>
-                                <ToggleButton Content="收入" IsChecked="{Binding IsQuickIncome}"/>
+                                <ToggleButton Content="{codewf:I18n {x:Static l:Language.Expense}}" IsChecked="{Binding IsQuickExpense}"/>
+                                <ToggleButton Content="{codewf:I18n {x:Static l:Language.Income}}" IsChecked="{Binding IsQuickIncome}"/>
                             </UniformGrid>
                         </Border>
                     </StackPanel>
 
                     <StackPanel Grid.Column="2" Spacing="6">
-                        <TextBlock Text="分类" FontSize="12" Foreground="#5a6058"/>
+                        <TextBlock Text="{codewf:I18n {x:Static l:Language.Category}}" FontSize="12" Foreground="{DynamicResource StudioText}"/>
                         <ComboBox ItemsSource="{Binding QuickCategories}" SelectedIndex="{Binding QuickCategoryIndex}" Height="36" HorizontalAlignment="Stretch">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
@@ -61,19 +61,19 @@
                     </StackPanel>
 
                     <StackPanel Grid.Column="3" Spacing="6">
-                        <TextBlock Text="日期" FontSize="12" Foreground="#5a6058"/>
-                        <DatePicker SelectedDate="{Binding QuickDate}" Height="36"/>
+                        <TextBlock Text="{codewf:I18n {x:Static l:Language.Date}}" FontSize="12" Foreground="{DynamicResource StudioText}"/>
+                        <CalendarDatePicker SelectedDate="{Binding QuickDate, Converter={StaticResource DateValueConverter}}" Height="36"/>
                     </StackPanel>
 
                     <StackPanel Grid.Column="4" Spacing="6">
-                        <TextBlock Text="备注" FontSize="12" Foreground="#5a6058"/>
-                        <TextBox Text="{Binding QuickNote, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="选填…" Height="36" CornerRadius="10"/>
+                        <TextBlock Text="{codewf:I18n {x:Static l:Language.Note}}" FontSize="12" Foreground="{DynamicResource StudioText}"/>
+                        <TextBox Text="{Binding QuickNote, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="{codewf:I18n {x:Static l:Language.Optional}}" Height="36" CornerRadius="10"/>
                     </StackPanel>
 
                     <StackPanel Grid.Column="5" Spacing="6">
                         <TextBlock Text=" " FontSize="12"/>
-                        <Button Content="＋ 记一笔" Command="{Binding SaveQuickCommand}" Height="36"
-                                Background="#147d64" Foreground="White" CornerRadius="10" FontWeight="SemiBold"/>
+                        <Button Content="{codewf:I18n {x:Static l:Language.NewTransaction}}" Command="{Binding SaveQuickCommand}" Height="36"
+                                Background="{DynamicResource StudioAccent}" Foreground="White" CornerRadius="10" FontWeight="SemiBold"/>
                     </StackPanel>
                 </Grid>
 
@@ -86,43 +86,43 @@
 
         <!-- 汇总卡片 -->
         <UniformGrid Columns="4">
-            <Border Background="White" BorderBrush="#e9e5dc" BorderThickness="1" CornerRadius="16" Padding="16" Margin="0,0,7,0">
+            <Border Background="{DynamicResource StudioSurface}" BorderBrush="{DynamicResource StudioBorder}" BorderThickness="1" CornerRadius="16" Padding="16" Margin="0,0,7,0">
                 <StackPanel>
-                    <StackPanel Orientation="Horizontal"><Border Width="6" Height="6" Background="#d9a441"/><TextBlock Text=" 本月收入" FontSize="12" Foreground="#99a096"/></StackPanel>
-                    <TextBlock Text="{Binding MonthIncomeText}" FontSize="24" FontWeight="Bold" FontFamily="Georgia" Foreground="#2f9e6e" Margin="0,7,0,0"/>
+                    <StackPanel Orientation="Horizontal"><Border Width="6" Height="6" Background="{DynamicResource StudioAccent}"/><TextBlock Text="{codewf:I18n {x:Static l:Language.MonthIncome}}" FontSize="12" Foreground="{DynamicResource StudioMuted}"/></StackPanel>
+                    <TextBlock Text="{Binding MonthIncomeText}" FontSize="24" FontWeight="Bold" FontFamily="Georgia" Foreground="{DynamicResource FinanceIncome}" Margin="0,7,0,0"/>
                 </StackPanel>
             </Border>
-            <Border Background="White" BorderBrush="#e9e5dc" BorderThickness="1" CornerRadius="16" Padding="16" Margin="0,0,7,0">
+            <Border Background="{DynamicResource StudioSurface}" BorderBrush="{DynamicResource StudioBorder}" BorderThickness="1" CornerRadius="16" Padding="16" Margin="0,0,7,0">
                 <StackPanel>
-                    <StackPanel Orientation="Horizontal"><Border Width="6" Height="6" Background="#d9a441"/><TextBlock Text=" 本月支出" FontSize="12" Foreground="#99a096"/></StackPanel>
-                    <TextBlock Text="{Binding MonthExpenseText}" FontSize="24" FontWeight="Bold" FontFamily="Georgia" Foreground="#c4553d" Margin="0,7,0,0"/>
+                    <StackPanel Orientation="Horizontal"><Border Width="6" Height="6" Background="{DynamicResource StudioAccent}"/><TextBlock Text="{codewf:I18n {x:Static l:Language.MonthExpense}}" FontSize="12" Foreground="{DynamicResource StudioMuted}"/></StackPanel>
+                    <TextBlock Text="{Binding MonthExpenseText}" FontSize="24" FontWeight="Bold" FontFamily="Georgia" Foreground="{DynamicResource FinanceExpense}" Margin="0,7,0,0"/>
                 </StackPanel>
             </Border>
-            <Border Background="White" BorderBrush="#e9e5dc" BorderThickness="1" CornerRadius="16" Padding="16" Margin="0,0,7,0">
+            <Border Background="{DynamicResource StudioSurface}" BorderBrush="{DynamicResource StudioBorder}" BorderThickness="1" CornerRadius="16" Padding="16" Margin="0,0,7,0">
                 <StackPanel>
-                    <StackPanel Orientation="Horizontal"><Border Width="6" Height="6" Background="#d9a441"/><TextBlock Text=" 本月结余" FontSize="12" Foreground="#99a096"/></StackPanel>
+                    <StackPanel Orientation="Horizontal"><Border Width="6" Height="6" Background="{DynamicResource StudioAccent}"/><TextBlock Text="{codewf:I18n {x:Static l:Language.MonthBalance}}" FontSize="12" Foreground="{DynamicResource StudioMuted}"/></StackPanel>
                     <TextBlock Text="{Binding MonthBalanceText}" FontSize="24" FontWeight="Bold" FontFamily="Georgia" Margin="0,7,0,0"/>
                 </StackPanel>
             </Border>
-            <Border Background="White" BorderBrush="#e9e5dc" BorderThickness="1" CornerRadius="16" Padding="16" Margin="7,0,0,0">
+            <Border Background="{DynamicResource StudioSurface}" BorderBrush="{DynamicResource StudioBorder}" BorderThickness="1" CornerRadius="16" Padding="16" Margin="7,0,0,0">
                 <StackPanel>
-                    <StackPanel Orientation="Horizontal"><Border Width="6" Height="6" Background="#d9a441"/><TextBlock Text=" 累计结余" FontSize="12" Foreground="#99a096"/></StackPanel>
+                    <StackPanel Orientation="Horizontal"><Border Width="6" Height="6" Background="{DynamicResource StudioAccent}"/><TextBlock Text="{codewf:I18n {x:Static l:Language.LifetimeBalance}}" FontSize="12" Foreground="{DynamicResource StudioMuted}"/></StackPanel>
                     <TextBlock Text="{Binding TotalBalanceText}" FontSize="24" FontWeight="Bold" FontFamily="Georgia" Margin="0,7,0,0"/>
                 </StackPanel>
             </Border>
         </UniformGrid>
 
         <!-- 记录列表 -->
-        <Border Background="White" BorderBrush="#e9e5dc" BorderThickness="1" CornerRadius="16" Padding="16">
+        <Border Background="{DynamicResource StudioSurface}" BorderBrush="{DynamicResource StudioBorder}" BorderThickness="1" CornerRadius="16" Padding="16">
             <StackPanel Spacing="12">
-                <StackPanel Orientation="Horizontal" Spacing="10" KeyDown="OnFilterAreaKeyDown">
-                    <DatePicker SelectedDate="{Binding FromDate}" Width="150"/>
-                    <TextBlock Text="~" VerticalAlignment="Center" Foreground="#99a096"/>
-                    <DatePicker SelectedDate="{Binding ToDate}" Width="150"/>
-                    <ComboBox SelectedIndex="{Binding KindFilterIndex}" MinWidth="100">
-                        <ComboBoxItem Content="全部类型" IsSelected="True"/>
-                        <ComboBoxItem Content="收入"/>
-                        <ComboBoxItem Content="支出"/>
+                <WrapPanel Orientation="Horizontal" KeyDown="OnFilterAreaKeyDown">
+                    <CalendarDatePicker SelectedDate="{Binding FromDate, Converter={StaticResource DateValueConverter}}" Width="150" Margin="0,0,10,8"/>
+                    <TextBlock Text="~" VerticalAlignment="Center" Foreground="{DynamicResource StudioMuted}"/>
+                    <CalendarDatePicker SelectedDate="{Binding ToDate, Converter={StaticResource DateValueConverter}}" Width="150" Margin="0,0,10,8"/>
+                    <ComboBox SelectedIndex="{Binding KindFilterIndex}" MinWidth="120" Margin="0,0,10,8">
+                        <ComboBoxItem Content="{codewf:I18n {x:Static l:Language.AllTypes}}" IsSelected="True"/>
+                        <ComboBoxItem Content="{codewf:I18n {x:Static l:Language.Income}}"/>
+                        <ComboBoxItem Content="{codewf:I18n {x:Static l:Language.Expense}}"/>
                     </ComboBox>
                     <ComboBox ItemsSource="{Binding FilterCategories}" SelectedIndex="{Binding FilterCategoryIndex}" MinWidth="120">
                         <ComboBox.ItemTemplate>
@@ -131,41 +131,46 @@
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
-                    <TextBox Text="{Binding Keyword, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="🔍 搜索备注…" MinWidth="160"
+                    <TextBox Text="{Binding Keyword, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="{codewf:I18n {x:Static l:Language.SearchNotes}}" Width="190" Margin="0,0,10,8"
                              KeyDown="OnFilterKeywordKeyDown"/>
-                    <Button Content="筛选" Command="{Binding FilterCommand}" CornerRadius="10"/>
-                </StackPanel>
+                    <Button Content="{codewf:I18n {x:Static l:Language.Filter}}" Command="{Binding FilterCommand}" CornerRadius="10"/>
+                </WrapPanel>
 
                 <Grid ColumnDefinitions="1.1*,0.8*,1.2*,1*,2.4*,1.1*" Margin="8,0">
-                    <TextBlock Text="日期" FontSize="12" Foreground="#99a096"/>
-                    <TextBlock Text="类型" FontSize="12" Foreground="#99a096" Grid.Column="1"/>
-                    <TextBlock Text="分类" FontSize="12" Foreground="#99a096" Grid.Column="2"/>
-                    <TextBlock Text="金额" FontSize="12" Foreground="#99a096" Grid.Column="3"/>
-                    <TextBlock Text="备注" FontSize="12" Foreground="#99a096" Grid.Column="4"/>
-                    <TextBlock Text="操作" FontSize="12" Foreground="#99a096" Grid.Column="5" HorizontalAlignment="Right"/>
+                    <TextBlock Text="{codewf:I18n {x:Static l:Language.Date}}" FontSize="12" Foreground="{DynamicResource StudioMuted}"/>
+                    <TextBlock Text="{codewf:I18n {x:Static l:Language.Type}}" FontSize="12" Foreground="{DynamicResource StudioMuted}" Grid.Column="1"/>
+                    <TextBlock Text="{codewf:I18n {x:Static l:Language.Category}}" FontSize="12" Foreground="{DynamicResource StudioMuted}" Grid.Column="2"/>
+                    <TextBlock Text="{codewf:I18n {x:Static l:Language.Amount}}" FontSize="12" Foreground="{DynamicResource StudioMuted}" Grid.Column="3"/>
+                    <TextBlock Text="{codewf:I18n {x:Static l:Language.Note}}" FontSize="12" Foreground="{DynamicResource StudioMuted}" Grid.Column="4"/>
+                    <TextBlock Text="{codewf:I18n {x:Static l:Language.Actions}}" FontSize="12" Foreground="{DynamicResource StudioMuted}" Grid.Column="5" HorizontalAlignment="Right"/>
                 </Grid>
-                <ScrollViewer Height="360">
+                <ScrollViewer MaxHeight="260">
                     <ItemsControl ItemsSource="{Binding Transactions}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Grid ColumnDefinitions="1.1*,0.8*,1.2*,1*,2.4*,1.1*" Margin="8,7" MinHeight="30">
                                     <TextBlock Text="{Binding DateText}" FontSize="13" VerticalAlignment="Center"/>
                                     <Border Grid.Column="1" Background="{Binding KindBg}" CornerRadius="6" Padding="8,2" HorizontalAlignment="Left" VerticalAlignment="Center">
-                                        <TextBlock Text="{Binding KindText}" FontSize="11" Foreground="{Binding KindFg}"/>
+                                        <TextBlock Text="{Binding KindText}" FontSize="12" Foreground="{Binding KindFg}"/>
                                     </Border>
                                     <TextBlock Text="{Binding CategoryName}" FontSize="13" Grid.Column="2" VerticalAlignment="Center"/>
                                     <TextBlock Text="{Binding AmountText}" FontSize="13" FontWeight="Bold" Foreground="{Binding AmountBrush}" Grid.Column="3" VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding Note}" FontSize="13" Foreground="#5a6058" Grid.Column="4" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                    <TextBlock Text="{Binding Note}" FontSize="13" Foreground="{DynamicResource StudioText}" Grid.Column="4" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
                                     <StackPanel Grid.Column="5" Orientation="Horizontal" HorizontalAlignment="Right">
-                                        <Button Content="编辑" FontSize="12" CornerRadius="8" Padding="10,4" Margin="0,0,6,0" Command="{Binding EditCommand}"/>
-                                        <Button Content="删除" FontSize="12" CornerRadius="8" Padding="10,4" Foreground="#c4553d" Command="{Binding DeleteCommand}"/>
+                                        <Button Content="{codewf:I18n {x:Static l:Language.Edit}}" FontSize="12" CornerRadius="8" Padding="10,4" Margin="0,0,6,0" Command="{Binding EditCommand}"/>
+                                        <Button Content="{codewf:I18n {x:Static l:Language.Delete}}" FontSize="12" CornerRadius="8" Padding="10,4" Foreground="{DynamicResource FinanceExpense}" Command="{Binding DeleteCommand}"/>
                                     </StackPanel>
                                 </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                 </ScrollViewer>
-                <TextBlock Text="{Binding SummaryText}" FontSize="12" Foreground="#99a096"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+                    <TextBlock Text="{Binding PageText}" VerticalAlignment="Center" FontSize="12" />
+                    <Button Content="{codewf:I18n {x:Static l:Language.PreviousPage}}" Command="{Binding PreviousPageCommand}" />
+                    <Button Content="{codewf:I18n {x:Static l:Language.NextPage}}" Command="{Binding NextPageCommand}" />
+                </StackPanel>
+                <TextBlock Text="{Binding SummaryText}" FontSize="12" Foreground="{DynamicResource StudioMuted}"/>
             </StackPanel>
         </Border>
     </StackPanel>

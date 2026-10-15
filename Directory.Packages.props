@@ -5,17 +5,21 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="CodeWF.Toolkit.Core" Version="1.0.0.1" />
-    <PackageVersion Include="CodeWF.Avalonia.Controls" Version="12.1.4.1" />
+    <PackageVersion Include="CodeWF.Toolkit.Core" Version="1.0.0.19" />
+    <PackageVersion Include="CodeWF.Avalonia.Controls" Version="12.1.4.20" />
+    <PackageVersion Include="CodeWF.Avalonia.Lang" Version="12.1.4.20" />
+    <PackageVersion Include="Irihi.Ursa" Version="2.2.0" />
+    <PackageVersion Include="Irihi.Ursa.Themes.Semi" Version="2.2.0" />
+    <PackageVersion Include="Avalonia.Headless" Version="12.1.4" />
     <!-- Avalonia -->
     <PackageVersion Include="Avalonia" Version="12.1.4" />
     <PackageVersion Include="Avalonia.Desktop" Version="12.1.4" />
     <PackageVersion Include="Semi.Avalonia" Version="12.1.0.1" />
     <!-- MVVM / DI -->
-    <PackageVersion Include="Prism.Avalonia" Version="8.1.97.11073" />
-    <PackageVersion Include="Prism.DryIoc.Avalonia" Version="8.1.97.11073" />
+    <PackageVersion Include="Prism.Core" Version="8.1.97" />
     <!-- 数据 -->
     <PackageVersion Include="Dapper" Version="2.1.79" />
+    <PackageVersion Include="Dapper.AOT" Version="1.0.52" />
     <PackageVersion Include="Microsoft.Data.Sqlite" Version="10.0.11" />
     <!-- 渲染与导出 -->
     <PackageVersion Include="SkiaSharp" Version="4.151.1" />
