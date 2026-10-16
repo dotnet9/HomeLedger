@@ -6,6 +6,7 @@
 #endif
 
 [Setup]
+LicenseFile=..\LICENSE
 AppId={{74EF99B5-9EB4-4D02-8164-8F78D465D08C}
 AppName=HomeLedger
 AppVersion={#AppVersion}
@@ -30,10 +31,11 @@ UninstallDisplayIcon={app}\HomeLedger.Desktop.exe
 WizardStyle=modern
 
 [Languages]
+Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "chinesesimplified"; MessagesFile: "Languages\ChineseSimplified.isl"
 
 [Tasks]
-Name: "desktopicon"; Description: "Create a desktop shortcut"; GroupDescription: "Additional shortcuts:"; Flags: unchecked
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
 Source: "{#SourceDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
@@ -43,4 +45,6 @@ Name: "{autoprograms}\HomeLedger"; Filename: "{app}\HomeLedger.Desktop.exe"; Wor
 Name: "{autodesktop}\HomeLedger"; Filename: "{app}\HomeLedger.Desktop.exe"; WorkingDir: "{app}"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\HomeLedger.Desktop.exe"; Description: "Launch HomeLedger"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\HomeLedger.Desktop.exe"; Description: "{cm:LaunchProgram,HomeLedger}"; Flags: nowait postinstall skipifsilent
+
+#include "installer\CodeWF.Setup.iss"
