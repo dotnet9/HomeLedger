@@ -1,0 +1,16 @@
+{
+  "id": "com.codewf.homeledger",
+  "package": "homeledger",
+  "command": "homeledger",
+  "name": "HomeLedger",
+  "chineseName": "个人记账本",
+  "summary": "Record expenses and review personal finances",
+  "chineseSummary": "记录收支并查看个人财务",
+  "description": "A desktop application for recording transactions and reviewing personal financial reports.",
+  "chineseDescription": "用于记录收支和查看个人财务报表的桌面应用。",
+  "categories": [
+    "Office",
+    "Finance"
+  ],
+  "homepage": "https://github.com/dotnet9/HomeLedger"
+}
