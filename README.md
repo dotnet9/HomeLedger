@@ -6,7 +6,7 @@ Avalonia 桌面家庭记账工具。多家庭成员独立账户、管理员全�
 
 ![0.1.13 原生主窗口](docs/media/homeledger-v0.1.13-main.png)
 
-0.1.13 本地候选版本的 Windows NativeAOT 真实控件离屏截图，使用隔离的成员与交易样例。截图来源、源码指纹和 SHA-256 见[媒体复核记录](docs/recheck25-native-media.md)。本轮尚未推送、创建版本标签或公开发布。
+0.1.13 本地候选版本的 Windows NativeAOT 真实控件离屏截图，使用隔离的成员与交易样例。截图来源、源码指纹和 SHA-256 见[媒体复核记录](docs/recheck25-native-media.md)。本机验证记录不替代 GitHub Release 发布状态。
 
 ## 功能
 
