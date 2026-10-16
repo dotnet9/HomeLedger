@@ -159,6 +159,58 @@ const {pathToFileURL}=require('node:url');
     if(scenario==='download-failed'){await page.locator('#update-action').click();await page.waitForTimeout(700);}
     await page.screenshot({path:path.join(output,'about-'+scenario+'.png')});results.push('Update scenario: '+scenario);
   }
+  const navigationColors=[];
+  for(const palette of expectedKeys)for(const mode of ['Light','Dark']){
+    await page.goto(pathToFileURL(path.join(base,'member-ledger.html')).href+'?palette='+palette+'&mode='+mode);
+    await page.addStyleTag({content:'*,*::before,*::after{transition:none!important;animation:none!important}'});
+    const selected=page.locator('.nav-item.active').first(),normal=page.locator('.nav-item:not(.active)').first();
+    await page.mouse.move(1,1);await recordNavigation(normal,'normal','--text',null);
+    await normal.hover();await recordNavigation(normal,'hover','--text','--raised');
+    await page.mouse.move(1,1);await recordNavigation(selected,'selected','--on-primary','--primary');
+    await selected.hover();await recordNavigation(selected,'selected-hover','--on-primary','--primary');
+    results.push('Navigation normal/hover/selected/selected-hover: '+palette+' '+mode);
+    async function recordNavigation(target,state,foregroundKey,backgroundKey){
+      const value=await target.evaluate((item,{state,foregroundKey,backgroundKey})=>{
+        const style=getComputedStyle(item),rgb=value=>value.match(/[\d.]+/g).slice(0,3).map(Number);
+        const resolve=key=>{const probe=document.createElement('i');probe.style.background=getComputedStyle(document.documentElement).getPropertyValue(key);document.body.append(probe);const value=getComputedStyle(probe).backgroundColor;probe.remove();return value;};
+        const foreground=style.color,background=backgroundKey?style.backgroundColor:getComputedStyle(item.closest('.sidebar')).backgroundColor;
+        const luminance=value=>rgb(value).map(channel=>{const x=channel/255;return x<=.04045?x/12.92:((x+.055)/1.055)**2.4;}).reduce((sum,x,index)=>sum+x*[.2126,.7152,.0722][index],0);
+        const a=luminance(foreground),b=luminance(background),ratio=(Math.max(a,b)+.05)/(Math.min(a,b)+.05);
+        return {state,foreground,background,ratio,expectedForeground:resolve(foregroundKey),expectedBackground:backgroundKey?resolve(backgroundKey):background};
+      },{state,foregroundKey,backgroundKey});
+      navigationColors.push({palette,mode,...value});
+      if(value.foreground!==value.expectedForeground||value.background!==value.expectedBackground||value.ratio<4.5)throw Error('Unreadable prototype navigation state: '+JSON.stringify({palette,mode,...value}));
+    }
+  }
+  fs.writeFileSync(path.join(output,'navigation-colors.json'),JSON.stringify(navigationColors,null,2));
+  const primaryColors=[];
+  for(const palette of expectedKeys)for(const mode of ['Light','Dark'])for(const pageName of ['admin-backup','login']){
+    await page.goto(pathToFileURL(path.join(base,pageName+'.html')).href+'?palette='+palette+'&mode='+mode);
+    await page.addStyleTag({content:'*,*::before,*::after{transition:none!important;animation:none!important}'});
+    const primary=page.locator(pageName==='login'?'.login-card .btn.primary':'main .btn.primary').first();
+    await page.mouse.move(1,1);
+    await recordPrimary('normal','--primary');
+    await primary.hover();await recordPrimary('hover','--primary-hover');
+    await page.mouse.down();await recordPrimary('pressed','--primary-pressed');
+    await page.mouse.move(1,1);await page.mouse.up();
+    await primary.evaluate(button=>button.disabled=true);await recordPrimary('disabled',null);
+    await primary.evaluate(button=>button.disabled=false);await recordPrimary('reenabled','--primary');
+    results.push('Primary button normal/hover/pressed/disabled/reenabled: '+pageName+' '+palette+' '+mode);
+    async function recordPrimary(state,key){
+      const value=await primary.evaluate((button,{state,key})=>{
+        const style=getComputedStyle(button),rgb=value=>value.match(/[\d.]+/g).slice(0,3).map(Number);
+        const luminance=value=>rgb(value).map(channel=>{const x=channel/255;return x<=.04045?x/12.92:((x+.055)/1.055)**2.4;}).reduce((sum,x,index)=>sum+x*[.2126,.7152,.0722][index],0);
+        const a=luminance(style.color),b=luminance(style.backgroundColor),ratio=(Math.max(a,b)+.05)/(Math.min(a,b)+.05);
+        const probe=document.createElement('i');probe.style.background=getComputedStyle(document.documentElement).getPropertyValue(key||'--primary');document.body.append(probe);const expected=getComputedStyle(probe).backgroundColor;probe.remove();
+        return {state,foreground:style.color,background:style.backgroundColor,opacity:Number(style.opacity),ratio,expected,disabled:button.disabled};
+      },{state,key});
+      primaryColors.push({page:pageName,palette,mode,...value});
+      if(key&&(value.background!==value.expected||value.ratio<4.5))throw Error('Unreadable prototype primary state: '+JSON.stringify({palette,mode,...value}));
+      if(!key&&(!value.disabled||value.opacity>=1))throw Error('Missing disabled primary state');
+      if(palette==='Aquatic'&&mode==='Dark')await page.screenshot({path:path.join(output,'primary-'+pageName+'-'+state+'.png')});
+    }
+  }
+  fs.writeFileSync(path.join(output,'primary-button-colors.json'),JSON.stringify(primaryColors,null,2));
   if(errors.length)throw Error('JavaScript errors: '+errors.join('; '));
   fs.writeFileSync(path.join(output,'assertions.txt'),results.join('\n'));console.log('Prototype verification passed: '+results.length+' page/scenario checks; 16 theme snapshots; standalone HTML passed');
   } finally { await browser.close(); }

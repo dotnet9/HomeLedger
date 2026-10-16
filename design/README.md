@@ -21,6 +21,8 @@
 
 维护源文件保留在 mockups，原六页的卡片、表格、图表和弹窗均保留。新增四页补齐应用入口。CSS 共享 Studio 令牌，同时保留收入/支出的语义色与 Georgia 金额字体。不要直接编辑生成的 index.html。
 
+0.1.13 起，实心主行动按钮分别使用 Primary、Hover、Pressed 和 OnPrimary 令牌；导航选中项和登录标记使用 Primary / OnPrimary，禁用状态保持可识别的弱化反馈。登录入口使用实际 button，支持同样的禁用状态。标题和链接继续沿用 Accent。
+
 ```powershell
 node scripts/build-prototype.cjs
 node scripts/prototype-verification.cjs E:/github/temp/homeledger/prototype

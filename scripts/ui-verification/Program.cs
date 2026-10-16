@@ -1,7 +1,9 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Text.Json.Serialization;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Presenters;
 using Avalonia.Headless;
 using Avalonia.Input;
 using Avalonia.Media;
@@ -14,6 +16,7 @@ using HomeLedger.Avalonia;
 using HomeLedger.Avalonia.Services;
 using HomeLedger.Avalonia.ViewModels;
 using HomeLedger.Avalonia.Views;
+using HomeLedger.Avalonia.Views.Pages;
 using HomeLedger.Core.I18n;
 using HomeLedger.Core.Models;
 using HomeLedger.Core.Services;
@@ -27,9 +30,12 @@ AppBuilder.Configure<App>().UseSkia().With(new FontManagerOptions
     FontFallbacks = [new FontFallback { FontFamily = new FontFamily("Microsoft YaHei UI") }]
 }).UseHeadless(new AvaloniaHeadlessPlatformOptions { UseHeadlessDrawing = false }).SetupWithoutStarting();
 var assertions = new List<string>();
+var primaryColors = new List<PrimaryButtonColorEvidence>();
+var navigationColors = new List<NavigationColorEvidence>();
 var appearance = AppearanceService.Current;
 Check(appearance.Modes.Count == 3 && appearance.Palettes.Count == 8, "Three modes and eight shared palettes");
 Check(AppServices.DbPath.StartsWith(output, StringComparison.OrdinalIgnoreCase), "All database work is isolated");
+VerifyBackupFeedback();
 AppServices.Auth.CreateUser("member", "Alex", "test1234");
 AppServices.Auth.CreateUser("member2", "Sam", "test1234");
 var member = AppServices.Auth.Login("member", "test1234")!;
@@ -48,7 +54,7 @@ AppServices.Deposits.AddDeposit(member.Id, 4000m, today.AddDays(-180), 5m, "Trav
 AppServices.Deposits.AddDeposit(other.Id, 18000m, today.AddDays(-120), 4m, "Family reserve");
 Session.Current = member;
 var login = new LoginWindow();
-login.Show(); Capture(login, "login-zh-CN.png"); login.Close();
+login.Show(); VerifyLoginButtonStates(login); Capture(login, "login-zh-CN.png"); login.Close();
 var window = new MainWindow(); window.Show();
 VerifyTitleBar(window);
 VerifyControlCulture(window, ["zh-CN", "en-US"], culture =>
@@ -130,6 +136,7 @@ foreach (var mode in appearance.Modes.Where(item => item.Key != "System"))
     appearance.SelectedPalette = palette;
     appearance.SelectedMode = mode;
     model.SelectedPageIndex = 0;
+    VerifyNavigationStates(window, palette.Key + " " + mode.Key);
     Capture(window, $"ledger-{palette.Key}-{mode.Key}.png");
     var stored = AppearanceService.Read(Path.Combine(AppServices.DataDirectory, "appearance.json"));
     Check(stored.Palette.ToString() == palette.Key && stored.Mode.ToString() == mode.Key, "Preference round trip " + palette.Key + " " + mode.Key);
@@ -213,12 +220,175 @@ var closing = new UpdateViewModel(fake, _ => { }, () => { }); pending = closing.
 Check(!closing.UpdateCommand.CanExecute(null), "Closed update model cancels and disables commands");
 about.Close(); settings.Close(); window.Close();
 File.WriteAllLines(Path.Combine(output, "assertions.txt"), assertions);
+File.WriteAllText(Path.Combine(output, "primary-button-colors.json"), System.Text.Json.JsonSerializer.Serialize(primaryColors,
+    PrimaryButtonJsonContext.Default.ListPrimaryButtonColorEvidence));
+File.WriteAllText(Path.Combine(output, "navigation-colors.json"), System.Text.Json.JsonSerializer.Serialize(navigationColors,
+    PrimaryButtonJsonContext.Default.ListNavigationColorEvidence));
 Console.WriteLine($"HomeLedger verification passed: {assertions.Count} assertions; NativeAOT={!RuntimeFeature.IsDynamicCodeSupported}; {output}");
 
 void Check(bool condition, string description)
 {
     if (!condition) throw new InvalidOperationException(description);
     assertions.Add(description); Console.WriteLine("PASS " + description);
+}
+void VerifyBackupFeedback()
+{
+    var originalPalette = appearance.SelectedPalette;
+    var originalMode = appearance.SelectedMode;
+    var page = new AdminBackupPage();
+    var host = new Window { Content = page, Width = 680, Height = 360 };
+    host.Show(); Pump();
+    var result = page.FindControl<TextBlock>("ResultText")!;
+    foreach (var success in new[] { true, false })
+    {
+        var message = success ? "Backup completed" : "Backup unavailable";
+        BackupFeedbackAccess.ShowResult(page, message, success);
+        Check(result.IsVisible && result.Text == message, "Backup feedback displays the actual " + (success ? "success" : "failure") + " result without file operations");
+        var key = success ? "FinanceIncome" : "FinanceExpense";
+        foreach (var palette in appearance.Palettes)
+        foreach (var mode in appearance.Modes.Where(item => item.Key != "System"))
+        {
+            appearance.SelectedPalette = palette; appearance.SelectedMode = mode; Pump();
+            Check(result.TryFindResource(key, result.ActualThemeVariant, out var resource) &&
+                  resource is ISolidColorBrush expected && result.Foreground is ISolidColorBrush actual && expected.Color == actual.Color,
+                "Existing backup feedback follows " + palette.Key + " " + mode.Key + " " + key);
+            if (success) VerifyPrimaryButtonStates(host, page.FindControl<Button>("BackupButton")!, "Backup " + palette.Key + " " + mode.Key);
+        }
+        Capture(host, "backup-feedback-" + (success ? "success" : "failure") + ".png");
+        page.Resources[key] = "invalid-brush";
+        BackupFeedbackAccess.ShowResult(page, message, success);
+        Check(result.IsVisible && result.Foreground == page.Foreground, "Invalid " + key + " safely falls back to the page text brush");
+        page.Resources.Remove(key);
+    }
+    host.Close();
+    appearance.SelectedPalette = originalPalette; appearance.SelectedMode = originalMode; Pump();
+}
+void VerifyPrimaryButtonStates(Window host, Button button, string variant)
+{
+    var presenter = button.GetVisualDescendants().OfType<ContentPresenter>().Single(item => item.Name == "PART_ContentPresenter");
+    button.Transitions = null; presenter.Transitions = null;
+    host.MouseMove(new Point(-20, -20)); Pump();
+    Record("normal", "StudioPrimary");
+    var point = button.TranslatePoint(new Point(button.Bounds.Width / 2, button.Bounds.Height / 2), host)!.Value;
+    host.MouseMove(point); Pump();
+    Check(button.IsPointerOver, "Primary action receives real pointer hover: " + variant);
+    Record("hover", "StudioPrimaryHover");
+    host.MouseDown(point, MouseButton.Left); Pump();
+    Check(button.IsPressed, "Primary action receives real pointer press: " + variant);
+    Record("pressed", "StudioPrimaryPressed");
+    // 在按钮外释放，不触发备份或文件选择器。
+    host.MouseMove(new Point(-20, -20)); host.MouseUp(new Point(-20, -20), MouseButton.Left); Pump();
+    button.IsEnabled = false; Pump();
+    var disabledForeground = (ISolidColorBrush)presenter.Foreground!;
+    var disabledBackground = (ISolidColorBrush)presenter.Background!;
+    Check(!button.IsEffectivelyEnabled && !button.IsPressed &&
+          (button.Opacity < 1 || presenter.Opacity < 1 || disabledForeground.Opacity < 1 || disabledBackground.Opacity < 1 ||
+           !Equals(presenter.Foreground, button.FindResource("StudioOnPrimary"))), "Primary action exposes a disabled visual state: " + variant);
+    Record("disabled", null);
+    button.IsEnabled = true; Pump();
+    Record("reenabled", "StudioPrimary");
+
+    void Record(string state, string? backgroundKey)
+    {
+        var foreground = (ISolidColorBrush)presenter.Foreground!;
+        var background = (ISolidColorBrush)presenter.Background!;
+        var under = ((ISolidColorBrush)host.FindResource("StudioSurface")!).Color;
+        var bg = Blend(background, under);
+        var fg = Blend(foreground, bg);
+        var ratio = Contrast(fg, bg);
+        primaryColors.Add(new PrimaryButtonColorEvidence(variant, state, foreground.Color.ToString(), foreground.Opacity,
+            background.Color.ToString(), background.Opacity, ratio));
+        File.WriteAllText(Path.Combine(output, "primary-button-colors.json"), System.Text.Json.JsonSerializer.Serialize(primaryColors,
+            PrimaryButtonJsonContext.Default.ListPrimaryButtonColorEvidence));
+        if (backgroundKey is null) return;
+        Check(button.TryFindResource(backgroundKey, button.ActualThemeVariant, out var resource) && resource is ISolidColorBrush expected &&
+              expected.Color == background.Color && ratio >= 4.5, "Primary action uses readable " + state + " colors: " + variant +
+              $"; foreground={foreground}; background={background}; ratio={ratio:F2}; resource={button.FindResource(backgroundKey)}");
+    }
+}
+void VerifyLoginButtonStates(LoginWindow host)
+{
+    var originalPalette = appearance.SelectedPalette;
+    var originalMode = appearance.SelectedMode;
+    var username = host.FindControl<TextBox>("UsernameBox")!;
+    var password = host.FindControl<TextBox>("PasswordBox")!;
+    var button = host.FindControl<Button>("LoginButton")!;
+    username.Text = "member"; password.Text = "test1234"; Pump();
+    Check(button.IsEnabled, "Real login fields enable the primary action without submitting credentials");
+    foreach (var palette in appearance.Palettes)
+    foreach (var mode in appearance.Modes.Where(item => item.Key != "System"))
+    {
+        appearance.SelectedPalette = palette; appearance.SelectedMode = mode; Pump();
+        VerifyPrimaryButtonStates(host, button, "Login " + palette.Key + " " + mode.Key);
+        var mark = host.FindControl<Border>("LoginMark")!;
+        var foreground = (ISolidColorBrush)((TextBlock)mark.Child!).Foreground!;
+        var background = (ISolidColorBrush)mark.Background!;
+        Check(Contrast(foreground.Color, background.Color) >= 4.5,
+            "Login currency mark remains readable: " + palette.Key + " " + mode.Key);
+        if (palette.Key == "Aquatic" && mode.Key == "Dark") Capture(host, "login-Aquatic-Dark.png");
+    }
+    username.Text = null; password.Text = null; Pump();
+    Check(!button.IsEnabled, "Clearing actual login fields restores the disabled action");
+    appearance.SelectedPalette = originalPalette; appearance.SelectedMode = originalMode; Pump();
+}
+static Color Blend(ISolidColorBrush brush, Color under)
+{
+    var alpha = brush.Color.A / 255d * brush.Opacity;
+    return Color.FromRgb((byte)Math.Round(brush.Color.R * alpha + under.R * (1 - alpha)),
+        (byte)Math.Round(brush.Color.G * alpha + under.G * (1 - alpha)), (byte)Math.Round(brush.Color.B * alpha + under.B * (1 - alpha)));
+}
+void VerifyNavigationStates(MainWindow host, string variant)
+{
+    var list = host.FindControl<ListBox>("NavList")!;
+    var item = (ListBoxItem)list.ContainerFromIndex(0)!;
+    var presenter = item.GetVisualDescendants().OfType<ContentPresenter>().Single();
+    var text = item.GetVisualDescendants().OfType<TextBlock>().Single();
+    item.Transitions = null; presenter.Transitions = null;
+    host.MouseMove(new Point(-20, -20)); list.SelectedIndex = 1; Pump();
+    Record("normal", null, "StudioText");
+    var point = item.TranslatePoint(new Point(item.Bounds.Width / 2, item.Bounds.Height / 2), host)!.Value;
+    host.MouseMove(point); Pump();
+    Check(item.IsPointerOver, "Navigation receives real pointer hover: " + variant);
+    Record("hover", "StudioRaised", "StudioText");
+    host.MouseMove(new Point(-20, -20)); list.SelectedIndex = 0; Pump();
+    Record("selected", "StudioPrimary", "StudioOnPrimary");
+    host.MouseMove(point); Pump();
+    Record("selected-hover", "StudioPrimary", "StudioOnPrimary");
+    host.MouseMove(new Point(-20, -20)); item.IsEnabled = false; Pump();
+    Check(!item.IsEffectivelyEnabled && (item.Opacity < 1 || presenter.Opacity < 1 || text.Opacity < 1 ||
+          !Equals(text.Foreground, item.FindResource("StudioOnPrimary"))), "Navigation exposes a disabled visual state: " + variant);
+    Record("disabled", null, null);
+    item.IsEnabled = true; Pump();
+    Record("reenabled", "StudioPrimary", "StudioOnPrimary");
+
+    void Record(string state, string? backgroundKey, string? foregroundKey)
+    {
+        // 读取模板内实际绘制的文字与容器画刷，覆盖默认样式对自定义样式的影响。
+        var foreground = (ISolidColorBrush)text.Foreground!;
+        var background = presenter.Background as ISolidColorBrush ?? item.Background as ISolidColorBrush ?? Brushes.Transparent;
+        item.TryFindResource("StudioSurface", item.ActualThemeVariant, out var surfaceResource);
+        var surface = ((ISolidColorBrush)surfaceResource!).Color;
+        var bg = Blend(background, surface);
+        var fg = Blend(foreground, bg);
+        var ratio = Contrast(fg, bg);
+        navigationColors.Add(new NavigationColorEvidence(variant, state, foreground.Color.ToString(), foreground.Opacity,
+            background.Color.ToString(), background.Opacity, item.Opacity, presenter.Opacity, ratio));
+        File.WriteAllText(Path.Combine(output, "navigation-colors.json"), System.Text.Json.JsonSerializer.Serialize(navigationColors,
+            PrimaryButtonJsonContext.Default.ListNavigationColorEvidence));
+        if (foregroundKey is null) return;
+        Check(item.TryFindResource(foregroundKey, item.ActualThemeVariant, out var expectedForeground) &&
+              expectedForeground is ISolidColorBrush expectedText && expectedText.Color == foreground.Color && ratio >= 4.5 &&
+              (backgroundKey is null || item.TryFindResource(backgroundKey, item.ActualThemeVariant, out var expectedBackground) &&
+               expectedBackground is ISolidColorBrush expectedFill && expectedFill.Color == background.Color),
+            "Navigation uses readable " + state + " colors: " + variant + $"; foreground={foreground}; background={background}; ratio={ratio:F2}");
+    }
+}
+static double Contrast(Color first, Color second)
+{
+    static double Channel(byte value) { var x = value / 255d; return x <= .04045 ? x / 12.92 : Math.Pow((x + .055) / 1.055, 2.4); }
+    static double Luminance(Color value) => .2126 * Channel(value.R) + .7152 * Channel(value.G) + .0722 * Channel(value.B);
+    var a = Luminance(first); var b = Luminance(second);
+    return (Math.Max(a, b) + .05) / (Math.Min(a, b) + .05);
 }
 void VerifyTitleBar(MainWindow target)
 {
@@ -432,6 +602,23 @@ void CheckLocalized(Window target)
         Check(chart.InLabel == AppText.Get(Language.Income) && chart.OutLabel == AppText.Get(Language.Expense), "Chart legends follow the current language");
 }
 UpdateInfo NewUpdate() => new(new Version(9, 0), "v9.0", "HomeLedger", "Release notes", "https://example.test/release", "https://example.test/setup.exe", "setup.exe", "https://example.test/setup.exe.sha256");
+
+sealed record PrimaryButtonColorEvidence(string Variant, string State, string Foreground, double ForegroundOpacity,
+    string Background, double BackgroundOpacity, double Ratio);
+sealed record NavigationColorEvidence(string Variant, string State, string Foreground, double ForegroundOpacity,
+    string Background, double BackgroundOpacity, double ItemOpacity, double PresenterOpacity, double Ratio);
+
+[JsonSourceGenerationOptions(WriteIndented = true, PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
+[JsonSerializable(typeof(List<PrimaryButtonColorEvidence>))]
+[JsonSerializable(typeof(List<NavigationColorEvidence>))]
+partial class PrimaryButtonJsonContext : JsonSerializerContext;
+
+static class BackupFeedbackAccess
+{
+    // 仅触发真实页面的结果显示，不调用备份、文件选择器或用户数据库。
+    [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "ShowResult")]
+    public static extern void ShowResult(AdminBackupPage page, string message, bool success);
+}
 
 sealed class FakeUpdates : IUpdateService
 {
