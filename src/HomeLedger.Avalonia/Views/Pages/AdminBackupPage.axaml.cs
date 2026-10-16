@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using HomeLedger.Avalonia.Views;
@@ -9,10 +10,13 @@ namespace HomeLedger.Avalonia.Views.Pages;
 
 public partial class AdminBackupPage : UserControl
 {
+    private string _resultResourceKey = "FinanceIncome";
+
     public AdminBackupPage()
     {
         InitializeComponent();
         DbPathText.Text = AppServices.DbPath;
+        ResultText.ActualThemeVariantChanged += (_, _) => UpdateResultForeground();
         Dispatcher.UIThread.Post(() => BackupButton.Focus());
     }
 
@@ -56,7 +60,15 @@ public partial class AdminBackupPage : UserControl
     private void ShowResult(string message, bool success)
     {
         ResultText.Text = message;
-        ResultText.Foreground = global::Avalonia.Media.Brush.Parse(success ? "FinanceIncome" : "FinanceExpense");
+        _resultResourceKey = success ? "FinanceIncome" : "FinanceExpense";
+        UpdateResultForeground();
         ResultText.IsVisible = true;
+    }
+
+    private void UpdateResultForeground()
+    {
+        // 资源键不是颜色字符串；切换主题时重新读取，缺失时继承页面文字颜色。
+        ResultText.Foreground = ResultText.TryFindResource(_resultResourceKey, ResultText.ActualThemeVariant, out var value)
+            && value is IBrush brush ? brush : Foreground;
     }
 }

@@ -32,14 +32,8 @@
                 BoxShadow="0 16 50 0 #1e463724">
             <StackPanel>
                 <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,0,0,6">
-                    <Border Width="44" Height="44" CornerRadius="10">
-                        <Border.Background>
-                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-                                <GradientStop Color="{DynamicResource StudioAccentColor}" Offset="0"/>
-                                <GradientStop Color="{DynamicResource StudioAccentColor}" Offset="1"/>
-                            </LinearGradientBrush>
-                        </Border.Background>
-                        <TextBlock Text="¥" FontSize="22" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Border x:Name="LoginMark" Width="44" Height="44" CornerRadius="10" Background="{DynamicResource StudioPrimary}">
+                        <TextBlock Text="¥" FontSize="22" Foreground="{DynamicResource StudioOnPrimary}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
                     <TextBlock Text="{codewf:I18n {x:Static l:Language.FamilyLedger}}" FontSize="20" FontWeight="Bold" VerticalAlignment="Center"/>
                 </StackPanel>
@@ -59,15 +53,8 @@
                          TextChanged="OnLoginInputChanged"/>
 
                 <Button x:Name="LoginButton" Content="{codewf:I18n {x:Static l:Language.Login}}" Click="OnLogin" Height="40" Margin="0,6,0,0"
-                        HorizontalAlignment="Stretch" Foreground="White" CornerRadius="10" FontWeight="Bold" FontSize="14"
-                        IsDefault="True" IsEnabled="False">
-                    <Button.Background>
-                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-                            <GradientStop Color="{DynamicResource StudioAccentColor}" Offset="0"/>
-                            <GradientStop Color="{DynamicResource StudioAccentColor}" Offset="1"/>
-                        </LinearGradientBrush>
-                    </Button.Background>
-                </Button>
+                        HorizontalAlignment="Stretch" Theme="{DynamicResource SolidButton}" CornerRadius="10" FontWeight="Bold" FontSize="14"
+                        IsDefault="True" IsEnabled="False"/>
 
                 <TextBlock x:Name="HintText" TextWrapping="Wrap" FontSize="12" Foreground="{DynamicResource FinanceExpense}"
                            IsVisible="False" Margin="0,12,0,0"/>

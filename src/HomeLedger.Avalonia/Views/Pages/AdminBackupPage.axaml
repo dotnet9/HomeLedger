@@ -12,8 +12,8 @@
             <StackPanel Spacing="14">
                 <TextBlock Text="{codewf:I18n {x:Static l:Language.DatabaseLocation}}" FontSize="13" Foreground="{DynamicResource StudioText}"/>
                 <TextBox x:Name="DbPathText" IsReadOnly="True" FontSize="12" TextWrapping="Wrap"/>
-                <Button x:Name="BackupButton" Content="{codewf:I18n {x:Static l:Language.BackupDatabase}}" Click="OnBackup" Background="{DynamicResource StudioAccent}" Foreground="White" CornerRadius="10" HorizontalAlignment="Left"/>
-                <TextBlock x:Name="ResultText" FontSize="12" Foreground="{DynamicResource FinanceIncome}" TextWrapping="Wrap" IsVisible="False"/>
+                <Button x:Name="BackupButton" Content="{codewf:I18n {x:Static l:Language.BackupDatabase}}" Click="OnBackup" Theme="{DynamicResource SolidButton}" CornerRadius="10" HorizontalAlignment="Left"/>
+                <TextBlock x:Name="ResultText" FontSize="12" TextWrapping="Wrap" IsVisible="False"/>
             </StackPanel>
         </Border>
     </StackPanel>

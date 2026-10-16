@@ -44,8 +44,8 @@
                             <Setter Property="Foreground" Value="{DynamicResource StudioText}"/>
                         </Style>
                         <Style Selector="ListBoxItem:selected">
-                            <Setter Property="Background" Value="{DynamicResource StudioAccent}"/>
-                            <Setter Property="Foreground" Value="White"/>
+                            <Setter Property="Background" Value="{DynamicResource StudioPrimary}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource StudioOnPrimary}"/>
                             <Setter Property="FontWeight" Value="SemiBold"/>
                         </Style>
                     </ListBox.Styles>

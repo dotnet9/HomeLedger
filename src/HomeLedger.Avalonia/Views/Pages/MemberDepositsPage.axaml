@@ -40,9 +40,9 @@
                 <StackPanel Orientation="Horizontal" Spacing="10">
                     <TextBlock Text="{codewf:I18n {x:Static l:Language.MyDeposits}}" FontSize="14" FontWeight="Bold" VerticalAlignment="Center"/>
                     <Panel Width="20"/>
-                    <Button x:Name="DepositButton" Content="{codewf:I18n {x:Static l:Language.NewDeposit}}" Command="{Binding DepositCommand}" Background="{DynamicResource StudioAccent}" Foreground="White" CornerRadius="10"/>
+                    <Button x:Name="DepositButton" Content="{codewf:I18n {x:Static l:Language.NewDeposit}}" Command="{Binding DepositCommand}" Theme="{DynamicResource SolidButton}" CornerRadius="10"/>
                     <Button Content="{codewf:I18n {x:Static l:Language.WithdrawAction}}" Command="{Binding WithdrawFirstCommand}" CornerRadius="10"/>
-                    <Button Content="{codewf:I18n {x:Static l:Language.SettleTitle}}" Command="{Binding SettleCommand}" Background="{DynamicResource StudioAccent}" Foreground="White" CornerRadius="10"/>
+                    <Button Content="{codewf:I18n {x:Static l:Language.SettleTitle}}" Command="{Binding SettleCommand}" Theme="{DynamicResource SolidButton}" CornerRadius="10"/>
                 </StackPanel>
 
                 <Grid ColumnDefinitions="1.2*,0.7*,1.1*,1*,1.2*,2.6*,0.9*,0.9*,40" Margin="8,0">

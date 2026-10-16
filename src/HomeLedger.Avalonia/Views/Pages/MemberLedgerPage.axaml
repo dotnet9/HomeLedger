@@ -73,7 +73,7 @@
                     <StackPanel Width="120" Spacing="6" Margin="0,0,12,10">
                         <TextBlock Text=" " FontSize="12"/>
                         <Button x:Name="QuickSaveButton" Content="{codewf:I18n {x:Static l:Language.NewTransaction}}" Command="{Binding SaveQuickCommand}" Height="36"
-                                Background="{DynamicResource StudioAccent}" Foreground="White" CornerRadius="10" FontWeight="SemiBold" HorizontalAlignment="Stretch"/>
+                                Theme="{DynamicResource SolidButton}" CornerRadius="10" FontWeight="SemiBold" HorizontalAlignment="Stretch"/>
                     </StackPanel>
                 </WrapPanel>
 

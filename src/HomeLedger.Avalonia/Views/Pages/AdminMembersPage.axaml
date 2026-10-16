@@ -12,7 +12,7 @@
             <TextBox Text="{Binding Keyword, UpdateSourceTrigger=PropertyChanged}"
                 PlaceholderText="{codewf:I18n {x:Static l:Language.SearchMembers}}" />
             <Button Grid.Column="2" Content="{codewf:I18n {x:Static l:Language.AddMember}}" Command="{Binding CreateCommand}"
-                Background="{DynamicResource StudioAccent}" Foreground="White" CornerRadius="10" />
+                Theme="{DynamicResource SolidButton}" CornerRadius="10" />
         </Grid>
 
         <Border Background="{DynamicResource StudioSurface}" BorderBrush="{DynamicResource StudioBorder}" BorderThickness="1" CornerRadius="16" Padding="16">
